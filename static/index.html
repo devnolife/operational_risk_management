@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operational Risk Management — Giudici (2009) Bab 12</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2d6a9f;
+    --accent: #2ca02c;
+    --warn: #ff7f0e;
+    --danger: #d62728;
+    --bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #6c757d;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* --- Sidebar --- */
+  .sidebar {
+    position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
+    background: linear-gradient(180deg, var(--primary) 0%, #142d4c 100%);
+    color: white; padding: 1.5rem 1rem; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column;
+  }
+  .sidebar h2 { font-size: 1.15rem; margin-bottom: 0.3rem; }
+  .sidebar .subtitle { font-size: 0.78rem; opacity: 0.7; margin-bottom: 1.5rem; }
+  .nav-btn {
+    display: block; width: 100%; text-align: left; padding: 0.7rem 1rem;
+    border: none; background: transparent; color: rgba(255,255,255,0.8);
+    font-size: 0.9rem; border-radius: 8px; cursor: pointer;
+    margin-bottom: 4px; transition: all 0.2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+  .nav-btn.active { background: rgba(255,255,255,0.2); color: white; font-weight: 600; }
+  .sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.78rem; opacity: 0.65; }
+
+  /* --- Main --- */
+  .main { margin-left: 280px; padding: 2rem 2.5rem 4rem; max-width: 1200px; }
+
+  /* --- Page sections --- */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* --- Hero --- */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white; padding: 2.2rem 2.5rem; border-radius: var(--radius);
+    margin-bottom: 2rem;
+  }
+  .hero h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .hero p { color: #c8dff5; font-size: 1.05rem; }
+
+  /* --- Cards & Metrics --- */
+  .metrics { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+  .metrics.c4 { grid-template-columns: repeat(4, 1fr); }
+  .metrics.c3 { grid-template-columns: repeat(3, 1fr); }
+  .metrics.c2 { grid-template-columns: repeat(2, 1fr); }
+  .metric-card {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 1.2rem 1.4rem; box-shadow: var(--shadow);
+  }
+  .metric-card .label { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+  .metric-card .value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+
+  .card {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem;
+  }
+
+  /* --- Info boxes --- */
+  .info-box {
+    border-left: 4px solid var(--primary-light);
+    background: #e8f4fd; padding: 1rem 1.3rem; border-radius: 0 8px 8px 0;
+    margin-bottom: 1.2rem; font-size: 0.92rem;
+  }
+  .info-box.green {
+    border-left-color: var(--accent); background: #e8f5e9;
+  }
+  .info-box.yellow {
+    border-left-color: var(--warn); background: #fff8e1;
+  }
+
+  /* --- Key Finding --- */
+  .key-finding {
+    background: linear-gradient(90deg, #e8f5e9, #f1f8e9);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.3rem; border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+  }
+
+  /* --- Tables --- */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 1rem 0; }
+  .data-table th {
+    background: var(--primary); color: white;
+    padding: 0.6rem 0.8rem; text-align: left; font-weight: 600;
+    position: sticky; top: 0;
+  }
+  .data-table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid #e9ecef; }
+  .data-table tr:nth-child(even) { background: #f8f9fa; }
+  .data-table tr:hover { background: #e9ecef; }
+  .table-scroll { max-height: 450px; overflow-y: auto; border-radius: 8px; border: 1px solid #dee2e6; }
+
+  /* --- Tabs --- */
+  .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid #dee2e6; }
+  .tab-btn {
+    padding: 0.7rem 1.5rem; border: none; background: transparent;
+    cursor: pointer; font-size: 0.9rem; color: var(--text-muted);
+    border-bottom: 3px solid transparent; transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--primary); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+  .tab-content { display: none; padding: 1.5rem 0; }
+  .tab-content.active { display: block; }
+
+  /* --- Columns --- */
+  .cols { display: grid; gap: 1.5rem; }
+  .cols.c2 { grid-template-columns: 1fr 1fr; }
+  .cols.c3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* --- Section --- */
+  .section-title {
+    font-size: 1.3rem; font-weight: 700; color: var(--primary);
+    margin: 2rem 0 1rem; padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+  h3.step { color: var(--primary); margin: 1.5rem 0 0.8rem; font-size: 1.1rem; }
+
+  /* --- Badges --- */
+  .badge {
+    display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px;
+    font-size: 0.78rem; font-weight: 600; color: white;
+  }
+  .badge.green { background: var(--accent); }
+  .badge.yellow { background: var(--warn); }
+  .badge.red { background: var(--danger); }
+
+  /* --- Divider --- */
+  hr { border: none; border-top: 1px solid #dee2e6; margin: 2rem 0; }
+
+  /* --- Responsive --- */
+  @media (max-width: 900px) {
+    .sidebar { width: 100%; height: auto; position: relative; }
+    .main { margin-left: 0; padding: 1rem; }
+    .metrics.c4, .metrics.c3 { grid-template-columns: repeat(2, 1fr); }
+    .cols.c2, .cols.c3 { grid-template-columns: 1fr; }
+  }
+
+  /* Number formatting */
+  .num { font-variant-numeric: tabular-nums; }
+
+  .success-box {
+    background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px;
+    padding: 1.2rem 1.5rem; margin: 1rem 0; color: #155724;
+  }
+  .formula { background: #f8f9fa; padding: 0.8rem 1rem; border-radius: 8px; font-family: 'Cambria Math', serif; margin: 0.5rem 0; text-align: center; font-size: 1.05rem; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <h2>⚠️ Operational Risk Management</h2>
+  <div class="subtitle">Giudici (2009) Bab 12 — 3 model, 1 per anggota</div>
+
+  <button class="nav-btn active" onclick="showPage('beranda')">🏠 Beranda</button>
+  <button class="nav-btn" onclick="showPage('data')">📂 Data Lengkap</button>
+  <button class="nav-btn" onclick="showPage('scorecard')">1 — Scorecard</button>
+  <button class="nav-btn" onclick="showPage('actuarial')">2 — VaR Aktuaria</button>
+  <button class="nav-btn" onclick="showPage('integrated')">3 — VaR Integrasi & BIA</button>
+  <button class="nav-btn" onclick="showPage('summary')">📊 Ringkasan Eksekutif</button>
+
+  <div style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:1rem;">
+    <div style="font-size:0.8rem;opacity:0.8;margin-bottom:0.5rem;"><strong>Cara baca tiap model:</strong></div>
+    <div style="font-size:0.75rem;opacity:0.7;">1️⃣ Rumusan Masalah<br>2️⃣ Metode<br>3️⃣ Dataset<br>4️⃣ Proses<br>5️⃣ Hasil & Kesimpulan</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <strong>Anggota Kelompok:</strong><br>
+    👤 Anggota 1 → Scorecard<br>
+    👤 Anggota 2 → VaR Aktuaria<br>
+    👤 Anggota 3 → VaR Integrasi & BIA
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- ==================== BERANDA ==================== -->
+<div id="page-beranda" class="page active">
+  <div class="hero">
+    <h1>⚠️ Operational Risk Management</h1>
+    <p>Implementasi Bab 12 — Giudici, <em>Applied Data Mining for Business and Industry</em> (2009)</p>
+  </div>
+
+  <div class="card">
+    <h3>📖 Apa itu Risiko Operasional?</h3>
+    <div class="info-box" style="margin-top:0.8rem;">
+      <strong>Definisi Basel II:</strong> "The risk of loss resulting from inadequate or failed internal processes, people and systems or from external events."
+      <br><em>— Giudici (2009), Bab 12.1</em>
+    </div>
+    <p>Risiko operasional = risiko kerugian akibat <strong>proses internal yang gagal</strong>, <strong>kesalahan manusia</strong>, <strong>kegagalan sistem</strong>, atau <strong>kejadian eksternal</strong> (termasuk penipuan/fraud).</p>
+  </div>
+
+  <div class="section-title">🎯 Dua Tujuan Pengukuran (Bab 12.1)</div>
+  <div class="cols c2">
+    <div class="card">
+      <h4>🏛️ Tujuan Prudensial</h4>
+      <p>Menentukan <strong>berapa cadangan modal</strong> (capital reserve) yang harus disiapkan bank untuk menutup kerugian tak terduga.</p>
+      <div class="badge green">→ Model 2 & 3: VaR</div>
+    </div>
+    <div class="card">
+      <h4>📊 Tujuan Manajerial</h4>
+      <p>Membuat <strong>peringkat risiko</strong> agar manajemen tahu mana yang harus ditangani lebih dulu.</p>
+      <div class="badge green">→ Model 1: Scorecard</div>
+    </div>
+  </div>
+
+  <div class="section-title">📥 Tiga Sumber Data (Bab 12.2)</div>
+  <div class="cols c3">
+    <div class="card">
+      <h4>📊 Data Internal</h4>
+      <p><em>(Bab 12.2, hal. 221)</em></p>
+      <p>Buku mensyaratkan tabel riwayat kerugian bank sendiri: jumlah kerugian (amount), tanggal, unit organisasi, lini bisnis & jenis kejadian.</p>
+      <div class="badge green">Backward-looking</div>
+      <p style="margin-top:0.5rem;font-size:0.85rem;"><strong>Di proyek ini:</strong> Dataset PaySim (Kaggle) — data bank asli bersifat rahasia.</p>
+    </div>
+    <div class="card">
+      <h4>👥 Penilaian Ahli</h4>
+      <p><em>(Bab 12.2, hal. 222–224)</em></p>
+      <p>Kepala cabang, kepala area, dan manajer menilai frekuensi, severity, dan kontrol tiap risiko dalam skala ordinal. 8 BL × 7 ET = 56 kategori.</p>
+      <div class="badge yellow">Forward-looking</div>
+      <p style="margin-top:0.5rem;font-size:0.85rem;"><strong>Di proyek ini:</strong> Data sintetis mengikuti struktur buku.</p>
+    </div>
+    <div class="card">
+      <h4>🏢 Data Eksternal</h4>
+      <p><em>(Bab 12.2, hal. 221–222)</em></p>
+      <p>Data konsorsium bank (DIPO). Karena gabungan banyak bank, di-<strong>scaling</strong> agar setara ukuran bank kita.</p>
+      <div class="badge blue" style="background:var(--primary-light);">Perspektif industri</div>
+      <p style="margin-top:0.5rem;font-size:0.85rem;"><strong>Di proyek ini:</strong> Data sintetis dengan proses scaling sesuai buku.</p>
+    </div>
+  </div>
+
+  <div class="section-title">🎯 Mengapa Dataset PaySim?</div>
+  <div class="card">
+    <div class="cols c2">
+      <div>
+        <h4>✅ Kenapa cocok sebagai data internal?</h4>
+        <table class="data-table" style="margin-top:0.5rem;">
+          <tr><th>Syarat Buku</th><th>PaySim</th></tr>
+          <tr><td>Jumlah kerugian (amount)</td><td>✅ Kolom <code>amount</code></td></tr>
+          <tr><td>Tanggal/waktu kejadian</td><td>✅ Kolom <code>step</code> (jam → hari)</td></tr>
+          <tr><td>Label kejadian (fraud/tidak)</td><td>✅ Kolom <code>isFraud</code></td></tr>
+          <tr><td>Jenis transaksi</td><td>✅ Kolom <code>type</code></td></tr>
+          <tr><td>Identitas pelaku/korban</td><td>✅ <code>nameOrig</code>, <code>nameDest</code></td></tr>
+          <tr><td>Jumlah data besar</td><td>✅ <strong>6,3 juta</strong> transaksi</td></tr>
+        </table>
+      </div>
+      <div>
+        <h4>📌 Untuk apa dataset ini dipakai?</h4>
+        <ol style="padding-left:1.2rem;margin-top:0.5rem;">
+          <li>Transaksi fraud (<code>isFraud=1</code>) → <strong>data kerugian internal</strong> bank, kolom <code>amount</code> = besarnya kerugian</li>
+          <li>Dari data ini dihitung <strong>frekuensi</strong> (berapa kali fraud per tahun) dan <strong>severity</strong> (distribusi besarnya kerugian)</li>
+          <li>Frekuensi & severity menjadi input utama model <strong>VaR Aktuaria</strong> dan <strong>VaR Integrasi Bayesian</strong></li>
+        </ol>
+        <div class="info-box" style="margin-top:1rem;">
+          💡 <strong>Mengapa bukan data bank asli?</strong> — Data kerugian operasional bank bersifat sangat rahasia. PaySim adalah alternatif terbaik karena sintetis tetapi realistis.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">🔧 Tiga Model yang Dipakai (Bab 12.3–12.4)</div>
+  <div class="cols c3">
+    <div class="card">
+      <h4>📋 1. Scorecard</h4>
+      <p><strong>Apa:</strong> Sistem peringkat risiko berbasis warna 🟢🟡🔴</p>
+      <p><strong>Untuk apa:</strong> Tujuan manajerial — prioritas risiko</p>
+      <p><strong>Metode:</strong> Median + Indeks Gini → Rating huruf</p>
+      <p><strong>Pendekatan:</strong> Bottom-up, kualitatif</p>
+    </div>
+    <div class="card">
+      <h4>📈 2. VaR Aktuaria</h4>
+      <p><strong>Apa:</strong> Estimasi cadangan modal dari simulasi</p>
+      <p><strong>Untuk apa:</strong> Tujuan prudensial — cadangan modal</p>
+      <p><strong>Metode:</strong> Poisson × Lognormal → Monte Carlo → VaR 99,9%</p>
+      <p><strong>Pendekatan:</strong> Bottom-up, kuantitatif</p>
+    </div>
+    <div class="card">
+      <h4>🧮 3. VaR Integrasi & BIA</h4>
+      <p><strong>Apa:</strong> Gabungan 3 sumber data + pembanding BIA</p>
+      <p><strong>Untuk apa:</strong> Validasi silang (cross-check)</p>
+      <p><strong>Metode:</strong> Integrasi Bayesian + BIA (15% GI)</p>
+      <p><strong>Pendekatan:</strong> Bottom-up + Top-down</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DATA LENGKAP ==================== -->
+<div id="page-data" class="page">
+  <div class="hero">
+    <h1>📂 Data Lengkap — Semua Dataset</h1>
+    <p>Seluruh data yang dipakai proyek, sesuai Bab 12.2 buku Giudici (2009)</p>
+  </div>
+
+  <div class="metrics c4" id="data-metrics"></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('data', 'paysim')">① PaySim — Internal</button>
+    <button class="tab-btn" onclick="showTab('data', 'expert')">② Penilaian Ahli</button>
+    <button class="tab-btn" onclick="showTab('data', 'external')">③ Kerugian Eksternal</button>
+  </div>
+
+  <div id="data-tab-paysim" class="tab-content active"></div>
+  <div id="data-tab-expert" class="tab-content"></div>
+  <div id="data-tab-external" class="tab-content"></div>
+</div>
+
+<!-- ==================== SCORECARD ==================== -->
+<div id="page-scorecard" class="page">
+  <div class="hero">
+    <h1>📋 Model 1 — Scorecard (Self-Assessment)</h1>
+    <p>Anggota 1 · Giudici (2009) Bab 12.4 · analog Gambar 12.1</p>
+  </div>
+
+  <div class="key-finding">
+    <strong>📌 Halaman ini menjawab:</strong> Dari 56 kategori risiko bank,
+    <strong>mana yang paling berbahaya</strong> dan harus ditangani lebih dulu?
+    Model ini menggunakan <em>pendapat ahli</em> untuk membuat peringkat risiko
+    dengan sistem warna 🟢🟡🔴.
+  </div>
+
+  <h3 class="step">1️⃣ Rumusan Masalah</h3>
+  <div class="card">
+    <p><strong>Dari banyak jenis risiko operasional yang bisa terjadi di sebuah bank, mana yang paling berbahaya dan harus ditangani lebih dulu?</strong></p>
+    <p style="margin-top:0.5rem;">Sebuah bank menghadapi puluhan jenis risiko. Tidak mungkin menangani semua sekaligus. Kita perlu cara untuk <strong>memberi peringkat</strong> risiko mana yang paling mendesak.</p>
+  </div>
+
+  <h3 class="step">2️⃣ Metode (dari buku)</h3>
+  <div class="card">
+    <p><strong>Scorecard / Self-Assessment</strong> — seperti membuat <em>rapor</em> untuk tiap risiko.</p>
+    <ol style="padding-left:1.2rem;margin-top:0.5rem;">
+      <li>Para ahli menilai tiap risiko dari 3 sisi: <strong>frekuensi</strong>, <strong>severity</strong>, dan <strong>kontrol</strong>.</li>
+      <li>Penilaian digabung memakai <strong>median</strong> + <strong>indeks Gini</strong> (tingkat kesepakatan).</li>
+      <li>Hasilnya: <strong>rating huruf</strong> (A = paling aman) + <strong>lampu lalu lintas</strong> 🟢🟡🔴.</li>
+    </ol>
+    <div class="info-box yellow" style="margin-top:1rem;">
+      🧩 <strong>Perumpamaan:</strong> Seperti dokter UGD yang melakukan <em>triase</em>. Pasien paling kritis didahulukan. Scorecard melakukan hal sama untuk risiko.
+    </div>
+    <div class="formula">G = 1 − Σ p<sub>k</sub>² → G<sub>norm</sub> = G × K/(K−1)</div>
+    <div class="formula">Perceived Loss = frekuensi/tahun × nilai severity × faktor kontrol</div>
+  </div>
+
+  <h3 class="step">3️⃣ & 4️⃣ Dataset & Proses</h3>
+  <div class="metrics c3" id="sc-dataset-metrics"></div>
+
+  <h3 class="step">5️⃣ Hasil & Kesimpulan</h3>
+  <div class="metrics c2" id="sc-result-metrics"></div>
+
+  <div class="card">
+    <h4>Tabel Scorecard (diurutkan: paling atas = paling prioritas)</h4>
+    <div class="table-scroll" id="sc-table"></div>
+  </div>
+
+  <div class="card">
+    <h4>📊 Grafik 15 Risiko Prioritas Tertinggi</h4>
+    <div id="sc-bar-chart"></div>
+  </div>
+
+  <div class="card">
+    <h4>🗺️ Peta Risiko (Heatmap)</h4>
+    <div id="sc-heatmap"></div>
+    <div class="info-box green" style="margin-top:0.8rem;">
+      💡 Kotak <strong>paling merah</strong> = area yang harus mendapat perhatian utama.
+    </div>
+  </div>
+
+  <div class="success-box" id="sc-conclusion"></div>
+</div>
+
+<!-- ==================== VaR AKTUARIA ==================== -->
+<div id="page-actuarial" class="page">
+  <div class="hero">
+    <h1>📈 Model 2 — VaR Aktuaria</h1>
+    <p>Anggota 2 · Giudici (2009) Bab 12.3 · analog Gambar 12.2</p>
+  </div>
+
+  <div class="key-finding">
+    <strong>📌 Halaman ini menjawab:</strong> Berapa <strong>cadangan modal minimum</strong> yang harus disiapkan bank untuk menutup kerugian fraud? Model ini mensimulasikan <em>ribuan skenario</em> lalu mencari batas kerugian terburuk (VaR 99,9%).
+  </div>
+
+  <h3 class="step">1️⃣ Rumusan Masalah</h3>
+  <div class="card">
+    <p><strong>Seberapa besar total kerugian terburuk yang mungkin kita alami akibat penipuan (fraud), dan berapa "modal cadangan" yang harus disiapkan?</strong></p>
+  </div>
+
+  <h3 class="step">2️⃣ Metode (dari buku)</h3>
+  <div class="card">
+    <p><strong>Model Aktuaria</strong> — menggabungkan:</p>
+    <ol style="padding-left:1.2rem;margin-top:0.5rem;">
+      <li><strong>Frekuensi</strong> → distribusi <strong>Poisson</strong> (berapa kali fraud terjadi)</li>
+      <li><strong>Severity</strong> → distribusi <strong>Lognormal</strong> (berapa besar tiap kerugian)</li>
+      <li><strong>Simulasi Monte Carlo</strong> — komputer mengarang ribuan skenario masa depan</li>
+      <li><strong>VaR 99,9%</strong> = batas kerugian pada tingkat keyakinan sangat tinggi</li>
+    </ol>
+    <div class="info-box yellow" style="margin-top:1rem;">
+      🧩 <strong>Perumpamaan:</strong> Seperti perusahaan asuransi menghitung premi. Dengan ribuan simulasi, mereka tahu skenario terburuk. VaR 99,9% = "dana darurat" untuk 999 dari 1.000 kemungkinan.
+    </div>
+    <div class="formula">L = Σ<sub>i=1</sub><sup>N</sup> X<sub>i</sub> &nbsp; → &nbsp; N ~ Poisson(λ), &nbsp; X ~ Lognormal(μ, σ)</div>
+    <div class="formula">VaR<sub>q</sub> = persentil ke-q dari distribusi L</div>
+  </div>
+
+  <h3 class="step">3️⃣ Dataset</h3>
+  <div class="metrics c4" id="act-dataset-metrics"></div>
+
+  <h3 class="step">4️⃣ & 5️⃣ Hasil</h3>
+  <div class="metrics c3" id="act-result-metrics"></div>
+
+  <div class="card">
+    <h4>Distribusi Total Kerugian (dari ribuan skenario Monte Carlo)</h4>
+    <div id="act-histogram"></div>
+    <div class="info-box green" style="margin-top:0.8rem;">
+      💡 Sebagian besar skenario ada di kiri (kerugian kecil). <strong>Garis merah</strong> menandai batas VaR — hanya 0,1% skenario melampaui garis ini.
+    </div>
+  </div>
+
+  <div class="success-box" id="act-conclusion"></div>
+</div>
+
+<!-- ==================== VaR INTEGRASI ==================== -->
+<div id="page-integrated" class="page">
+  <div class="hero">
+    <h1>🧮 Model 3 — VaR Integrasi & BIA</h1>
+    <p>Anggota 3 · Giudici (2009) Bab 12.4 · analog Gambar 12.2</p>
+  </div>
+
+  <div class="key-finding">
+    <strong>📌 Halaman ini menjawab:</strong> Jika kita gabungkan <strong>semua sumber data</strong> (internal + ahli + bank lain), berapa estimasi VaR-nya? Dan apakah hasilnya <strong>konsisten</strong> dengan cara sederhana (BIA = 15% pendapatan)?
+  </div>
+
+  <h3 class="step">1️⃣ Rumusan Masalah</h3>
+  <div class="card">
+    <p><strong>Kalau kerugian dihitung dengan beberapa metode berbeda, berapa hasilnya dan apakah saling konsisten?</strong></p>
+    <p style="margin-top:0.5rem;">Mengandalkan satu metode saja berisiko. Lebih aman bila kita menghitung dengan <strong>beberapa cara</strong> lalu membandingkannya.</p>
+  </div>
+
+  <h3 class="step">2️⃣ Metode (dari buku)</h3>
+  <div class="card">
+    <ol style="padding-left:1.2rem;">
+      <li><strong>Integrasi Bayesian</strong> (bottom-up) — menggabungkan 3 sumber data menjadi satu estimasi</li>
+      <li><strong>Basic Indicator Approach / BIA</strong> (top-down) — cadangan = <strong>15% dari pendapatan kotor</strong></li>
+    </ol>
+    <div class="info-box yellow" style="margin-top:1rem;">
+      🧩 <strong>Perumpamaan:</strong> Seperti minta <em>second opinion</em> ke beberapa dokter. Kalau semua sepakat, kita jauh lebih yakin.
+    </div>
+    <div class="formula">S<sub>gabungan</sub> = S<sub>internal</sub> ∪ {p<sub>self-assessment</sub>} ∪ S<sub>eksternal</sub><sup>scaled</sup></div>
+    <div class="formula">BIA = α × Gross Income, &nbsp; α = 15%</div>
+  </div>
+
+  <h3 class="step">3️⃣ Dataset</h3>
+  <div class="metrics c3" id="int-dataset-metrics"></div>
+
+  <h3 class="step">4️⃣ & 5️⃣ Hasil</h3>
+  <div class="metrics c3" id="int-result-metrics"></div>
+
+  <div class="card">
+    <h4>📊 Perbandingan VaR antar-metode (analog Gambar 12.2 di buku)</h4>
+    <div id="int-comparison-chart"></div>
+    <div class="info-box green" style="margin-top:0.8rem;">
+      💡 Jika batang-batang <strong>berdekatan</strong>, berarti metode-metode saling sepakat → hasil lebih dapat dipercaya.
+    </div>
+  </div>
+
+  <div class="success-box" id="int-conclusion"></div>
+</div>
+
+<!-- ==================== RINGKASAN EKSEKUTIF ==================== -->
+<div id="page-summary" class="page">
+  <div class="hero">
+    <h1>📊 Ringkasan Eksekutif</h1>
+    <p>Semua hasil dari 3 model dalam satu halaman — siap untuk presentasi</p>
+  </div>
+
+  <div class="section-title">🎯 Angka Kunci</div>
+  <div class="metrics c4" id="sum-key-metrics"></div>
+
+  <div class="key-finding">
+    <strong>💡 Temuan Utama:</strong> Ketiga pendekatan (bottom-up via aktuaria, gabungan Bayesian, dan top-down BIA) menghasilkan estimasi yang <strong>saling berdekatan</strong> — menunjukkan bahwa model ini <strong>saling memvalidasi</strong>, sesuai Gambar 12.2 di buku Giudici.
+  </div>
+
+  <hr>
+  <div class="section-title">📋 Model 1 — Hasil Scorecard</div>
+  <div id="sum-focus-metrics" class="metrics c4"></div>
+  <div class="card">
+    <h4>🗺️ Peta Risiko — Perceived Loss per Kategori Basel II</h4>
+    <div id="sum-heatmap"></div>
+  </div>
+
+  <hr>
+  <div class="section-title">📈 Model 2 & 3 — Perbandingan 7 Metode VaR</div>
+  <div class="card">
+    <div id="sum-comparison-chart"></div>
+  </div>
+
+  <hr>
+  <div class="section-title">📝 Ringkasan per Model</div>
+  <div id="sum-model-table"></div>
+
+  <hr>
+  <div class="success-box" id="sum-conclusion"></div>
+
+  <div class="card" style="margin-top:1.5rem;">
+    <h4>📖 Detail Kesesuaian dengan Buku (11/12 aspek ✅)</h4>
+    <div class="table-scroll" id="sum-checklist"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// === Page Navigation ===
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.onclick.toString().includes("'" + id + "'")) b.classList.add('active');
+  });
+  window.scrollTo(0, 0);
+}
+
+// === Tab Switching ===
+function showTab(page, tab) {
+  const prefix = page === 'data' ? 'data' : page;
+  document.querySelectorAll(`#page-${page} .tab-content`).forEach(t => t.classList.remove('active'));
+  document.querySelectorAll(`#page-${page} .tab-btn`).forEach(b => b.classList.remove('active'));
+  document.getElementById(`${prefix}-tab-${tab}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// === Helpers ===
+function fmt(n) { return n.toLocaleString('id-ID', {maximumFractionDigits: 0}); }
+function metricHTML(label, value) {
+  return `<div class="metric-card"><div class="label">${label}</div><div class="value num">${value}</div></div>`;
+}
+function makeTable(headers, rows, colorCols) {
+  let html = '<table class="data-table"><thead><tr>';
+  headers.forEach(h => html += `<th>${h}</th>`);
+  html += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    html += '<tr>';
+    row.forEach((cell, i) => {
+      if (colorCols && colorCols[i]) {
+        html += `<td style="background:${colorCols[i](cell)};color:white;font-weight:600;">${cell}</td>`;
+      } else {
+        html += `<td>${cell}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+// === Load Data & Render ===
+fetch('data.json')
+  .then(r => r.json())
+  .then(D => {
+    renderAll(D);
+  })
+  .catch(e => {
+    document.querySelector('.main').innerHTML = `<div class="card" style="color:red;"><h3>❌ Error loading data.json</h3><p>${e.message}</p><p>Jalankan dulu: <code>python generate_static_data.py</code></p></div>`;
+  });
+
+function renderAll(D) {
+  const tlHex = D.scorecard.traffic_light_hex;
+
+  // ===================== DATA LENGKAP =====================
+  document.getElementById('data-metrics').innerHTML =
+    metricHTML('Total transaksi PaySim', fmt(D.paysim.total_tx)) +
+    metricHTML('Transaksi fraud', fmt(D.paysim.total_fraud)) +
+    metricHTML('Jumlah field PaySim', D.paysim.num_cols) +
+    metricHTML('Sumber data', '3 jenis');
+
+  // Tab PaySim
+  let paysimHTML = `
+    <div class="info-box">
+      <strong>🎯 Mengapa PaySim dipilih?</strong><br>
+      Buku Bab 12.2 mensyaratkan data kerugian internal bank berupa tabel berisi: jumlah kerugian, tanggal, unit organisasi, dan jenis kejadian.
+      Data asli bank <strong>tidak tersedia publik</strong> (rahasia). PaySim cocok karena memiliki kolom amount, step, isFraud, type — dan distribusinya realistis (dari pola transaksi mobile-money nyata di Afrika).
+    </div>
+    <div class="metrics c3">
+      ${metricHTML('Total baris', fmt(D.paysim.total_rows))}
+      ${metricHTML('Jumlah kolom', D.paysim.num_cols)}
+      ${metricHTML('Periode simulasi', '± 31 hari')}
+    </div>
+    <h4>Pratinjau Data Fraud (30 baris pertama)</h4>
+    <div class="table-scroll">`;
+  if (D.paysim.fraud_preview.length > 0) {
+    const cols = Object.keys(D.paysim.fraud_preview[0]);
+    paysimHTML += '<table class="data-table"><thead><tr>';
+    cols.forEach(c => paysimHTML += `<th>${c}</th>`);
+    paysimHTML += '</tr></thead><tbody>';
+    D.paysim.fraud_preview.forEach(row => {
+      paysimHTML += '<tr>';
+      cols.forEach(c => {
+        let v = row[c];
+        if (typeof v === 'number' && !Number.isInteger(v)) v = fmt(v);
+        paysimHTML += `<td>${v}</td>`;
+      });
+      paysimHTML += '</tr>';
+    });
+    paysimHTML += '</tbody></table>';
+  }
+  paysimHTML += '</div>';
+  document.getElementById('data-tab-paysim').innerHTML = paysimHTML;
+
+  // Tab Expert
+  let expertHTML = `
+    <div class="info-box">
+      <strong>🎯 Mengapa ada data expert?</strong><br>
+      Buku Bab 12.2: data internal saja <strong>tidak cukup</strong> — banyak kejadian yang jarang terjadi. Dibutuhkan pendapat ahli yang bersifat <strong>forward-looking</strong>. Setiap ahli menilai frekuensi, severity, dan kontrol untuk 56 kategori risiko.
+    </div>
+    <div class="metrics c3">
+      ${metricHTML('Total baris', fmt(D.expert.n_rows))}
+      ${metricHTML('Jumlah ahli', D.expert.n_experts)}
+      ${metricHTML('Kategori risiko', D.expert.n_categories)}
+    </div>
+    <h4>Pratinjau Data Penilaian Ahli</h4>
+    <div class="table-scroll"><table class="data-table">
+      <thead><tr><th>Ahli ke-</th><th>Lini Bisnis</th><th>Jenis Kejadian</th><th>Frekuensi</th><th>Severity</th><th>Kontrol</th></tr></thead><tbody>`;
+  D.expert.preview.forEach(row => {
+    expertHTML += `<tr><td>${row.expert}</td><td>${row.business_line}</td><td>${row.event_type}</td><td>${row.frequency}</td><td>${row.severity}</td><td>${row.control}</td></tr>`;
+  });
+  expertHTML += '</tbody></table></div>';
+  document.getElementById('data-tab-expert').innerHTML = expertHTML;
+
+  // Tab External
+  let extHTML = `
+    <div class="info-box">
+      <strong>🎯 Mengapa ada data eksternal?</strong><br>
+      Buku Bab 12.2: data internal & expert bisa punya <strong>missing values</strong>. Data konsorsium (DIPO) dari banyak bank membantu mengisi celah. Kerugian di-<strong>scaling</strong> (dibagi konstanta c) agar setara ukuran bank kita.
+    </div>
+    <div class="metrics c3">
+      ${metricHTML('Total baris', fmt(D.external.n_rows))}
+      ${metricHTML('Median (mentah)', fmt(D.external.median_raw))}
+      ${metricHTML('Median (ter-scaling)', fmt(D.external.median_scaled))}
+    </div>
+    <h4>Pratinjau Data Kerugian Eksternal</h4>
+    <div class="table-scroll"><table class="data-table">
+      <thead><tr><th>No.</th><th>Kerugian Mentah (bank lain)</th><th>Kerugian Ter-scaling</th></tr></thead><tbody>`;
+  D.external.raw.forEach((v, i) => {
+    extHTML += `<tr><td>${i + 1}</td><td>${fmt(v)}</td><td>${fmt(D.external.scaled[i])}</td></tr>`;
+  });
+  extHTML += '</tbody></table></div>';
+  document.getElementById('data-tab-external').innerHTML = extHTML;
+
+  // ===================== SCORECARD =====================
+  document.getElementById('sc-dataset-metrics').innerHTML =
+    metricHTML('Nama data', 'Expert Opinion') +
+    metricHTML('Jumlah ahli', '8') +
+    metricHTML('Kategori risiko', '56');
+
+  document.getElementById('sc-result-metrics').innerHTML =
+    metricHTML('Jumlah kategori dinilai', D.scorecard.total_categories) +
+    metricHTML('Total perkiraan kerugian', 'Rp ' + fmt(D.scorecard.sa_total_loss));
+
+  // Scorecard table
+  let scTable = '<table class="data-table"><thead><tr><th>Lini Bisnis</th><th>Jenis Kejadian</th><th>Rating Freq</th><th>Rating Sev</th><th>Rating Ctrl</th><th>Perkiraan Kerugian</th><th>Skor Prioritas</th></tr></thead><tbody>';
+  D.scorecard.table.forEach(row => {
+    const fc = tlHex[row.frequency_color] || '#999';
+    const sc2 = tlHex[row.severity_color] || '#999';
+    const cc = tlHex[row.control_color] || '#999';
+    scTable += `<tr>
+      <td>${row.business_line}</td><td>${row.event_type}</td>
+      <td style="background:${fc};color:white;font-weight:600;text-align:center;">${row.frequency_rating}</td>
+      <td style="background:${sc2};color:white;font-weight:600;text-align:center;">${row.severity_rating}</td>
+      <td style="background:${cc};color:white;font-weight:600;text-align:center;">${row.control_rating}</td>
+      <td class="num">${fmt(row.perceived_loss)}</td>
+      <td class="num">${row.priority_score}</td>
+    </tr>`;
+  });
+  scTable += '</tbody></table>';
+  document.getElementById('sc-table').innerHTML = scTable;
+
+  // Scorecard bar chart
+  const top15 = D.scorecard.top15;
+  Plotly.newPlot('sc-bar-chart', [{
+    type: 'bar', orientation: 'h',
+    y: top15.map(r => r.event_type),
+    x: top15.map(r => r.perceived_loss),
+    text: top15.map(r => r.business_line),
+    marker: { color: '#2d6a9f' },
+  }], {
+    title: 'Perkiraan Kerugian Tertinggi (15 Risiko)',
+    xaxis: { title: 'Perkiraan Kerugian' },
+    yaxis: { autorange: 'reversed' },
+    height: 420, margin: { l: 200, r: 20, t: 50, b: 50 },
+  }, { responsive: true });
+
+  // Scorecard heatmap
+  const hm = D.scorecard.heatmap;
+  Plotly.newPlot('sc-heatmap', [{
+    type: 'heatmap',
+    z: hm.values, x: hm.cols, y: hm.rows,
+    colorscale: 'RdYlGn', reversescale: true,
+    text: hm.values.map(r => r.map(v => v ? fmt(v) : '')),
+    texttemplate: '%{text}', hovertemplate: '%{y}<br>%{x}<br>Loss: %{z:,.0f}<extra></extra>',
+  }], {
+    title: 'Perceived Loss per Kategori (merah = risiko tinggi)',
+    height: 450, margin: { l: 180, r: 20, t: 50, b: 100 },
+  }, { responsive: true });
+
+  // Scorecard conclusion
+  const topRisk = D.scorecard.table[0];
+  document.getElementById('sc-conclusion').innerHTML =
+    `<strong>✅ Kesimpulan:</strong> Risiko paling prioritas adalah <strong>${topRisk.business_line} — ${topRisk.event_type}</strong> (rating severity ${topRisk.severity_rating}). Inilah yang sebaiknya <strong>ditangani lebih dulu</strong> oleh manajemen.`;
+
+  // ===================== ACTUARIAL =====================
+  document.getElementById('act-dataset-metrics').innerHTML =
+    metricHTML('Total transaksi', fmt(D.paysim.total_tx)) +
+    metricHTML('Transaksi fraud', fmt(D.paysim.total_fraud)) +
+    metricHTML('Dipakai (kerugian)', fmt(D.internal.n_events)) +
+    metricHTML('Rentang waktu', D.internal.span_days + ' hari');
+
+  document.getElementById('act-result-metrics').innerHTML =
+    metricHTML('Rata-rata kerugian', fmt(D.actuarial.expected_loss)) +
+    metricHTML('VaR 99,9% (simulasi)', fmt(D.actuarial.mc_var)) +
+    metricHTML('VaR 99,9% (historis)', fmt(D.actuarial.hist_var));
+
+  // Histogram
+  const hist = D.actuarial.histogram;
+  const binCenters = hist.bin_edges.slice(0, -1).map((e, i) => (e + hist.bin_edges[i + 1]) / 2);
+  Plotly.newPlot('act-histogram', [{
+    type: 'bar',
+    x: binCenters, y: hist.counts,
+    marker: { color: '#2d6a9f' },
+    name: 'Skenario',
+  }], {
+    title: 'Sebaran Total Kerugian (garis merah = batas VaR)',
+    xaxis: { title: 'Total Kerugian', tickformat: ',.0f' },
+    yaxis: { title: 'Jumlah Skenario', type: 'log' },
+    shapes: [{
+      type: 'line', x0: hist.var_line, x1: hist.var_line, y0: 0, y1: 1,
+      yref: 'paper', line: { color: 'red', width: 2, dash: 'dash' },
+    }],
+    annotations: [{
+      x: hist.var_line, y: 1, yref: 'paper',
+      text: 'VaR 99,9%', showarrow: false,
+      font: { color: 'red', size: 12 },
+    }],
+    height: 400, margin: { l: 60, r: 20, t: 50, b: 60 },
+  }, { responsive: true });
+
+  document.getElementById('act-conclusion').innerHTML =
+    `<strong>✅ Kesimpulan:</strong> Dengan keyakinan <strong>99,9%</strong>, total kerugian fraud dalam ${D.comparison.period_label} diperkirakan <strong>tidak melebihi ${fmt(D.actuarial.mc_var)}</strong>. Angka inilah yang bisa dipakai sebagai usulan <strong>modal cadangan</strong>.`;
+
+  // ===================== INTEGRATED =====================
+  document.getElementById('int-dataset-metrics').innerHTML =
+    metricHTML('① Internal (baris)', fmt(D.internal.n_events)) +
+    metricHTML('② Expert (baris)', fmt(D.expert.n_rows)) +
+    metricHTML('③ Eksternal (baris)', fmt(D.external.n_rows));
+
+  const compItems = D.comparison.items;
+  document.getElementById('int-result-metrics').innerHTML =
+    metricHTML('Self-assessment VaR', fmt(D.comparison.self_assessment_point)) +
+    metricHTML('Pendapatan kotor (asumsi)', fmt(D.comparison.gross_income)) +
+    metricHTML('BIA = 15% pendapatan', fmt(D.comparison.bia));
+
+  // Comparison bar chart
+  const colors = compItems.map((item, i) => {
+    const ratio = (item.value - compItems[0].value) / (compItems[compItems.length - 1].value - compItems[0].value + 1);
+    if (ratio < 0.33) return '#2ca02c';
+    if (ratio < 0.66) return '#ff7f0e';
+    return '#d62728';
+  });
+  Plotly.newPlot('int-comparison-chart', [{
+    type: 'bar', orientation: 'h',
+    y: compItems.map(c => c.method),
+    x: compItems.map(c => c.value),
+    marker: { color: colors },
+    text: compItems.map(c => fmt(c.value)),
+    textposition: 'outside',
+  }], {
+    title: 'Estimasi Cadangan dari 7 Metode (diurutkan rendah → tinggi)',
+    xaxis: { title: 'Estimasi Cadangan (Rp)', tickformat: ',.0f' },
+    height: 400, margin: { l: 220, r: 80, t: 50, b: 50 },
+  }, { responsive: true });
+
+  const highest = compItems[compItems.length - 1];
+  const lowest = compItems[0];
+  document.getElementById('int-conclusion').innerHTML =
+    `<strong>✅ Kesimpulan:</strong> Estimasi <strong>tertinggi</strong> dari <em>${highest.method}</em> (${fmt(highest.value)}) dan <strong>terendah</strong> dari <em>${lowest.method}</em> (${fmt(lowest.value)}). Pendekatan sederhana <strong>BIA</strong> berdekatan dengan <strong>VaR Bayesian</strong> — sesuai Gambar 12.2 di buku.`;
+
+  // ===================== RINGKASAN EKSEKUTIF =====================
+  const bayesMC = compItems.find(c => c.method.includes('Bayes Montecarlo'));
+  const actMC = compItems.find(c => c.method.includes('Actuarial Montecarlo'));
+  const bia = compItems.find(c => c.method.includes('Basic Indicator'));
+
+  document.getElementById('sum-key-metrics').innerHTML =
+    metricHTML('🔴 VaR 99,9% (Aktuaria)', 'Rp ' + fmt(actMC ? actMC.value : D.actuarial.mc_var)) +
+    metricHTML('🟡 VaR Bayesian', 'Rp ' + fmt(bayesMC ? bayesMC.value : 0)) +
+    metricHTML('🟢 BIA (15%)', 'Rp ' + fmt(bia ? bia.value : D.comparison.bia)) +
+    metricHTML('📋 Self-Assessment', 'Rp ' + fmt(D.scorecard.sa_total_loss));
+
+  // Focus area
+  if (D.focus) {
+    document.getElementById('sum-focus-metrics').innerHTML =
+      metricHTML('Rating Frekuensi', D.focus.freq_rating) +
+      metricHTML('Rating Severity', D.focus.sev_rating) +
+      metricHTML('Rating Kontrol', D.focus.ctrl_rating) +
+      `<div class="metric-card" style="text-align:center;">
+        <div style="background:${D.focus.freq_color};color:white;padding:0.8rem;border-radius:8px;font-size:1.3rem;font-weight:700;">
+          ${D.focus.freq_rating}<br><small style="font-weight:400;">Lampu Lalu Lintas</small>
+        </div>
+      </div>`;
+  }
+
+  // Summary heatmap
+  Plotly.newPlot('sum-heatmap', [{
+    type: 'heatmap',
+    z: hm.values, x: hm.cols, y: hm.rows,
+    colorscale: 'RdYlGn', reversescale: true,
+    text: hm.values.map(r => r.map(v => v ? fmt(v) : '')),
+    texttemplate: '%{text}',
+  }], {
+    title: '🗺️ Peta Risiko — Perceived Loss per Kategori Basel II',
+    height: 450, margin: { l: 180, r: 20, t: 50, b: 100 },
+  }, { responsive: true });
+
+  // Summary comparison chart
+  Plotly.newPlot('sum-comparison-chart', [{
+    type: 'bar', orientation: 'h',
+    y: compItems.map(c => c.method),
+    x: compItems.map(c => c.value),
+    marker: { color: colors },
+    text: compItems.map(c => fmt(c.value)),
+    textposition: 'outside',
+  }], {
+    title: '📊 Estimasi Cadangan dari 7 Metode',
+    xaxis: { tickformat: ',.0f' },
+    height: 380, margin: { l: 220, r: 80, t: 50, b: 50 },
+  }, { responsive: true });
+
+  // Summary model table
+  document.getElementById('sum-model-table').innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Model</th><th>Metode</th><th>Tipe</th><th>Pendekatan</th><th>Hasil Utama</th></tr></thead>
+      <tbody>
+        <tr><td>📋 Scorecard</td><td>Kuesioner ahli → Median & Gini → Rating</td><td>Kualitatif</td><td>Bottom-up</td><td>Perceived Loss = ${fmt(D.scorecard.sa_total_loss)}</td></tr>
+        <tr><td>📈 VaR Aktuaria</td><td>Poisson × Lognormal → Monte Carlo → VaR</td><td>Kuantitatif</td><td>Bottom-up</td><td>VaR 99,9% = ${fmt(D.actuarial.mc_var)}</td></tr>
+        <tr><td>🔗 VaR Integrasi</td><td>Gabungan 3 sumber (Bayesian) → VaR</td><td>Kuantitatif</td><td>Bottom-up</td><td>Bayes VaR = ${fmt(bayesMC ? bayesMC.value : 0)}</td></tr>
+        <tr><td>🏦 BIA</td><td>15% × Pendapatan Kotor</td><td>Kuantitatif</td><td>Top-down</td><td>BIA = ${fmt(bia ? bia.value : D.comparison.bia)}</td></tr>
+      </tbody>
+    </table>`;
+
+  // Summary conclusion
+  document.getElementById('sum-conclusion').innerHTML = `
+    <h3>✅ Kesimpulan Akhir</h3>
+    <ol style="padding-left:1.2rem;margin-top:0.8rem;">
+      <li><strong>Scorecard</strong> memberikan pandangan kualitatif risiko — ahli menilai frekuensi, severity, dan kontrol → rating lampu lalu lintas.</li>
+      <li><strong>VaR Aktuaria</strong> menghitung cadangan secara statistik murni dari data kerugian internal (Monte Carlo).</li>
+      <li><strong>VaR Integrasi (Bayesian)</strong> menggabungkan semua sumber data menjadi satu estimasi yang lebih akurat.</li>
+      <li><strong>BIA</strong> sebagai pembanding sederhana ternyata <strong>berdekatan</strong> dengan VaR Bayesian — memvalidasi bahwa bottom-up dan top-down <strong>konsisten</strong>.</li>
+      <li>Keseluruhan implementasi <strong>sesuai dengan Bab 12</strong> buku Giudici (2009) — 11 dari 12 aspek metodologi tercakup.</li>
+    </ol>`;
+
+  // Checklist
+  const checklist = [
+    ['Basel II (56 kategori)', '✅', '8 BL × 7 ET lengkap'],
+    ['3 aliran data', '✅', 'Internal, Expert, Eksternal'],
+    ['Scaling DIPO', '✅', 'Rasio total_ext / total_int'],
+    ['Fokus 1 area', '✅', 'Payment & Settlement'],
+    ['KRI formula', '⚠️', 'Disederhanakan (±30% sama, detail beda)'],
+    ['Scorecard median+Gini', '✅', 'Rating A/AA/AAA + traffic light'],
+    ['Model Aktuaria', '✅', 'Poisson × lognormal MC → VaR 99,9%'],
+    ['Integrasi Bayesian', '✅', '3 sumber → distribusi gabungan → VaR'],
+    ['BIA (15%)', '✅', '15% gross income'],
+    ['Perbandingan 7 VaR', '✅', 'Urutan konsisten Gambar 12.2'],
+    ['Visualisasi scorecard', '✅', 'Traffic light convention'],
+    ['Skala ordinal', '✅', 'Frequency/severity/control classes'],
+  ];
+  let clHTML = '<table class="data-table"><thead><tr><th>Aspek Buku</th><th>Status</th><th>Catatan</th></tr></thead><tbody>';
+  checklist.forEach(row => {
+    const color = row[1] === '✅' ? '#d4edda' : '#fff3cd';
+    clHTML += `<tr><td>${row[0]}</td><td style="background:${color};text-align:center;">${row[1]}</td><td>${row[2]}</td></tr>`;
+  });
+  clHTML += '</tbody></table>';
+  document.getElementById('sum-checklist').innerHTML = clHTML;
+}
+</script>
+</body>
+</html>
