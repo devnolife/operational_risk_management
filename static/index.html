@@ -689,33 +689,61 @@ function renderAll(D) {
   scTable += '</tbody></table>';
   document.getElementById('sc-table').innerHTML = scTable;
 
+  // === Shared Plotly theme ===
+  const plotFont = { family: 'Segoe UI, system-ui, sans-serif', color: '#1a1a2e' };
+  const plotBg = 'rgba(0,0,0,0)';
+  const gridColor = 'rgba(0,0,0,0.06)';
+  const plotCfg = { responsive: true, displayModeBar: false };
+
   // Scorecard bar chart
   const top15 = D.scorecard.top15;
+  const barGrad = top15.map((_, i) => {
+    const t = i / (top15.length - 1);
+    const r = Math.round(214 + (30 - 214) * t);
+    const g = Math.round(39 + (58 - 39) * t);
+    const b = Math.round(40 + (138 - 40) * t);
+    return `rgb(${r},${g},${b})`;
+  });
   Plotly.newPlot('sc-bar-chart', [{
     type: 'bar', orientation: 'h',
     y: top15.map(r => r.event_type),
     x: top15.map(r => r.perceived_loss),
-    text: top15.map(r => r.business_line),
-    marker: { color: '#2d6a9f' },
+    text: top15.map(r => fmt(r.perceived_loss)),
+    textposition: 'outside',
+    textfont: { size: 11, color: '#1a1a2e' },
+    hovertemplate: '<b>%{y}</b><br>%{customdata}<br>Kerugian: %{x:,.0f}<extra></extra>',
+    customdata: top15.map(r => r.business_line),
+    marker: { color: barGrad, line: { width: 0 }, cornerradius: 4 },
   }], {
-    title: 'Perkiraan Kerugian Tertinggi (15 Risiko)',
-    xaxis: { title: 'Perkiraan Kerugian' },
-    yaxis: { autorange: 'reversed' },
-    height: 420, margin: { l: 200, r: 20, t: 50, b: 50 },
-  }, { responsive: true });
+    font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
+    xaxis: { title: 'Perkiraan Kerugian (Rp)', tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
+    yaxis: { autorange: 'reversed', tickfont: { size: 11 } },
+    height: 480, margin: { l: 210, r: 90, t: 30, b: 50 },
+    bargap: 0.25,
+  }, plotCfg);
 
   // Scorecard heatmap
   const hm = D.scorecard.heatmap;
+  const hmCustomScale = [
+    [0, '#f0fdf4'], [0.15, '#bbf7d0'], [0.3, '#86efac'],
+    [0.45, '#fde68a'], [0.6, '#fbbf24'],
+    [0.75, '#fb923c'], [0.9, '#ef4444'], [1, '#991b1b']
+  ];
   Plotly.newPlot('sc-heatmap', [{
     type: 'heatmap',
     z: hm.values, x: hm.cols, y: hm.rows,
-    colorscale: 'RdYlGn', reversescale: true,
-    text: hm.values.map(r => r.map(v => v ? fmt(v) : '')),
-    texttemplate: '%{text}', hovertemplate: '%{y}<br>%{x}<br>Loss: %{z:,.0f}<extra></extra>',
+    colorscale: hmCustomScale,
+    text: hm.values.map(r => r.map(v => v ? fmt(v) : '—')),
+    texttemplate: '%{text}', textfont: { size: 11, color: '#1a1a2e' },
+    hovertemplate: '<b>%{y}</b><br>%{x}<br>Loss: %{z:,.0f}<extra></extra>',
+    xgap: 3, ygap: 3,
+    colorbar: { title: 'Kerugian', tickformat: ',.0f', thickness: 15, outlinewidth: 0 },
   }], {
-    title: 'Perceived Loss per Kategori (merah = risiko tinggi)',
-    height: 450, margin: { l: 180, r: 20, t: 50, b: 100 },
-  }, { responsive: true });
+    font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
+    height: 480, margin: { l: 195, r: 30, t: 30, b: 120 },
+    xaxis: { tickangle: -35, tickfont: { size: 10 } },
+    yaxis: { tickfont: { size: 11 } },
+  }, plotCfg);
 
   // Scorecard conclusion
   const topRisk = D.scorecard.table[0];
@@ -737,26 +765,32 @@ function renderAll(D) {
   // Histogram
   const hist = D.actuarial.histogram;
   const binCenters = hist.bin_edges.slice(0, -1).map((e, i) => (e + hist.bin_edges[i + 1]) / 2);
+  const histColors = binCenters.map(x => x >= hist.var_line ? 'rgba(220,38,38,0.85)' : 'rgba(45,106,159,0.75)');
   Plotly.newPlot('act-histogram', [{
     type: 'bar',
     x: binCenters, y: hist.counts,
-    marker: { color: '#2d6a9f' },
+    marker: { color: histColors, line: { width: 0.5, color: 'rgba(255,255,255,0.4)' }, cornerradius: 2 },
+    hovertemplate: 'Kerugian: %{x:,.0f}<br>Skenario: %{y}<extra></extra>',
     name: 'Skenario',
   }], {
-    title: 'Sebaran Total Kerugian (garis merah = batas VaR)',
-    xaxis: { title: 'Total Kerugian', tickformat: ',.0f' },
-    yaxis: { title: 'Jumlah Skenario', type: 'log' },
+    font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
+    xaxis: { title: 'Total Kerugian (Rp)', tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
+    yaxis: { title: 'Jumlah Skenario', type: 'log', gridcolor: gridColor, zeroline: false },
     shapes: [{
       type: 'line', x0: hist.var_line, x1: hist.var_line, y0: 0, y1: 1,
-      yref: 'paper', line: { color: 'red', width: 2, dash: 'dash' },
+      yref: 'paper', line: { color: '#dc2626', width: 2.5, dash: 'dot' },
     }],
     annotations: [{
-      x: hist.var_line, y: 1, yref: 'paper',
-      text: 'VaR 99,9%', showarrow: false,
-      font: { color: 'red', size: 12 },
+      x: hist.var_line, y: 0.97, yref: 'paper',
+      text: '<b>VaR 99,9%</b><br>' + fmt(hist.var_line),
+      showarrow: true, arrowhead: 2, arrowcolor: '#dc2626',
+      ax: 50, ay: -30,
+      font: { color: '#dc2626', size: 12 },
+      bgcolor: 'rgba(255,255,255,0.9)', bordercolor: '#dc2626', borderwidth: 1, borderpad: 5,
     }],
-    height: 400, margin: { l: 60, r: 20, t: 50, b: 60 },
-  }, { responsive: true });
+    height: 430, margin: { l: 70, r: 30, t: 30, b: 60 },
+    bargap: 0.03,
+  }, plotCfg);
 
   document.getElementById('act-conclusion').innerHTML =
     `<strong>✅ Kesimpulan:</strong> Dengan keyakinan <strong>99,9%</strong>, total kerugian fraud dalam ${D.comparison.period_label} diperkirakan <strong>tidak melebihi ${fmt(D.actuarial.mc_var)}</strong>. Angka inilah yang bisa dipakai sebagai usulan <strong>modal cadangan</strong>.`;
@@ -773,25 +807,24 @@ function renderAll(D) {
     metricHTML('Pendapatan kotor (asumsi)', fmt(D.comparison.gross_income)) +
     metricHTML('BIA = 15% pendapatan', fmt(D.comparison.bia));
 
-  // Comparison bar chart
-  const colors = compItems.map((item, i) => {
-    const ratio = (item.value - compItems[0].value) / (compItems[compItems.length - 1].value - compItems[0].value + 1);
-    if (ratio < 0.33) return '#2ca02c';
-    if (ratio < 0.66) return '#ff7f0e';
-    return '#d62728';
-  });
+  // Comparison bar chart — gradient palette
+  const compGrad = ['#10b981','#34d399','#a3e635','#facc15','#fb923c','#f87171','#dc2626'];
+  const compColors = compItems.map((_, i) => compGrad[Math.min(i, compGrad.length - 1)]);
   Plotly.newPlot('int-comparison-chart', [{
     type: 'bar', orientation: 'h',
     y: compItems.map(c => c.method),
     x: compItems.map(c => c.value),
-    marker: { color: colors },
-    text: compItems.map(c => fmt(c.value)),
-    textposition: 'outside',
+    marker: { color: compColors, line: { width: 0 }, cornerradius: 4 },
+    text: compItems.map(c => 'Rp ' + fmt(c.value)),
+    textposition: 'outside', textfont: { size: 12, color: '#1a1a2e' },
+    hovertemplate: '<b>%{y}</b><br>Rp %{x:,.0f}<extra></extra>',
   }], {
-    title: 'Estimasi Cadangan dari 7 Metode (diurutkan rendah → tinggi)',
-    xaxis: { title: 'Estimasi Cadangan (Rp)', tickformat: ',.0f' },
-    height: 400, margin: { l: 220, r: 80, t: 50, b: 50 },
-  }, { responsive: true });
+    font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
+    xaxis: { title: 'Estimasi Cadangan (Rp)', tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
+    yaxis: { tickfont: { size: 12 } },
+    height: 420, margin: { l: 230, r: 130, t: 30, b: 55 },
+    bargap: 0.3,
+  }, plotCfg);
 
   const highest = compItems[compItems.length - 1];
   const lowest = compItems[0];
@@ -826,27 +859,35 @@ function renderAll(D) {
   Plotly.newPlot('sum-heatmap', [{
     type: 'heatmap',
     z: hm.values, x: hm.cols, y: hm.rows,
-    colorscale: 'RdYlGn', reversescale: true,
-    text: hm.values.map(r => r.map(v => v ? fmt(v) : '')),
-    texttemplate: '%{text}',
+    colorscale: hmCustomScale,
+    text: hm.values.map(r => r.map(v => v ? fmt(v) : '—')),
+    texttemplate: '%{text}', textfont: { size: 10, color: '#1a1a2e' },
+    hovertemplate: '<b>%{y}</b><br>%{x}<br>Loss: %{z:,.0f}<extra></extra>',
+    xgap: 3, ygap: 3,
+    colorbar: { title: 'Kerugian', tickformat: ',.0f', thickness: 15, outlinewidth: 0 },
   }], {
-    title: '🗺️ Peta Risiko — Perceived Loss per Kategori Basel II',
-    height: 450, margin: { l: 180, r: 20, t: 50, b: 100 },
-  }, { responsive: true });
+    font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
+    height: 480, margin: { l: 195, r: 30, t: 30, b: 120 },
+    xaxis: { tickangle: -35, tickfont: { size: 10 } },
+    yaxis: { tickfont: { size: 11 } },
+  }, plotCfg);
 
   // Summary comparison chart
   Plotly.newPlot('sum-comparison-chart', [{
     type: 'bar', orientation: 'h',
     y: compItems.map(c => c.method),
     x: compItems.map(c => c.value),
-    marker: { color: colors },
-    text: compItems.map(c => fmt(c.value)),
-    textposition: 'outside',
+    marker: { color: compColors, line: { width: 0 }, cornerradius: 4 },
+    text: compItems.map(c => 'Rp ' + fmt(c.value)),
+    textposition: 'outside', textfont: { size: 11, color: '#1a1a2e' },
+    hovertemplate: '<b>%{y}</b><br>Rp %{x:,.0f}<extra></extra>',
   }], {
-    title: '📊 Estimasi Cadangan dari 7 Metode',
-    xaxis: { tickformat: ',.0f' },
-    height: 380, margin: { l: 220, r: 80, t: 50, b: 50 },
-  }, { responsive: true });
+    font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
+    xaxis: { tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
+    yaxis: { tickfont: { size: 11 } },
+    height: 380, margin: { l: 230, r: 130, t: 30, b: 50 },
+    bargap: 0.3,
+  }, plotCfg);
 
   // Summary model table
   document.getElementById('sum-model-table').innerHTML = `
