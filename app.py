@@ -262,78 +262,146 @@ if page == "🏠 Beranda":
         unsafe_allow_html=True,
     )
 
+    # ---- Apa itu Risiko Operasional? (dari buku) ----
+    st.markdown("### 📖 Apa itu Risiko Operasional?")
     st.markdown(
-        "### 🎯 Apa yang kami lakukan?\n\n"
-        "Kami membangun **3 model** untuk mengukur **risiko operasional** bank, "
-        "mengikuti langkah-langkah dari **Bab 12 buku Giudici (2009)**. "
-        "Setiap model dikerjakan oleh 1 anggota kelompok."
+        "Menurut **Basel II** (*Basel Committee on Banking Supervision*, 2001), "
+        "risiko operasional didefinisikan sebagai:\n\n"
+        "> *\"The risk of loss resulting from inadequate or failed internal processes, "
+        "people and systems or from external events.\"*\n\n"
+        "> **\"Risiko kerugian akibat proses internal yang tidak memadai atau gagal, "
+        "kesalahan manusia, kegagalan sistem, atau kejadian dari luar.\"**\n\n"
+        "Contoh nyata: **penipuan (fraud)**, kesalahan input data, sistem IT down, "
+        "bencana alam, pencurian, pemalsuan dokumen."
     )
+
+    st.markdown("### 🎯 Untuk Apa Mengukur Risiko Operasional?")
+    st.markdown(
+        "Menurut buku (Giudici, 2009, hlm. 227), ada **dua tujuan utama**:"
+    )
+    col_tujuan1, col_tujuan2 = st.columns(2)
+    with col_tujuan1:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>🏦 1. Tujuan Prudensial (Kehati-hatian)</h4>'
+            '<p>Menyiapkan <strong>cadangan modal</strong> yang cukup untuk menutup '
+            'kerugian tak terduga. Dihitung menggunakan <strong>Value at Risk (VaR)</strong> '
+            '— berapa kerugian terburuk yang mungkin terjadi?</p></div>',
+            unsafe_allow_html=True,
+        )
+    with col_tujuan2:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>📋 2. Tujuan Manajerial (Pengelolaan)</h4>'
+            '<p>Membuat <strong>peringkat risiko</strong> dari yang paling berbahaya '
+            'ke yang paling aman, sehingga manajemen tahu <strong>mana yang harus '
+            'ditangani lebih dulu</strong>.</p></div>',
+            unsafe_allow_html=True,
+        )
 
     st.info(
-        "💡 **Risiko Operasional** = potensi kerugian akibat kegagalan proses internal, "
-        "kesalahan manusia, sistem yang bermasalah, atau kejadian dari luar. "
-        "Contoh paling umum: **penipuan (fraud)**."
+        "💡 **Intinya:** Semakin tinggi risiko operasional suatu bank, "
+        "semakin buruk sistem kontrolnya. Mengukur risiko = mengukur "
+        "seberapa efektif kontrol yang ada *(Giudici, 2009, hlm. 227)*."
     )
 
+    # ---- 3 Sumber Data (dari buku Bab 12.2) ----
+    st.markdown("---")
+    st.markdown("### 📥 Tiga Sumber Data (Bab 12.2)")
+    st.markdown(
+        "Buku menjelaskan bahwa pengukuran risiko operasional menggunakan "
+        "**3 sumber informasi** yang saling melengkapi:"
+    )
+    d1, d2, d3 = st.columns(3)
+    with d1:
+        st.markdown(
+            "#### 📊 Data Internal\n"
+            "Riwayat kerugian **bank sendiri** — "
+            "setiap peristiwa dicatat: tanggal, jumlah, jenis.\n\n"
+            "🔹 *Melihat ke belakang (backward-looking)*\n\n"
+            "**Di proyek ini:** Data fraud PaySim (Kaggle)"
+        )
+    with d2:
+        st.markdown(
+            "#### 👥 Penilaian Ahli\n"
+            "Pendapat para **ahli/manajer** bank tentang "
+            "frekuensi, severity, dan kontrol tiap risiko.\n\n"
+            "🔹 *Melihat ke depan (forward-looking)*\n\n"
+            "**Di proyek ini:** Kuesioner sintetis (56 kategori)"
+        )
+    with d3:
+        st.markdown(
+            "#### 🏢 Data Eksternal\n"
+            "Data kerugian dari **bank lain** (konsorsium/DIPO) — "
+            "di-*scaling* agar setara ukuran bank kita.\n\n"
+            "🔹 *Perspektif industri*\n\n"
+            "**Di proyek ini:** Data sintetis (ter-scaling)"
+        )
+
+    # ---- 3 Model/Metode (dari buku Bab 12.3) ----
+    st.markdown("---")
+    st.markdown("### 🔧 Tiga Model yang Dipakai (Bab 12.3–12.4)")
+    st.markdown(
+        "Buku membahas **dua pendekatan besar**: *top-down* (dari atas, sederhana) "
+        "dan *bottom-up* (dari bawah, detail). Proyek ini mengimplementasikan keduanya:"
+    )
+
+    st.markdown(
+        '<div class="flow-card">'
+        '<h4>📋 Model 1 — Scorecard / Self-Assessment (Anggota 1)</h4>'
+        '<p><strong>Apa:</strong> Para ahli mengisi kuesioner tentang risiko, '
+        'lalu jawaban mereka dirangkum menjadi <em>rating</em> (A/AA/AAA) dan '
+        'warna lampu lalu lintas (🟢🟡🔴).</p>'
+        '<p><strong>Untuk apa:</strong> Membuat <em>peringkat risiko</em> — '
+        'mana yang harus ditangani duluan? (Tujuan Manajerial)</p>'
+        '<p><strong>Metode:</strong> Median + Indeks Gini (konsensus ahli) → '
+        'Rating huruf → Perceived Loss → Skor Prioritas</p>'
+        '<p><strong>Pendekatan:</strong> Bottom-up (dari pendapat ahli per kategori)</p>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="flow-card">'
+        '<h4>📈 Model 2 — VaR Aktuaria (Anggota 2)</h4>'
+        '<p><strong>Apa:</strong> Menghitung <em>Value at Risk</em> — '
+        'berapa cadangan modal minimum yang harus disiapkan agar 99,9% aman.</p>'
+        '<p><strong>Untuk apa:</strong> Menentukan <em>cadangan modal</em> berdasarkan '
+        'data historis kerugian. (Tujuan Prudensial)</p>'
+        '<p><strong>Metode:</strong> Frekuensi (Poisson) × Severity (Lognormal) → '
+        'Simulasi Monte Carlo 100.000× → VaR 99,9%</p>'
+        '<p><strong>Pendekatan:</strong> Bottom-up (dari data kerugian aktual)</p>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="flow-card">'
+        '<h4>🔗 Model 3 — VaR Integrasi Bayesian + BIA (Anggota 3)</h4>'
+        '<p><strong>Apa:</strong> Menggabungkan <em>semua 3 sumber data</em> '
+        'menjadi satu estimasi, lalu dibandingkan dengan cara paling sederhana (BIA).</p>'
+        '<p><strong>Untuk apa:</strong> <em>Validasi silang</em> — kalau cara canggih '
+        'dan cara sederhana hasilnya dekat, estimasi lebih bisa dipercaya. '
+        '(Tujuan Prudensial + Validasi)</p>'
+        '<p><strong>Metode:</strong> Gabungan internal + expert + eksternal → '
+        'VaR Bayesian, lalu BIA = 15% × Gross Income sebagai pembanding</p>'
+        '<p><strong>Pendekatan:</strong> Bottom-up (Bayesian) + Top-down (BIA)</p>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ---- Alur Proyek ----
+    st.markdown("---")
     st.markdown("### 🔄 Alur Keseluruhan Proyek")
     st.markdown(
-        '<div class="flow-card">'
-        '<h4>📥 Langkah 1 — Kumpulkan Data</h4>'
-        '<p>3 sumber data: <strong>Internal</strong> (PaySim fraud), '
-        '<strong>Penilaian Ahli</strong> (kuesioner), '
-        '<strong>Eksternal</strong> (bank lain/konsorsium)</p></div>',
-        unsafe_allow_html=True,
+        "| Langkah | Apa yang Dilakukan | Output |\n"
+        "|---|---|---|\n"
+        "| 1. Kumpulkan Data | Ambil 3 sumber data (internal, ahli, eksternal) | Dataset siap pakai |\n"
+        "| 2. Scorecard | Ahli menilai 56 kategori risiko → rating & prioritas | Peringkat risiko 🟢🟡🔴 |\n"
+        "| 3. VaR Aktuaria | Simulasi Monte Carlo dari data fraud → distribusi kerugian | Cadangan modal (VaR) |\n"
+        "| 4. VaR Integrasi | Gabungkan 3 sumber + bandingkan dengan BIA | 7 estimasi VaR (Gambar 12.2) |\n"
+        "| 5. Kesimpulan | Bandingkan semua metode → validasi silang | Estimasi yang bisa dipercaya |"
     )
-    st.markdown(
-        '<div class="flow-card">'
-        '<h4>📋 Langkah 2 — Scorecard (Model 1)</h4>'
-        '<p>Ahli mengisi kuesioner → hitung median & Gini → '
-        'rating A/AA/AAA → warna lampu lalu lintas 🟢🟡🔴</p></div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div class="flow-card">'
-        '<h4>📈 Langkah 3 — VaR Aktuaria (Model 2)</h4>'
-        '<p>Simulasi Monte Carlo 100.000× → distribusi kerugian → '
-        '<strong>VaR 99.9%</strong> = cadangan uang minimum</p></div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div class="flow-card">'
-        '<h4>🔗 Langkah 4 — VaR Integrasi & BIA (Model 3)</h4>'
-        '<p>Gabungkan 3 sumber data (Bayesian) + bandingkan dengan '
-        'cara sederhana (BIA = 15% pendapatan)</p></div>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("---")
-    st.markdown("### 📊 Tiga Model dalam Satu Pandangan")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown("#### 📋 Scorecard")
-        st.markdown(
-            "- **Input**: Kuesioner ahli\n"
-            "- **Output**: Rating risiko (A–AAA)\n"
-            "- **Warna**: 🟢 Rendah, 🟡 Sedang, 🔴 Tinggi\n"
-            "- **Anggota**: 1"
-        )
-    with col2:
-        st.markdown("#### 📈 VaR Aktuaria")
-        st.markdown(
-            "- **Input**: Data fraud internal\n"
-            "- **Output**: Cadangan minimum (VaR)\n"
-            "- **Metode**: Monte Carlo 100rb simulasi\n"
-            "- **Anggota**: 2"
-        )
-    with col3:
-        st.markdown("#### 🔗 VaR Integrasi")
-        st.markdown(
-            "- **Input**: Semua 3 sumber data\n"
-            "- **Output**: VaR Bayesian + BIA\n"
-            "- **Metode**: Gabungan + perbandingan\n"
-            "- **Anggota**: 3"
-        )
 
     st.markdown("---")
     st.markdown("### 📚 Referensi Buku")
@@ -368,6 +436,16 @@ elif page == "1 — Scorecard (Self-Assessment)":
 
     st.title("📋 Model 1 — Scorecard (Self-Assessment)")
     st.caption("Anggota 1 · Giudici (2009) Bab 12.4 · analog Gambar 12.1")
+
+    st.markdown(
+        '<div class="key-finding">'
+        '<strong>📌 Halaman ini menjawab:</strong> Dari 56 kategori risiko bank, '
+        '<strong>mana yang paling berbahaya</strong> dan harus ditangani lebih dulu? '
+        'Model ini menggunakan <em>pendapat ahli</em> untuk membuat peringkat risiko '
+        'dengan sistem warna 🟢🟡🔴.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     langkah(1, "Rumusan Masalah")
     st.markdown(
@@ -612,6 +690,16 @@ elif page == "2 — VaR Aktuaria":
     st.title("📈 Model 2 — VaR Aktuaria")
     st.caption("Anggota 2 · Giudici (2009) Bab 12.3 · analog Gambar 12.2")
 
+    st.markdown(
+        '<div class="key-finding">'
+        '<strong>📌 Halaman ini menjawab:</strong> Berapa <strong>cadangan modal '
+        'minimum</strong> yang harus disiapkan bank untuk menutup kerugian fraud? '
+        'Model ini mensimulasikan <em>ribuan skenario</em> lalu mencari batas '
+        'kerugian terburuk (VaR 99,9%).'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
     langkah(1, "Rumusan Masalah")
     st.markdown(
         "> **Seberapa besar total kerugian terburuk yang mungkin kita alami akibat "
@@ -833,6 +921,16 @@ elif page == "3 — VaR Integrasi & BIA":
 
     st.title("🧮 Model 3 — VaR Integrasi & BIA")
     st.caption("Anggota 3 · Giudici (2009) Bab 12.4 · analog Gambar 12.2")
+
+    st.markdown(
+        '<div class="key-finding">'
+        '<strong>📌 Halaman ini menjawab:</strong> Jika kita gabungkan <strong>semua '
+        'sumber data</strong> (internal + ahli + bank lain), berapa estimasi VaR-nya? '
+        'Dan apakah hasilnya <strong>konsisten</strong> dengan cara sederhana (BIA = 15% '
+        'pendapatan)? Jika dekat → estimasi lebih bisa dipercaya.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     langkah(1, "Rumusan Masalah")
     st.markdown(
@@ -1231,29 +1329,33 @@ elif page == "📂 Data Lengkap (semua data)":
     st.title("📂 Data Lengkap — Semua Dataset")
     st.caption("Seluruh data yang dipakai proyek, dikumpulkan di satu halaman.")
     st.markdown(
-        "Halaman ini **bukan** untuk analisis — hanya untuk **melihat data apa adanya** "
-        "secara lengkap. Tersedia 3 sumber data dalam tab di bawah."
+        "Halaman ini menampilkan **seluruh data** yang dipakai proyek secara lengkap. "
+        "Tersedia **3 sumber data** sesuai Bab 12.2 buku Giudici (2009)."
     )
 
     _total_tx, _total_fraud = info_dataset_paysim()
     _rows, _cols = paysim_meta()
-    g1, g2, g3 = st.columns(3)
+    g1, g2, g3, g4 = st.columns(4)
     g1.metric("Total transaksi PaySim", f"{_total_tx:,}")
     g2.metric("Transaksi fraud", f"{_total_fraud:,}")
     g3.metric("Jumlah field PaySim", f"{len(_cols)}")
+    g4.metric("Sumber data", "3 jenis")
 
     tabA, tabB, tabC = st.tabs([
-        "① PaySim (data utama)",
-        "② Penilaian Ahli (expert)",
-        "③ Kerugian Eksternal",
+        "① PaySim — Data Internal (utama)",
+        "② Penilaian Ahli (Expert Opinion)",
+        "③ Kerugian Eksternal (Bank Lain)",
     ])
 
     # ---- Tab A: PaySim lengkap ----
     with tabA:
         st.markdown(
+            "### 📊 Data Internal — PaySim\n\n"
             "**PaySim** — *Synthetic Financial Datasets for Fraud Detection* "
-            "(Kaggle: `ealaxi/paysim1`). Sumber utama proyek; tiap baris = satu "
-            "transaksi keuangan."
+            "(Kaggle: `ealaxi/paysim1`). Dataset ini berisi simulasi transaksi "
+            "keuangan mobile-money yang memuat label penipuan.\n\n"
+            "**Peran di proyek:** Sebagai **data kerugian internal** bank — tiap "
+            "transaksi fraud = satu peristiwa kerugian operasional."
         )
         a1, a2, a3 = st.columns(3)
         a1.metric("Total baris", f"{_rows:,}")
@@ -1268,12 +1370,11 @@ elif page == "📂 Data Lengkap (semua data)":
         )
         if mode.startswith("Hanya"):
             _fraud_df = paysim_fraud_full()
-            st.caption(f"Menampilkan **seluruh {len(_fraud_df):,} transaksi fraud** "
-                       "(semua kolom).")
-            n = st.slider("Jumlah baris ditampilkan", 10,
-                          int(len(_fraud_df)), min(100, int(len(_fraud_df))),
-                          key="paysim_fraud_rows")
-            st.dataframe(_fraud_df.head(n), use_container_width=True, hide_index=True)
+            st.success(
+                f"Menampilkan **seluruh {len(_fraud_df):,} transaksi fraud** "
+                "(semua kolom). Ini adalah data yang dipakai model.")
+            st.dataframe(_fraud_df, use_container_width=True, hide_index=True,
+                         height=500)
             st.download_button(
                 "⬇️ Unduh semua transaksi fraud (CSV)",
                 _fraud_df.to_csv(index=False).encode("utf-8"),
@@ -1284,14 +1385,18 @@ elif page == "📂 Data Lengkap (semua data)":
                           key="paysim_all_rows")
             st.dataframe(paysim_preview(n), use_container_width=True, hide_index=True)
             st.caption(f"Pratinjau {n} dari {_rows:,} baris (data mentah, semua kolom). "
-                       "Karena dataset sangat besar, hanya bagian awal yang dimuat.")
+                       "Pilih **'Hanya transaksi fraud'** untuk melihat seluruh data "
+                       "yang dipakai model.")
 
     # ---- Tab B: Expert lengkap ----
     with tabB:
         st.markdown(
-            "**Penilaian ahli (expert)** — kuesioner self-assessment untuk seluruh "
-            "kerangka Basel **8 lini bisnis × 7 jenis kejadian = 56 kategori**. "
-            "Bersifat sintetis namun setia pada metode buku."
+            "### 👥 Data Penilaian Ahli (Expert Opinion)\n\n"
+            "Kuesioner **self-assessment** untuk seluruh kerangka Basel II: "
+            "**8 lini bisnis × 7 jenis kejadian = 56 kategori risiko**.\n\n"
+            "**Peran di proyek:** Sebagai **penilaian kualitatif** dari para ahli — "
+            "setiap ahli menilai frekuensi, severity, dan kontrol tiap risiko. "
+            "Data ini bersifat sintetis namun setia pada metode buku."
         )
         n_exp = st.slider("Jumlah ahli (expert)", 3, 20, 8, key="data_n_exp")
         _exp_all = contoh_expert(n_exp, 42)
@@ -1304,13 +1409,19 @@ elif page == "📂 Data Lengkap (semua data)":
             ("expert", "Nomor ahli yang memberi penilaian"),
             ("business_line", "Lini bisnis bank (1 dari 8)"),
             ("event_type", "Jenis kejadian risiko (1 dari 7)"),
-            ("frequency", "Perkiraan seberapa sering kejadian terjadi (kelas)"),
-            ("severity", "Perkiraan seberapa besar kerugiannya (kelas)"),
-            ("control", "Penilaian sebaik apa kontrol yang ada (kelas)"),
+            ("frequency", "Perkiraan seberapa sering kejadian terjadi (kelas ordinal)"),
+            ("severity", "Perkiraan seberapa besar kerugiannya (kelas ordinal)"),
+            ("control", "Penilaian sebaik apa kontrol yang ada (kelas ordinal)"),
         ])
-        n = st.slider("Jumlah baris ditampilkan", 8, int(len(_exp_all)),
-                      min(56, int(len(_exp_all))), key="data_exp_rows")
-        st.dataframe(_exp_all.head(n), use_container_width=True, hide_index=True)
+        st.success(f"Menampilkan **seluruh {len(_exp_all):,} baris** penilaian ahli.")
+        st.dataframe(
+            _exp_all.rename(columns={
+                "expert": "Ahli ke-", "business_line": "Lini Bisnis",
+                "event_type": "Jenis Kejadian", "frequency": "Frekuensi",
+                "severity": "Severity", "control": "Kontrol",
+            }),
+            use_container_width=True, hide_index=True, height=500,
+        )
         st.download_button(
             "⬇️ Unduh seluruh penilaian ahli (CSV)",
             _exp_all.to_csv(index=False).encode("utf-8"),
@@ -1320,22 +1431,31 @@ elif page == "📂 Data Lengkap (semua data)":
     # ---- Tab C: Eksternal lengkap ----
     with tabC:
         st.markdown(
-            "**Kerugian eksternal** — basis data konsorsium bank lain (sintetis). "
-            "Biasanya lebih besar; ditampilkan versi mentah dan versi ter-*scaling* "
-            "agar setara ukuran bank kita."
+            "### 🏢 Data Kerugian Eksternal (Bank Lain)\n\n"
+            "Data dari **konsorsium bank lain** (sintetis, analog DIPO). "
+            "Kerugian bank lain biasanya lebih besar karena merupakan gabungan "
+            "dari banyak bank.\n\n"
+            "**Peran di proyek:** Di-**scaling** (dibagi konstanta *c*) agar "
+            "setara ukuran bank kita, lalu digabung ke model integrasi Bayesian."
         )
         _ext_raw, _ext_scaled = contoh_external()
         _ext_df = pd.DataFrame({
-            "Kerugian (mentah)": _ext_raw,
-            "Kerugian (ter-scaling)": _ext_scaled,
+            "No.": range(1, len(_ext_raw) + 1),
+            "Kerugian Mentah (bank lain)": _ext_raw,
+            "Kerugian Ter-scaling (setara bank kita)": _ext_scaled,
         })
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
         c1.metric("Total baris", f"{len(_ext_df):,}")
-        c2.metric("Median kerugian (mentah)", f"{pd.Series(_ext_raw).median():,.0f}")
-        n = st.slider("Jumlah baris ditampilkan", 10, int(len(_ext_df)),
-                      min(100, int(len(_ext_df))), key="data_ext_rows")
-        st.dataframe(_ext_df.head(n).style.format("{:,.0f}"),
-                     use_container_width=True, hide_index=True)
+        c2.metric("Median (mentah)", f"{pd.Series(_ext_raw).median():,.0f}")
+        c3.metric("Median (ter-scaling)", f"{pd.Series(_ext_scaled).median():,.0f}")
+        st.success(f"Menampilkan **seluruh {len(_ext_df):,} baris** kerugian eksternal.")
+        st.dataframe(
+            _ext_df.style.format({
+                "Kerugian Mentah (bank lain)": "{:,.0f}",
+                "Kerugian Ter-scaling (setara bank kita)": "{:,.0f}",
+            }),
+            use_container_width=True, hide_index=True, height=500,
+        )
         st.download_button(
             "⬇️ Unduh kerugian eksternal (CSV)",
             _ext_df.to_csv(index=False).encode("utf-8"),
