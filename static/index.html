@@ -392,6 +392,202 @@
     border-radius: var(--radius-sm);
     min-height: 200px;
   }
+
+  /* ========== ANIMATED PIPELINE FLOW ========== */
+  .pipeline-flow {
+    display: flex; align-items: stretch; gap: 0;
+    margin: 1.5rem 0 2rem; position: relative;
+    overflow: hidden;
+  }
+  .pipeline-step {
+    flex: 1; padding: 1.2rem 1rem; text-align: center;
+    position: relative; border-radius: var(--radius-sm);
+    opacity: 0; transform: translateY(30px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pipeline-step.visible {
+    opacity: 1; transform: translateY(0) scale(1);
+  }
+  .pipeline-step:nth-child(1) { transition-delay: 0.1s; }
+  .pipeline-step:nth-child(2) { transition-delay: 0.35s; }
+  .pipeline-step:nth-child(3) { transition-delay: 0.6s; }
+  .pipeline-step:nth-child(4) { transition-delay: 0.85s; }
+
+  .pipeline-step .step-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 0.7rem; font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    position: relative; z-index: 2;
+  }
+  .pipeline-step .step-label {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 0.3rem;
+    opacity: 0.7;
+  }
+  .pipeline-step .step-title {
+    font-size: 0.92rem; font-weight: 700; margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+  .pipeline-step .step-detail {
+    font-size: 0.78rem; line-height: 1.5; opacity: 0.85;
+  }
+
+  /* Step color themes */
+  .pipeline-step.ps-data {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03));
+    border: 1px solid rgba(59,130,246,0.15);
+  }
+  .pipeline-step.ps-data .step-icon {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+  }
+  .pipeline-step.ps-formula {
+    background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(139,92,246,0.03));
+    border: 1px solid rgba(139,92,246,0.15);
+  }
+  .pipeline-step.ps-formula .step-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+  }
+  .pipeline-step.ps-process {
+    background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03));
+    border: 1px solid rgba(245,158,11,0.15);
+  }
+  .pipeline-step.ps-process .step-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+  .pipeline-step.ps-result {
+    background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.03));
+    border: 1px solid rgba(16,185,129,0.15);
+  }
+  .pipeline-step.ps-result .step-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+  }
+
+  /* Animated arrow between steps */
+  .pipeline-arrow {
+    display: flex; align-items: center; justify-content: center;
+    width: 50px; min-width: 50px; position: relative;
+    opacity: 0; transform: scaleX(0);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pipeline-arrow.visible { opacity: 1; transform: scaleX(1); }
+  .pipeline-arrow:nth-of-type(2) { transition-delay: 0.25s; }
+  .pipeline-arrow:nth-of-type(4) { transition-delay: 0.5s; }
+  .pipeline-arrow:nth-of-type(6) { transition-delay: 0.75s; }
+
+  .pipeline-arrow svg {
+    width: 40px; height: 24px;
+  }
+  .pipeline-arrow .arrow-line {
+    stroke: #94a3b8; stroke-width: 2; fill: none;
+    stroke-dasharray: 30; stroke-dashoffset: 30;
+    animation: drawArrow 0.8s ease forwards;
+    animation-play-state: paused;
+  }
+  .pipeline-arrow.visible .arrow-line {
+    animation-play-state: running;
+  }
+  .pipeline-arrow .arrow-head {
+    fill: #94a3b8;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.6s;
+  }
+  .pipeline-arrow.visible .arrow-head {
+    opacity: 1;
+  }
+
+  @keyframes drawArrow {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Pulse animation for icons */
+  @keyframes iconPulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
+    50% { box-shadow: 0 4px 25px rgba(0,0,0,0.25), 0 0 20px rgba(59,130,246,0.2); }
+  }
+  .pipeline-step.visible .step-icon {
+    animation: iconPulse 2s ease-in-out 1s 1;
+  }
+
+  /* Data flow particles */
+  @keyframes flowParticle {
+    0% { left: -8px; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { left: calc(100% + 8px); opacity: 0; }
+  }
+  .pipeline-arrow .particle {
+    position: absolute; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--primary-light);
+    opacity: 0;
+  }
+  .pipeline-arrow.visible .particle {
+    animation: flowParticle 1.8s ease-in-out infinite;
+  }
+  .pipeline-arrow.visible .particle:nth-child(2) {
+    animation-delay: 0.6s; background: #8b5cf6;
+  }
+  .pipeline-arrow.visible .particle:nth-child(3) {
+    animation-delay: 1.2s; background: #10b981;
+  }
+
+  /* Code snippet animation inside pipeline */
+  .pipeline-code {
+    background: #1e293b; color: #93c5fd; border-radius: 6px;
+    padding: 0.4rem 0.6rem; font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.68rem; text-align: left; margin-top: 0.5rem;
+    overflow: hidden; position: relative;
+    max-height: 0; opacity: 0;
+    transition: max-height 0.6s ease, opacity 0.4s ease;
+  }
+  .pipeline-step.visible .pipeline-code {
+    max-height: 200px; opacity: 1;
+    transition-delay: 0.8s;
+  }
+  .pipeline-code .code-line {
+    opacity: 0; transform: translateX(-10px);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  .pipeline-step.visible .pipeline-code .code-line:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 1.0s; }
+  .pipeline-step.visible .pipeline-code .code-line:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 1.15s; }
+  .pipeline-step.visible .pipeline-code .code-line:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 1.3s; }
+
+  /* Typing cursor effect */
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  .typing-cursor::after {
+    content: '▌'; color: #60a5fa;
+    animation: blink 1s infinite;
+    font-weight: 400;
+  }
+
+  /* Number count-up highlight */
+  @keyframes countUpGlow {
+    0% { color: var(--primary-light); text-shadow: 0 0 10px rgba(59,130,246,0.4); }
+    100% { color: inherit; text-shadow: none; }
+  }
+  .count-up {
+    animation: countUpGlow 1.5s ease-out forwards;
+  }
+
+  /* Responsive pipeline */
+  @media (max-width: 900px) {
+    .pipeline-flow {
+      flex-direction: column; align-items: center;
+    }
+    .pipeline-arrow {
+      transform: rotate(90deg) scaleX(0);
+      width: 24px; min-width: 24px; height: 40px;
+    }
+    .pipeline-arrow.visible { transform: rotate(90deg) scaleX(1); }
+  }
 </style>
 </head>
 <body>
@@ -534,6 +730,76 @@
   </div>
 
   <div class="section-title">🔄 Alur Keseluruhan Proyek</div>
+
+  <div class="pipeline-flow" data-pipeline="beranda">
+    <!-- STEP 1: Dataset -->
+    <div class="pipeline-step ps-data">
+      <div class="step-icon">📥</div>
+      <div class="step-label">Langkah 1</div>
+      <div class="step-title">Kumpulkan Data</div>
+      <div class="step-detail">3 sumber: Internal (PaySim), Expert Opinion, Eksternal (konsorsium)</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#f59e0b;">internal</span> = PaySim.csv</div>
+        <div class="code-line"><span style="color:#f59e0b;">expert</span> = 8 ahli × 56 kat</div>
+        <div class="code-line"><span style="color:#f59e0b;">external</span> = DIPO bank</div>
+      </div>
+    </div>
+
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 2: Rumus -->
+    <div class="pipeline-step ps-formula">
+      <div class="step-icon">📐</div>
+      <div class="step-label">Langkah 2</div>
+      <div class="step-title">Terapkan Rumus</div>
+      <div class="step-detail">Scorecard (Gini), Aktuaria (Poisson×Lognormal), Integrasi (Bayesian + BIA)</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#c4b5fd;">M1</span> = Median + Gini</div>
+        <div class="code-line"><span style="color:#c4b5fd;">M2</span> = Poisson × Lognorm</div>
+        <div class="code-line"><span style="color:#c4b5fd;">M3</span> = Bayesian + BIA</div>
+      </div>
+    </div>
+
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 3: Proses -->
+    <div class="pipeline-step ps-process">
+      <div class="step-icon">⚙️</div>
+      <div class="step-label">Langkah 3</div>
+      <div class="step-title">Proses & Simulasi</div>
+      <div class="step-detail">Monte Carlo 100K skenario, rating 56 kategori, integrasi 3 sumber data</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#fcd34d;">simulate</span>(100_000)</div>
+        <div class="code-line"><span style="color:#fcd34d;">rate</span>(56_categories)</div>
+        <div class="code-line"><span style="color:#fcd34d;">integrate</span>(3_sources)</div>
+      </div>
+    </div>
+
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 4: Hasil -->
+    <div class="pipeline-step ps-result">
+      <div class="step-icon">📊</div>
+      <div class="step-label">Langkah 4</div>
+      <div class="step-title">Hasil & Validasi</div>
+      <div class="step-detail">Rating risiko 🟢🟡🔴, VaR 99,9%, 7 metode saling validasi (Gambar 12.2)</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#86efac;">risk</span> = 🟢🟡🔴 ranked</div>
+        <div class="code-line"><span style="color:#86efac;">VaR</span> = 99.9% capital</div>
+        <div class="code-line"><span style="color:#86efac;">validated</span> = ✅ 7 methods</div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="table-scroll">
       <table class="data-table">
@@ -648,7 +914,80 @@
     </div>
   </details>
 
-  <h3 class="step">3️⃣ & 4️⃣ Dataset & Proses</h3>
+  <h3 class="step">3️⃣ & 4️⃣ Dataset → Rumus → Proses → Hasil</h3>
+
+  <div class="pipeline-flow" data-pipeline="scorecard">
+    <!-- STEP 1: Dataset -->
+    <div class="pipeline-step ps-data">
+      <div class="step-icon">📂</div>
+      <div class="step-label">Dataset</div>
+      <div class="step-title">Penilaian Ahli</div>
+      <div class="step-detail">8 ahli menilai 56 kategori risiko (8 BL × 7 ET) pada 3 dimensi: frekuensi, severity, kontrol</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#f59e0b;">experts</span> = <span style="color:#a5f3fc;">8</span></div>
+        <div class="code-line"><span style="color:#f59e0b;">categories</span> = <span style="color:#a5f3fc;">8</span> × <span style="color:#a5f3fc;">7</span> = <span style="color:#a5f3fc;">56</span></div>
+        <div class="code-line"><span style="color:#f59e0b;">dims</span> = [<span style="color:#86efac;">freq, sev, ctrl</span>]</div>
+      </div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 2: Rumus -->
+    <div class="pipeline-step ps-formula">
+      <div class="step-icon">📐</div>
+      <div class="step-label">Rumus</div>
+      <div class="step-title">Median + Gini</div>
+      <div class="step-detail">Median = nilai tengah ordinal. Gini mengukur kesepakatan ahli → rating A/AA/AAA</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#c4b5fd;">G</span> = 1 − Σ p<sub>k</sub>²</div>
+        <div class="code-line"><span style="color:#c4b5fd;">G_norm</span> = G × K/(K−1)</div>
+        <div class="code-line"><span style="color:#c4b5fd;">loss</span> = freq × sev × ctrl</div>
+      </div>
+    </div>
+
+    <!-- ARROW 2 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 3: Proses -->
+    <div class="pipeline-step ps-process">
+      <div class="step-icon">⚙️</div>
+      <div class="step-label">Proses</div>
+      <div class="step-title">Hitung Rating & Prioritas</div>
+      <div class="step-detail">Untuk 56 kategori: hitung median tiap dimensi → tentukan rating → hitung perceived loss → urutkan</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#fcd34d;">for</span> cat <span style="color:#fcd34d;">in</span> 56_categories:</div>
+        <div class="code-line">&nbsp; rating = <span style="color:#fcd34d;">median</span>(votes)</div>
+        <div class="code-line">&nbsp; priority = <span style="color:#fcd34d;">sort</span>(loss)</div>
+      </div>
+    </div>
+
+    <!-- ARROW 3 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 4: Hasil -->
+    <div class="pipeline-step ps-result">
+      <div class="step-icon">✅</div>
+      <div class="step-label">Hasil</div>
+      <div class="step-title">Peringkat Risiko 🟢🟡🔴</div>
+      <div class="step-detail">56 kategori berperingkat: traffic light + rating huruf. Risiko tertinggi di-prioritaskan manajemen</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#86efac;">output</span> = traffic_light 🟢🟡🔴</div>
+        <div class="code-line"><span style="color:#86efac;">top_risk</span> = kategori #1</div>
+        <div class="code-line"><span style="color:#86efac;">action</span> = prioritas mitigasi</div>
+      </div>
+    </div>
+  </div>
+
   <div class="metrics c3" id="sc-dataset-metrics"></div>
 
   <h3 class="step">5️⃣ Hasil & Kesimpulan</h3>
@@ -739,7 +1078,80 @@
     </div>
   </details>
 
-  <h3 class="step">3️⃣ Dataset</h3>
+  <h3 class="step">3️⃣ Dataset → Rumus → Proses → Hasil</h3>
+
+  <div class="pipeline-flow" data-pipeline="actuarial">
+    <!-- STEP 1: Dataset -->
+    <div class="pipeline-step ps-data">
+      <div class="step-icon">📂</div>
+      <div class="step-label">Dataset</div>
+      <div class="step-title">PaySim (Fraud)</div>
+      <div class="step-detail">6,3 juta transaksi, filter isFraud=1 → data kerugian internal. Kolom amount = besar kerugian</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#f59e0b;">df</span> = paysim[isFraud==<span style="color:#a5f3fc;">1</span>]</div>
+        <div class="code-line"><span style="color:#f59e0b;">losses</span> = df[<span style="color:#86efac;">'amount'</span>]</div>
+        <div class="code-line"><span style="color:#f59e0b;">n_fraud</span> = <span style="color:#a5f3fc;">8.213</span> events</div>
+      </div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 2: Rumus -->
+    <div class="pipeline-step ps-formula">
+      <div class="step-icon">📐</div>
+      <div class="step-label">Rumus</div>
+      <div class="step-title">Poisson × Lognormal</div>
+      <div class="step-detail">N ~ Poisson(λ) = frekuensi kejadian. X ~ Lognormal(μ,σ) = besar tiap kerugian. L = ΣXᵢ</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#c4b5fd;">N</span> ~ Poisson(λ)</div>
+        <div class="code-line"><span style="color:#c4b5fd;">X</span> ~ Lognormal(μ, σ)</div>
+        <div class="code-line"><span style="color:#c4b5fd;">L</span> = Σ<sub>i=1</sub><sup>N</sup> X<sub>i</sub></div>
+      </div>
+    </div>
+
+    <!-- ARROW 2 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 3: Proses -->
+    <div class="pipeline-step ps-process">
+      <div class="step-icon">⚙️</div>
+      <div class="step-label">Proses</div>
+      <div class="step-title">Monte Carlo Simulasi</div>
+      <div class="step-detail">Simulasikan 100.000 skenario: tiap skenario acak N kejadian × acak besar kerugian → distribusi L</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#fcd34d;">for</span> s <span style="color:#fcd34d;">in</span> range(<span style="color:#a5f3fc;">100000</span>):</div>
+        <div class="code-line">&nbsp; n = poisson(λ)</div>
+        <div class="code-line">&nbsp; L[s] = <span style="color:#fcd34d;">sum</span>(lognorm(n))</div>
+      </div>
+    </div>
+
+    <!-- ARROW 3 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 4: Hasil -->
+    <div class="pipeline-step ps-result">
+      <div class="step-icon">✅</div>
+      <div class="step-label">Hasil</div>
+      <div class="step-title">VaR 99,9%</div>
+      <div class="step-detail">Persentil ke-99,9 dari distribusi L = cadangan modal minimum. Hanya 0,1% skenario melebihi batas ini</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#86efac;">VaR</span> = percentile(L, <span style="color:#a5f3fc;">99.9</span>)</div>
+        <div class="code-line"><span style="color:#86efac;">capital</span> = VaR_amount</div>
+        <div class="code-line"><span style="color:#86efac;">confidence</span> = <span style="color:#a5f3fc;">99.9</span>%</div>
+      </div>
+    </div>
+  </div>
+
   <div class="metrics c4" id="act-dataset-metrics"></div>
 
   <h3 class="step">4️⃣ & 5️⃣ Hasil</h3>
@@ -815,7 +1227,80 @@
     </div>
   </details>
 
-  <h3 class="step">3️⃣ Dataset</h3>
+  <h3 class="step">3️⃣ Dataset → Rumus → Proses → Hasil</h3>
+
+  <div class="pipeline-flow" data-pipeline="integrated">
+    <!-- STEP 1: Dataset -->
+    <div class="pipeline-step ps-data">
+      <div class="step-icon">📂</div>
+      <div class="step-label">Dataset</div>
+      <div class="step-title">3 Sumber Data</div>
+      <div class="step-detail">① Internal (PaySim fraud) + ② Expert (penilaian ahli) + ③ Eksternal (konsorsium bank lain, di-scaling)</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#f59e0b;">S1</span> = internal_losses</div>
+        <div class="code-line"><span style="color:#f59e0b;">S2</span> = expert_assessment</div>
+        <div class="code-line"><span style="color:#f59e0b;">S3</span> = external / <span style="color:#a5f3fc;">c</span></div>
+      </div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 2: Rumus -->
+    <div class="pipeline-step ps-formula">
+      <div class="step-icon">📐</div>
+      <div class="step-label">Rumus</div>
+      <div class="step-title">Integrasi Bayesian + BIA</div>
+      <div class="step-detail">S_gabungan = S₁ ∪ expert ∪ S₃ˢᶜᵃˡᵉᵈ. Scaling: c = Σext/Σint. BIA = 15% × Gross Income</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#c4b5fd;">c</span> = Σext / Σint</div>
+        <div class="code-line"><span style="color:#c4b5fd;">S</span> = S1 ∪ exp ∪ S3/c</div>
+        <div class="code-line"><span style="color:#c4b5fd;">BIA</span> = 0.15 × GI</div>
+      </div>
+    </div>
+
+    <!-- ARROW 2 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 3: Proses -->
+    <div class="pipeline-step ps-process">
+      <div class="step-icon">⚙️</div>
+      <div class="step-label">Proses</div>
+      <div class="step-title">7 Metode VaR</div>
+      <div class="step-detail">Hitung VaR dari tiap sumber & gabungan: Historical, Bayes, Monte Carlo, Self-Assessment, BIA → 7 estimasi</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#fcd34d;">for</span> src <span style="color:#fcd34d;">in</span> [int, bay, mc]:</div>
+        <div class="code-line">&nbsp; VaR[src] = p99.9(src)</div>
+        <div class="code-line">&nbsp; compare(VaR, BIA)</div>
+      </div>
+    </div>
+
+    <!-- ARROW 3 -->
+    <div class="pipeline-arrow">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
+    </div>
+
+    <!-- STEP 4: Hasil -->
+    <div class="pipeline-step ps-result">
+      <div class="step-icon">✅</div>
+      <div class="step-label">Hasil</div>
+      <div class="step-title">Validasi Silang</div>
+      <div class="step-detail">7 estimasi VaR dibandingkan (analog Gambar 12.2). BIA ≈ Bayes VaR → konsisten, model valid</div>
+      <div class="pipeline-code">
+        <div class="code-line"><span style="color:#86efac;">methods</span> = <span style="color:#a5f3fc;">7</span> estimasi</div>
+        <div class="code-line"><span style="color:#86efac;">BIA</span> ≈ Bayes VaR ✅</div>
+        <div class="code-line"><span style="color:#86efac;">status</span> = validated!</div>
+      </div>
+    </div>
+  </div>
+
   <div class="metrics c3" id="int-dataset-metrics"></div>
 
   <div class="card">
@@ -1401,6 +1886,61 @@ function renderAll(D) {
   clHTML += '</tbody></table>';
   document.getElementById('sum-checklist').innerHTML = clHTML;
 }
+</script>
+
+<script>
+// === Pipeline Animation via IntersectionObserver ===
+function initPipelineAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const flow = entry.target;
+        const steps = flow.querySelectorAll('.pipeline-step');
+        const arrows = flow.querySelectorAll('.pipeline-arrow');
+        steps.forEach(s => s.classList.add('visible'));
+        arrows.forEach(a => a.classList.add('visible'));
+        observer.unobserve(flow);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.pipeline-flow').forEach(flow => {
+    observer.observe(flow);
+  });
+}
+
+// Reset pipeline animations when switching pages
+function resetPipelineAnimations(pageId) {
+  const page = document.getElementById('page-' + pageId);
+  if (!page) return;
+  page.querySelectorAll('.pipeline-flow').forEach(flow => {
+    flow.querySelectorAll('.pipeline-step').forEach(s => s.classList.remove('visible'));
+    flow.querySelectorAll('.pipeline-arrow').forEach(a => a.classList.remove('visible'));
+  });
+  // Re-trigger after a short delay to let the page become visible
+  setTimeout(() => {
+    page.querySelectorAll('.pipeline-flow').forEach(flow => {
+      const steps = flow.querySelectorAll('.pipeline-step');
+      const arrows = flow.querySelectorAll('.pipeline-arrow');
+      steps.forEach(s => s.classList.add('visible'));
+      arrows.forEach(a => a.classList.add('visible'));
+    });
+  }, 150);
+}
+
+// Patch the page navigation to include pipeline reset
+const _origShowPage = showPage;
+showPage = function(id) {
+  _origShowPage(id);
+  resetPipelineAnimations(id);
+};
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  initPipelineAnimations();
+  // Trigger for the initially active page
+  resetPipelineAnimations('beranda');
+});
 </script>
 </body>
 </html>
