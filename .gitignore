@@ -1,0 +1,21 @@
+# Data
+data/raw/
+data/processed/
+*.parquet
+*.csv
+
+# Models
+models/*.joblib
+models/*.pkl
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Kaggle credentials / secrets
+kaggle.json
+.env
+.streamlit/secrets.toml
