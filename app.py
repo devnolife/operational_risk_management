@@ -340,11 +340,11 @@ if page == "🏠 Beranda":
     st.markdown(
         "| Bagian Buku | Model | Halaman |\n"
         "|---|---|---|\n"
-        "| §12.1 Kerangka Basel II | Dasar semua model | 225–227 |\n"
-        "| §12.2 Sumber Data | Data internal, ahli, eksternal | 228–231 |\n"
-        "| §12.3 Model Aktuaria | VaR Aktuaria (Model 2) | 231–234 |\n"
-        "| §12.4 Self-Assessment | Scorecard (Model 1) + Integrasi (Model 3) | 234–240 |\n"
-        "| §12.5 Kesimpulan | Perbandingan 7 metrik VaR | 240–241 |"
+        "| Bab 12.1 — Kerangka Basel II | Dasar semua model | 225–227 |\n"
+        "| Bab 12.2 — Sumber Data | Data internal, ahli, eksternal | 228–231 |\n"
+        "| Bab 12.3 — Model Aktuaria | VaR Aktuaria (Model 2) | 231–234 |\n"
+        "| Bab 12.4 — Self-Assessment | Scorecard (Model 1) + Integrasi (Model 3) | 234–240 |\n"
+        "| Bab 12.5 — Kesimpulan | Perbandingan 7 metrik VaR | 240–241 |"
     )
 
     st.success(
