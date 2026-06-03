@@ -216,11 +216,11 @@ page = st.sidebar.radio(
     "Pilih halaman",
     [
         "🏠 Beranda",
+        "📂 Data Lengkap (semua data)",
         "1 — Scorecard (Self-Assessment)",
         "2 — VaR Aktuaria",
         "3 — VaR Integrasi & BIA",
         "📊 Ringkasan Eksekutif",
-        "📂 Data Lengkap (semua data)",
     ],
 )
 st.sidebar.markdown("---")
@@ -483,6 +483,183 @@ if page == "🏠 Beranda":
         "Atau langsung ke **📊 Ringkasan Eksekutif** untuk melihat semua hasil sekaligus."
     )
 
+
+
+# ============================================================================
+# Data Lengkap — semua dataset dalam satu tempat (tidak terbagi per model)
+# ============================================================================
+elif page == "📂 Data Lengkap (semua data)":
+    st.title("📂 Data Lengkap — Semua Dataset")
+    st.caption("Seluruh data yang dipakai proyek, dikumpulkan di satu halaman.")
+    st.markdown(
+        "Halaman ini menampilkan **seluruh data** yang dipakai proyek secara lengkap. "
+        "Tersedia **3 sumber data** sesuai Bab 12.2 buku Giudici (2009)."
+    )
+
+    _total_tx, _total_fraud = info_dataset_paysim()
+    _rows, _cols = paysim_meta()
+    g1, g2, g3, g4 = st.columns(4)
+    g1.metric("Total transaksi PaySim", f"{_total_tx:,}")
+    g2.metric("Transaksi fraud", f"{_total_fraud:,}")
+    g3.metric("Jumlah field PaySim", f"{len(_cols)}")
+    g4.metric("Sumber data", "3 jenis")
+
+    tabA, tabB, tabC = st.tabs([
+        "① PaySim — Data Internal (utama)",
+        "② Penilaian Ahli (Expert Opinion)",
+        "③ Kerugian Eksternal (Bank Lain)",
+    ])
+
+    # ---- Tab A: PaySim lengkap ----
+    with tabA:
+        st.markdown(
+            "### 📊 Data Internal — PaySim\n\n"
+            "**PaySim** — *Synthetic Financial Datasets for Fraud Detection* "
+            "(Kaggle: `ealaxi/paysim1`). Dataset sintetis berisi **6,3 juta** "
+            "transaksi mobile-money dengan label penipuan (fraud)."
+        )
+        st.info(
+            "**🎯 Mengapa PaySim dipilih?**\n\n"
+            "Buku Bab 12.2 mensyaratkan **data kerugian internal** bank berupa tabel "
+            "berisi: jumlah kerugian, tanggal, unit organisasi, dan jenis kejadian. "
+            "Data asli bank **tidak tersedia publik** (rahasia), sehingga dibutuhkan "
+            "dataset pengganti yang realistis.\n\n"
+            "**PaySim cocok karena:**\n"
+            "- ✅ Ada **kolom `amount`** → jumlah kerugian per peristiwa\n"
+            "- ✅ Ada **kolom `step`** → waktu kejadian (jam, dikonversi ke hari)\n"
+            "- ✅ Ada **label `isFraud`** → memisahkan fraud vs normal\n"
+            "- ✅ Ada **jenis transaksi** (`type`) → mirip jenis kejadian Basel II\n"
+            "- ✅ **Distribusi realistis** — dibuat dari pola transaksi mobile-money "
+            "nyata di Afrika\n\n"
+            "**Cara pemakaian:** Setiap transaksi fraud (`isFraud=1`) dianggap sebagai "
+            "**satu peristiwa kerugian operasional**, dan kolom `amount` = besarnya "
+            "kerugian. Dari sini dihitung **frekuensi** (berapa kali per tahun) dan "
+            "**severity** (distribusi besarnya kerugian) untuk model VaR."
+        )
+        a1, a2, a3 = st.columns(3)
+        a1.metric("Total baris", f"{_rows:,}")
+        a2.metric("Jumlah kolom", f"{len(_cols)}")
+        a3.metric("Periode simulasi", "± 31 hari")
+        kamus_kolom(PAYSIM_FIELDS)
+
+        mode = st.radio(
+            "Pilih data yang ditampilkan",
+            ["Semua transaksi (pratinjau awal)", "Hanya transaksi fraud (lengkap)"],
+            horizontal=True, key="paysim_mode",
+        )
+        if mode.startswith("Hanya"):
+            _fraud_df = paysim_fraud_full()
+            st.success(
+                f"Menampilkan **seluruh {len(_fraud_df):,} transaksi fraud** "
+                "(semua kolom). Ini adalah data yang dipakai model.")
+            st.dataframe(_fraud_df, use_container_width=True, hide_index=True,
+                         height=500)
+            st.download_button(
+                "⬇️ Unduh semua transaksi fraud (CSV)",
+                _fraud_df.to_csv(index=False).encode("utf-8"),
+                file_name="paysim_fraud.csv", mime="text/csv",
+            )
+        else:
+            n = st.slider("Jumlah baris ditampilkan", 10, 500, 100,
+                          key="paysim_all_rows")
+            st.dataframe(paysim_preview(n), use_container_width=True, hide_index=True)
+            st.caption(f"Pratinjau {n} dari {_rows:,} baris (data mentah, semua kolom). "
+                       "Pilih **'Hanya transaksi fraud'** untuk melihat seluruh data "
+                       "yang dipakai model.")
+
+    # ---- Tab B: Expert lengkap ----
+    with tabB:
+        st.markdown(
+            "### 👥 Data Penilaian Ahli (Expert Opinion)\n\n"
+            "Kuesioner **self-assessment** untuk seluruh kerangka Basel II: "
+            "**8 lini bisnis × 7 jenis kejadian = 56 kategori risiko**."
+        )
+        st.info(
+            "**🎯 Mengapa ada data expert?**\n\n"
+            "Buku Bab 12.2 menjelaskan bahwa data internal saja **tidak cukup** — "
+            "banyak kejadian risiko yang jarang terjadi atau belum pernah tercatat. "
+            "Oleh karena itu dibutuhkan **pendapat ahli** (*expert opinion*) yang "
+            "bersifat **forward-looking** (melihat ke depan).\n\n"
+            "**Cara pemakaian:** Setiap ahli menilai **frekuensi**, **severity**, dan "
+            "**kontrol** untuk seluruh 56 kategori risiko. Hasilnya diagregasi menjadi "
+            "**scorecard** (matriks traffic-light) yang dipakai di Model 1.\n\n"
+            "**Mengapa sintetis?** Data kuesioner ahli bank bersifat internal dan "
+            "rahasia. Kami membuat data sintetis mengikuti struktur buku: ordinal "
+            "scale (low/medium/high) untuk 8 BL × 7 ET."
+        )
+        n_exp = st.slider("Jumlah ahli (expert)", 3, 20, 8, key="data_n_exp")
+        _exp_all = contoh_expert(n_exp, 42)
+        b1, b2, b3 = st.columns(3)
+        b1.metric("Total baris", f"{len(_exp_all):,}")
+        b2.metric("Jumlah ahli", f"{_exp_all['expert'].nunique()}")
+        b3.metric("Kategori risiko",
+                  f"{_exp_all.groupby(['business_line','event_type']).ngroups}")
+        kamus_kolom([
+            ("expert", "Nomor ahli yang memberi penilaian"),
+            ("business_line", "Lini bisnis bank (1 dari 8)"),
+            ("event_type", "Jenis kejadian risiko (1 dari 7)"),
+            ("frequency", "Perkiraan seberapa sering kejadian terjadi (kelas ordinal)"),
+            ("severity", "Perkiraan seberapa besar kerugiannya (kelas ordinal)"),
+            ("control", "Penilaian sebaik apa kontrol yang ada (kelas ordinal)"),
+        ])
+        st.success(f"Menampilkan **seluruh {len(_exp_all):,} baris** penilaian ahli.")
+        st.dataframe(
+            _exp_all.rename(columns={
+                "expert": "Ahli ke-", "business_line": "Lini Bisnis",
+                "event_type": "Jenis Kejadian", "frequency": "Frekuensi",
+                "severity": "Severity", "control": "Kontrol",
+            }),
+            use_container_width=True, hide_index=True, height=500,
+        )
+        st.download_button(
+            "⬇️ Unduh seluruh penilaian ahli (CSV)",
+            _exp_all.to_csv(index=False).encode("utf-8"),
+            file_name="penilaian_ahli.csv", mime="text/csv",
+        )
+
+    # ---- Tab C: Eksternal lengkap ----
+    with tabC:
+        st.markdown(
+            "### 🏢 Data Kerugian Eksternal (Bank Lain)\n\n"
+            "Data dari **konsorsium bank lain** (sintetis, analog DIPO)."
+        )
+        st.info(
+            "**🎯 Mengapa ada data eksternal?**\n\n"
+            "Buku Bab 12.2 menjelaskan bahwa data internal & expert masih bisa memiliki "
+            "**missing values** — ada kategori risiko yang jarang/belum pernah terjadi "
+            "di bank kita. Data **konsorsium (DIPO)** dari banyak bank membantu "
+            "**mengisi celah** tersebut.\n\n"
+            "**Proses scaling:** Karena konsorsium menggabungkan banyak bank, "
+            "kerugiannya lebih besar. Buku (Bab 12.2) menerapkan **scaling** — "
+            "membagi kerugian konsorsium dengan konstanta *c* = rasio total "
+            "kerugian DIPO / total kerugian internal — agar setara ukuran bank kita.\n\n"
+            "**Mengapa sintetis?** Database DIPO hanya tersedia bagi anggota "
+            "konsorsium. Kami membuat data sintetis yang mengikuti distribusi "
+            "dan proses scaling sesuai buku."
+        )
+        _ext_raw, _ext_scaled = contoh_external()
+        _ext_df = pd.DataFrame({
+            "No.": range(1, len(_ext_raw) + 1),
+            "Kerugian Mentah (bank lain)": _ext_raw,
+            "Kerugian Ter-scaling (setara bank kita)": _ext_scaled,
+        })
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total baris", f"{len(_ext_df):,}")
+        c2.metric("Median (mentah)", f"{pd.Series(_ext_raw).median():,.0f}")
+        c3.metric("Median (ter-scaling)", f"{pd.Series(_ext_scaled).median():,.0f}")
+        st.success(f"Menampilkan **seluruh {len(_ext_df):,} baris** kerugian eksternal.")
+        st.dataframe(
+            _ext_df.style.format({
+                "Kerugian Mentah (bank lain)": "{:,.0f}",
+                "Kerugian Ter-scaling (setara bank kita)": "{:,.0f}",
+            }),
+            use_container_width=True, hide_index=True, height=500,
+        )
+        st.download_button(
+            "⬇️ Unduh kerugian eksternal (CSV)",
+            _ext_df.to_csv(index=False).encode("utf-8"),
+            file_name="kerugian_eksternal.csv", mime="text/csv",
+        )
 
 # ============================================================================
 # Anggota 1 — Scorecard Self-Assessment (Giudici Ch.12, Gambar 12.1)
@@ -1385,178 +1562,3 @@ elif page == "📊 Ringkasan Eksekutif":
         )
 
 
-# ============================================================================
-# Data Lengkap — semua dataset dalam satu tempat (tidak terbagi per model)
-# ============================================================================
-elif page == "📂 Data Lengkap (semua data)":
-    st.title("📂 Data Lengkap — Semua Dataset")
-    st.caption("Seluruh data yang dipakai proyek, dikumpulkan di satu halaman.")
-    st.markdown(
-        "Halaman ini menampilkan **seluruh data** yang dipakai proyek secara lengkap. "
-        "Tersedia **3 sumber data** sesuai Bab 12.2 buku Giudici (2009)."
-    )
-
-    _total_tx, _total_fraud = info_dataset_paysim()
-    _rows, _cols = paysim_meta()
-    g1, g2, g3, g4 = st.columns(4)
-    g1.metric("Total transaksi PaySim", f"{_total_tx:,}")
-    g2.metric("Transaksi fraud", f"{_total_fraud:,}")
-    g3.metric("Jumlah field PaySim", f"{len(_cols)}")
-    g4.metric("Sumber data", "3 jenis")
-
-    tabA, tabB, tabC = st.tabs([
-        "① PaySim — Data Internal (utama)",
-        "② Penilaian Ahli (Expert Opinion)",
-        "③ Kerugian Eksternal (Bank Lain)",
-    ])
-
-    # ---- Tab A: PaySim lengkap ----
-    with tabA:
-        st.markdown(
-            "### 📊 Data Internal — PaySim\n\n"
-            "**PaySim** — *Synthetic Financial Datasets for Fraud Detection* "
-            "(Kaggle: `ealaxi/paysim1`). Dataset sintetis berisi **6,3 juta** "
-            "transaksi mobile-money dengan label penipuan (fraud)."
-        )
-        st.info(
-            "**🎯 Mengapa PaySim dipilih?**\n\n"
-            "Buku Bab 12.2 mensyaratkan **data kerugian internal** bank berupa tabel "
-            "berisi: jumlah kerugian, tanggal, unit organisasi, dan jenis kejadian. "
-            "Data asli bank **tidak tersedia publik** (rahasia), sehingga dibutuhkan "
-            "dataset pengganti yang realistis.\n\n"
-            "**PaySim cocok karena:**\n"
-            "- ✅ Ada **kolom `amount`** → jumlah kerugian per peristiwa\n"
-            "- ✅ Ada **kolom `step`** → waktu kejadian (jam, dikonversi ke hari)\n"
-            "- ✅ Ada **label `isFraud`** → memisahkan fraud vs normal\n"
-            "- ✅ Ada **jenis transaksi** (`type`) → mirip jenis kejadian Basel II\n"
-            "- ✅ **Distribusi realistis** — dibuat dari pola transaksi mobile-money "
-            "nyata di Afrika\n\n"
-            "**Cara pemakaian:** Setiap transaksi fraud (`isFraud=1`) dianggap sebagai "
-            "**satu peristiwa kerugian operasional**, dan kolom `amount` = besarnya "
-            "kerugian. Dari sini dihitung **frekuensi** (berapa kali per tahun) dan "
-            "**severity** (distribusi besarnya kerugian) untuk model VaR."
-        )
-        a1, a2, a3 = st.columns(3)
-        a1.metric("Total baris", f"{_rows:,}")
-        a2.metric("Jumlah kolom", f"{len(_cols)}")
-        a3.metric("Periode simulasi", "± 31 hari")
-        kamus_kolom(PAYSIM_FIELDS)
-
-        mode = st.radio(
-            "Pilih data yang ditampilkan",
-            ["Semua transaksi (pratinjau awal)", "Hanya transaksi fraud (lengkap)"],
-            horizontal=True, key="paysim_mode",
-        )
-        if mode.startswith("Hanya"):
-            _fraud_df = paysim_fraud_full()
-            st.success(
-                f"Menampilkan **seluruh {len(_fraud_df):,} transaksi fraud** "
-                "(semua kolom). Ini adalah data yang dipakai model.")
-            st.dataframe(_fraud_df, use_container_width=True, hide_index=True,
-                         height=500)
-            st.download_button(
-                "⬇️ Unduh semua transaksi fraud (CSV)",
-                _fraud_df.to_csv(index=False).encode("utf-8"),
-                file_name="paysim_fraud.csv", mime="text/csv",
-            )
-        else:
-            n = st.slider("Jumlah baris ditampilkan", 10, 500, 100,
-                          key="paysim_all_rows")
-            st.dataframe(paysim_preview(n), use_container_width=True, hide_index=True)
-            st.caption(f"Pratinjau {n} dari {_rows:,} baris (data mentah, semua kolom). "
-                       "Pilih **'Hanya transaksi fraud'** untuk melihat seluruh data "
-                       "yang dipakai model.")
-
-    # ---- Tab B: Expert lengkap ----
-    with tabB:
-        st.markdown(
-            "### 👥 Data Penilaian Ahli (Expert Opinion)\n\n"
-            "Kuesioner **self-assessment** untuk seluruh kerangka Basel II: "
-            "**8 lini bisnis × 7 jenis kejadian = 56 kategori risiko**."
-        )
-        st.info(
-            "**🎯 Mengapa ada data expert?**\n\n"
-            "Buku Bab 12.2 menjelaskan bahwa data internal saja **tidak cukup** — "
-            "banyak kejadian risiko yang jarang terjadi atau belum pernah tercatat. "
-            "Oleh karena itu dibutuhkan **pendapat ahli** (*expert opinion*) yang "
-            "bersifat **forward-looking** (melihat ke depan).\n\n"
-            "**Cara pemakaian:** Setiap ahli menilai **frekuensi**, **severity**, dan "
-            "**kontrol** untuk seluruh 56 kategori risiko. Hasilnya diagregasi menjadi "
-            "**scorecard** (matriks traffic-light) yang dipakai di Model 1.\n\n"
-            "**Mengapa sintetis?** Data kuesioner ahli bank bersifat internal dan "
-            "rahasia. Kami membuat data sintetis mengikuti struktur buku: ordinal "
-            "scale (low/medium/high) untuk 8 BL × 7 ET."
-        )
-        n_exp = st.slider("Jumlah ahli (expert)", 3, 20, 8, key="data_n_exp")
-        _exp_all = contoh_expert(n_exp, 42)
-        b1, b2, b3 = st.columns(3)
-        b1.metric("Total baris", f"{len(_exp_all):,}")
-        b2.metric("Jumlah ahli", f"{_exp_all['expert'].nunique()}")
-        b3.metric("Kategori risiko",
-                  f"{_exp_all.groupby(['business_line','event_type']).ngroups}")
-        kamus_kolom([
-            ("expert", "Nomor ahli yang memberi penilaian"),
-            ("business_line", "Lini bisnis bank (1 dari 8)"),
-            ("event_type", "Jenis kejadian risiko (1 dari 7)"),
-            ("frequency", "Perkiraan seberapa sering kejadian terjadi (kelas ordinal)"),
-            ("severity", "Perkiraan seberapa besar kerugiannya (kelas ordinal)"),
-            ("control", "Penilaian sebaik apa kontrol yang ada (kelas ordinal)"),
-        ])
-        st.success(f"Menampilkan **seluruh {len(_exp_all):,} baris** penilaian ahli.")
-        st.dataframe(
-            _exp_all.rename(columns={
-                "expert": "Ahli ke-", "business_line": "Lini Bisnis",
-                "event_type": "Jenis Kejadian", "frequency": "Frekuensi",
-                "severity": "Severity", "control": "Kontrol",
-            }),
-            use_container_width=True, hide_index=True, height=500,
-        )
-        st.download_button(
-            "⬇️ Unduh seluruh penilaian ahli (CSV)",
-            _exp_all.to_csv(index=False).encode("utf-8"),
-            file_name="penilaian_ahli.csv", mime="text/csv",
-        )
-
-    # ---- Tab C: Eksternal lengkap ----
-    with tabC:
-        st.markdown(
-            "### 🏢 Data Kerugian Eksternal (Bank Lain)\n\n"
-            "Data dari **konsorsium bank lain** (sintetis, analog DIPO)."
-        )
-        st.info(
-            "**🎯 Mengapa ada data eksternal?**\n\n"
-            "Buku Bab 12.2 menjelaskan bahwa data internal & expert masih bisa memiliki "
-            "**missing values** — ada kategori risiko yang jarang/belum pernah terjadi "
-            "di bank kita. Data **konsorsium (DIPO)** dari banyak bank membantu "
-            "**mengisi celah** tersebut.\n\n"
-            "**Proses scaling:** Karena konsorsium menggabungkan banyak bank, "
-            "kerugiannya lebih besar. Buku (Bab 12.2) menerapkan **scaling** — "
-            "membagi kerugian konsorsium dengan konstanta *c* = rasio total "
-            "kerugian DIPO / total kerugian internal — agar setara ukuran bank kita.\n\n"
-            "**Mengapa sintetis?** Database DIPO hanya tersedia bagi anggota "
-            "konsorsium. Kami membuat data sintetis yang mengikuti distribusi "
-            "dan proses scaling sesuai buku."
-        )
-        _ext_raw, _ext_scaled = contoh_external()
-        _ext_df = pd.DataFrame({
-            "No.": range(1, len(_ext_raw) + 1),
-            "Kerugian Mentah (bank lain)": _ext_raw,
-            "Kerugian Ter-scaling (setara bank kita)": _ext_scaled,
-        })
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Total baris", f"{len(_ext_df):,}")
-        c2.metric("Median (mentah)", f"{pd.Series(_ext_raw).median():,.0f}")
-        c3.metric("Median (ter-scaling)", f"{pd.Series(_ext_scaled).median():,.0f}")
-        st.success(f"Menampilkan **seluruh {len(_ext_df):,} baris** kerugian eksternal.")
-        st.dataframe(
-            _ext_df.style.format({
-                "Kerugian Mentah (bank lain)": "{:,.0f}",
-                "Kerugian Ter-scaling (setara bank kita)": "{:,.0f}",
-            }),
-            use_container_width=True, hide_index=True, height=500,
-        )
-        st.download_button(
-            "⬇️ Unduh kerugian eksternal (CSV)",
-            _ext_df.to_csv(index=False).encode("utf-8"),
-            file_name="kerugian_eksternal.csv", mime="text/csv",
-        )
