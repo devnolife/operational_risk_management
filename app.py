@@ -5,9 +5,9 @@ Fokus: 3 halaman, 1 per anggota — tepat seperti 3 model pengukuran di buku.
 Tiap halaman disusun seperti laporan agar mudah dipahami orang awam:
   Rumusan Masalah → Metode → Dataset → Proses → Hasil → Kesimpulan.
 
-  1. Scorecard (Self-Assessment)   — Anggota 1 (orm/scorecard.py, Gambar 12.1)
-  2. VaR Aktuaria                   — Anggota 2 (orm/actuarial.py, Gambar 12.2)
-  3. VaR Integrasi & BIA            — Anggota 3 (orm/integrated.py, Gambar 12.2)
+  1. Scorecard (Self-Assessment)   — Lis Indriani (orm/scorecard.py, Gambar 12.1)
+  2. VaR Aktuaria                   — Ana Sulistiana Alwi (orm/actuarial.py, Gambar 12.2)
+  3. VaR Integrasi & BIA            — Andi Agung Dwi Arya B (orm/integrated.py, Gambar 12.2)
 
 Jalankan:
     streamlit run app.py
@@ -226,9 +226,9 @@ page = st.sidebar.radio(
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     "**Anggota Kelompok:**\n\n"
-    "👤 Anggota 1 → Scorecard\n\n"
-    "👤 Anggota 2 → VaR Aktuaria\n\n"
-    "👤 Anggota 3 → VaR Integrasi & BIA"
+    "👤 Lis Indriani → Scorecard\n\n"
+    "👤 Ana Sulistiana Alwi → VaR Aktuaria\n\n"
+    "👤 Andi Agung Dwi Arya B → VaR Integrasi & BIA"
 )
 
 if not PROCESSED_PATH.exists():
@@ -402,7 +402,7 @@ if page == "🏠 Beranda":
 
     st.markdown(
         '<div class="flow-card">'
-        '<h4>📋 Model 1 — Scorecard / Self-Assessment (Anggota 1)</h4>'
+        '<h4>📋 Model 1 — Scorecard / Self-Assessment (Lis Indriani)</h4>'
         '<p><strong>Apa:</strong> Para ahli mengisi kuesioner tentang risiko, '
         'lalu jawaban mereka dirangkum menjadi <em>rating</em> (A/AA/AAA) dan '
         'warna lampu lalu lintas (🟢🟡🔴).</p>'
@@ -417,7 +417,7 @@ if page == "🏠 Beranda":
 
     st.markdown(
         '<div class="flow-card">'
-        '<h4>📈 Model 2 — VaR Aktuaria (Anggota 2)</h4>'
+        '<h4>📈 Model 2 — VaR Aktuaria (Ana Sulistiana Alwi)</h4>'
         '<p><strong>Apa:</strong> Menghitung <em>Value at Risk</em> — '
         'berapa cadangan modal minimum yang harus disiapkan agar 99,9% aman.</p>'
         '<p><strong>Untuk apa:</strong> Menentukan <em>cadangan modal</em> berdasarkan '
@@ -431,7 +431,7 @@ if page == "🏠 Beranda":
 
     st.markdown(
         '<div class="flow-card">'
-        '<h4>🔗 Model 3 — VaR Integrasi Bayesian + BIA (Anggota 3)</h4>'
+        '<h4>🔗 Model 3 — VaR Integrasi Bayesian + BIA (Andi Agung Dwi Arya B)</h4>'
         '<p><strong>Apa:</strong> Menggabungkan <em>semua 3 sumber data</em> '
         'menjadi satu estimasi, lalu dibandingkan dengan cara paling sederhana (BIA).</p>'
         '<p><strong>Untuk apa:</strong> <em>Validasi silang</em> — kalau cara canggih '
@@ -653,7 +653,7 @@ elif page == "📂 Data Lengkap (semua data)":
         )
 
 # ============================================================================
-# Anggota 1 — Scorecard Self-Assessment (Giudici Ch.12, Gambar 12.1)
+# Lis Indriani — Scorecard Self-Assessment (Giudici Ch.12, Gambar 12.1)
 # ============================================================================
 elif page == "1 — Scorecard (Self-Assessment)":
     from orm.data_sources import generate_expert_opinions
@@ -666,7 +666,7 @@ elif page == "1 — Scorecard (Self-Assessment)":
     )
 
     st.title("📋 Model 1 — Scorecard (Self-Assessment)")
-    st.caption("Anggota 1 · Giudici (2009) Bab 12.4 · analog Gambar 12.1")
+    st.caption("Lis Indriani · Giudici (2009) Bab 12.4 · analog Gambar 12.1")
 
     st.markdown(
         '<div class="key-finding">'
@@ -908,7 +908,7 @@ elif page == "1 — Scorecard (Self-Assessment)":
 
 
 # ============================================================================
-# Anggota 2 — Model Aktuaria, VaR (Giudici Ch.12, Gambar 12.2)
+# Ana Sulistiana Alwi — Model Aktuaria, VaR (Giudici Ch.12, Gambar 12.2)
 # ============================================================================
 elif page == "2 — VaR Aktuaria":
     from orm.actuarial import (
@@ -919,7 +919,7 @@ elif page == "2 — VaR Aktuaria":
     from orm.integrated import run_comparison
 
     st.title("📈 Model 2 — VaR Aktuaria")
-    st.caption("Anggota 2 · Giudici (2009) Bab 12.3 · analog Gambar 12.2")
+    st.caption("Ana Sulistiana Alwi · Giudici (2009) Bab 12.3 · analog Gambar 12.2")
 
     st.markdown(
         '<div class="key-finding">'
@@ -1139,7 +1139,7 @@ elif page == "2 — VaR Aktuaria":
 
 
 # ============================================================================
-# Anggota 3 — Model Terintegrasi Bayesian & BIA (Giudici Ch.12, Gambar 12.2)
+# Andi Agung Dwi Arya B — Model Terintegrasi Bayesian & BIA (Giudici Ch.12, Gambar 12.2)
 # ============================================================================
 elif page == "3 — VaR Integrasi & BIA":
     from orm.integrated import (
@@ -1151,7 +1151,7 @@ elif page == "3 — VaR Integrasi & BIA":
     from orm.data_sources import scale_external_to_internal
 
     st.title("🧮 Model 3 — VaR Integrasi & BIA")
-    st.caption("Anggota 3 · Giudici (2009) Bab 12.4 · analog Gambar 12.2")
+    st.caption("Andi Agung Dwi Arya B · Giudici (2009) Bab 12.4 · analog Gambar 12.2")
 
     st.markdown(
         '<div class="key-finding">'

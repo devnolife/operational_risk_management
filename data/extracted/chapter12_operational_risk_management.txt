@@ -1,0 +1,436 @@
+CHAPTER 12
+Operational Risk Management
+
+Source: Applied Data Mining for Business and Industry, Second Edition
+Authors: Giudici
+Publisher: John Wiley & Sons, Ltd (c) 2009
+Pages: 227-236 (PDF pages 238-247)
+
+================================================================================
+12.1 Context and objectives of the analysis
+================================================================================
+
+Recent legislation and market practices make it important to measure the risks
+arising as a result of management decisions. For instance, the Basel II capital
+accord, published by Basel Committee on Banking Supervision (BCBS, 2001),
+requires financial institutions to measure operational risk, defined as 'the risk of
+loss resulting from inadequate or failed internal processes, people and systems
+or from external events'. Another important standard is the recently published
+ISO 17799 which establishes the need for risk controls aimed at preserving the
+security of information systems. Finally, Publicly Available Specification PAS
+56, in setting criteria that need to be met in order to maintain the business
+continuity of IT-intensive companies, also calls for the development of statistical
+indicators for monitoring the quality of business controls in place. In this chapter
+we focus on the Basel accord, while keeping in mind that what is developed here
+in a banking context can be extended to the general enterprise risk management
+framework (see Bonafede and Giudici, 2007).
+
+The Bank of International Settlements (BIS) is the world's oldest financial institution;
+its main purpose is to encourage and facilitate cooperation among central
+banks (BCBS, 2001). In particular, the BIS established a commission, the Basel
+Committee on Banking Supervision, to formulate broad supervisory standards,
+guidelines and formulate best practice recommendations. The ultimate purpose of
+the BCBS is to prescribe capital adequacy standards for all internationally active
+banks.
+
+In 1988 the BCBS issued one of the most significant international regulations
+impacting on the financial decision making of banks, the Basel accord. This was
+later replaced by the New Accord on Capital Adequacy, or Basel II (BCBS,
+2001). This new framework, developed to ensure the stability and soundness of
+financial systems, was based on three 'pillars': minimum capital requirements,
+supervisory review and market discipline. What was important about the new
+accord was that it identified operational risk as a distinct category of risk. In
+fact, it was only with the new accord that the Risk Management Group of the
+Basel Committee proposed the current definition of operational risk, stated in the
+opening paragraph of this section. The Risk Management Group also provided
+a standardised classification of operational losses into eight business lines and
+seven event types, giving 56 possible categories.
+
+The aims of operational risk measurement (Alexander, 2003; King, 2001; Cruz,
+2002) are twofold. On one hand, there is a prudential aspect which involves
+setting aside an amount of capital to cover unexpected losses. This is typically
+done by estimating a loss distribution and deriving functions of interest from
+it, such as the value at risk (VaR). On the other hand, there is a managerial
+aspect, for which the issue is to rank operational risks in an appropriate way,
+say from high priority to low priority, so to individuate appropriate management
+actions directed at improving preventive control of such risks. In general, the
+measurement of operational risks leads to the measurement of the efficacy of
+controls in place at a specific organisation: the higher the operational risks, the
+worse such controls.
+
+The complexity of operational risks and the newness of the problem have
+driven international institutions, such as the BCBS, to define conditions that
+sound statistical methodologies should satisfy to build and measure operational
+risk indicators.
+
+================================================================================
+12.2 Exploratory data analysis
+================================================================================
+
+Operational risk is composed of two elements: the frequency of loss events over
+a given period of time (frequency) and the mean monetary impact of the loss over
+the given period (severity). The following sources of information are generally
+used to determinate the operational value at risk:
+
+- Historical data. In its simplest form this is a table whose rows contain
+  information about the loss, such as the amount, the date of occurrence, the
+  organisational unit identifying the loss, the amount recovered by the insurance
+  and an indication of the business line and event type.
+
+- Expert opinion. This is risk evaluations made by experts (branch heads, area
+  heads, etc.) about the activity performed by the bank.
+
+- External databases. These are typically consortium databases which aggregate
+  the operational losses of all the banks taking part in the consortium.
+  Here we shall refer to the Data Base Italiano delle Perdite Operative (Italian
+  Database of Operational Losses, DIPO) consortium.
+
+It is reasonable to expect some missing values among the events that constitute
+the universe of possible losses. Certain events have never happened in
+many situations or have never been registered either internally or at DIPO level.
+Sometimes experts do not manage to make evaluations. Thus some categories
+may have all three sources of information, while others have only two, one or
+even no sources.
+
+The various sources of information are supplemented by a process of scaling.
+This makes it possible to compare and aggregate different databases, at least
+in terms of analysis. For example, we expect the DIPO, being an aggregation
+of the losses of several banks, to have loss amounts higher than the internal
+loss amounts. On the other hand, experts' opinions are formulated in specific
+areas, so their values may be rather different and, possibly, be comparable with
+internal losses.
+
+In the DIPO case, scaling is done by dividing the losses in every category
+by a constant which is equal to the ratio between the total DIPO losses and
+the total internal losses. The same method can be applied to the frequency, so
+that we obtain the severity as a ratio. Obviously, in order for this scaling to be
+effective, the bank should have the same features as DIPO; given that DIPO
+gathers information from a set of banks in the same country, this requirement
+should be satisfied.
+
+Another data organisation activity typically performed at the beginning of
+operational risk modelling is mapping. This is often a preliminary to the survey
+of expert opinion. By mapping we mean the identification, coding and schematization
+of all the activities carried out by a bank. This way, the organisation
+can be seen as an aggregation of productive processes, which are articulated as
+subprocesses, phases and subphases. The structure can be more or less complex
+according to the number of hierarchical levels considered. At the most elementary
+level, connected risks are identified. We talk about a risk when, in a given
+activity, there is a non-zero probability of incurring a loss.
+
+Once mapping has been done, whether in the manner described or in a simpler
+manner starting with an exhaustive list of risk events (regardless of the processes),
+the expert must describe how the risk is perceived in terms of frequency and
+severity. Such opinions must refer to the Basel accord business lines and events
+types, so that each perceived loss can be mapped to a risk category.
+
+The analysis of expert opinion is usually the exploratory analysis that is run
+in operational risk measurement. For the data set we have analysed, originating
+from a medium-sized Italian bank, we have noticed that experts agree about the
+distribution of the hazardousness across the losses, but not about their absolute
+dimension. This may be because different business areas have various levels of
+operational risk, as perceived by the experts. A scale factor could solve this
+problem, which will thus distinguish the various evaluations. Some experts may
+consider a loss of EUR 10,000 as more or less insignificant, while for others it is
+very important.
+
+Once expert opinions have been gathered, they are usually analysed with simple
+frequency distributions and graphs, one for each category. Aggregating the risks
+at the category level, we will obtain a database with 56 frequency x severity
+entries, one for every business line and event type. The product of the frequency
+and the severity gives the perceived loss for each category, and the sum of all
+such losses gives a qualitative (perceived) estimate of the total loss of the bank
+for every category.
+
+Missing data is a problem that often occurs with expert opinions. This is sometimes
+due to the lack of evaluations by a few experts, sometimes due to the lack
+of a complete mapping activity of the process, which prevents the identification
+of some risks. In our case only two area experts have been asked. The mapping
+activity of the process, and the consequent identification of the risks, is exclusively
+concerned with the payment and settlements business area. To bypass the
+first missing-data problem we used the dimension of a business area (number
+of area branches related to the total number) to assess the quality of the data
+at our disposal. Therefore, for instance, since the payment and settlements area
+represents about the 17% of the total losses, the estimate of the total value on
+the basis of expert opinions has been obtained by dividing this value by 0.17.
+The idea to weight the evaluations by the number of branches is equivalent to
+the hypothesis that, at the branch level, the risk is almost identical, so that the
+risk of a broader area depends on its number of branches.
+
+Another way to weight and scale opinions is to use key risk indicators (KRIs),
+variables which have a certain association with the losses and act as 'indicators' of
+the risk. Such variables are identified during the process mapping and monitored
+throughout the year. We decided to correct our experts' opinions using the KRIs
+available. The size of the correction depends on the significance of the KRI. For
+this purpose every loss, pertaining to the ith risk of the jth category evaluated
+by the kth expert, is multiplied by a factor given by
+
+F(i,j,k) = 
+  1 + 0.3 * R(i,j),       if K_bar(i,j,k) > 0.66
+  1,                        if 0.33 < K_bar(i,j,k) < 0.66
+  1 - 0.3 * R(i,j),        if K_bar(i,j,k) < 0.33
+
+where K_bar(i,j,k) is the average KRI associated with the ith risk of the jth category
+calculated on branches belonging to the area of the kth expert; and R(i,j) is the
+ratio between the deviation of the means of the area and total deviation relative
+to the ith risk and to the jth category.
+
+The R^2 index represents the share of deviance that the classification is able
+to explain in terms of areas. This way, the amount of the correction is directly
+proportional to the significance of the KRI. If a KRI is not very discriminating
+from area to area, R^2 is small and so is the correction size. Conversely, if the
+KRI is appreciably different from area to area, the F factor will be larger.
+
+================================================================================
+12.3 Model building
+================================================================================
+
+Statistical models for operational risk can be grouped into two main categories:
+'top-down' and 'bottom-up' methods.
+
+--- Top-Down Methods ---
+
+In top-down methods, risk estimation is based on macro data without identifying
+the individual events or the causes of losses. Operational risks are measured and
+covered centrally, so local business units are not involved in the measurement
+and allocation process. Top-down methods include:
+
+- Basic Indicator Approach (Yasuda, 2003; Pezier, 2002)
+- Standardised Approach (Cornalba and Giudici, 2004; Pezier, 2002)
+
+where risk is computed as a certain percentage of the variation of some variable,
+such as gross income, considered as a proxy for company performance. This
+approach is suitable for small banks, which prefer a methodology that is cheap
+to implement and easy to implement.
+
+--- Bottom-Up Methods ---
+
+Bottom-up techniques, on the other hand, use individual events to determine
+the source and amount of operational risk. Operational losses can be divided into
+levels corresponding to business lines and event types, and the risks are measured
+at each level and then aggregated. These techniques are particularly appropriate
+for large banks and those operating at the international level, since they can
+afford the implementation of sophisticated methods which sensitive to the bank's
+risk profile.
+
+Advanced Measurement Approaches (AMA) belong to this class (BCBS, 2001).
+Under the AMA, the regulatory capital requirement will equal the risk measure
+generated by the bank's internal operational risk measurement system using the
+quantitative and qualitative criteria set by the BCBS. This is an advanced approach
+as it allows banks to use external and internal loss data as well as internal
+expertise (Giudici and Bilotta, 2004).
+
+--- Actuarial Approach ---
+
+Statistical methods for operational risk management in the bottom-up context
+have recently been developed. One main approach has emerged: the actuarial
+approach. This method uses actual loss data to estimate the probability distribution
+of the losses. The most popular methods (King, 2001; Cruz, 2002; Frachot
+et al., 2001; Dalla Valle et al., 2008) are based on extreme value distributions.
+Another line of research suggests the use of Bayesian models (Yasuda, 2003,
+Cornalba and Giudici, 2004; Fanoni et al., 2005; Dalla Valle and Giudici, 2008).
+
+The main disadvantage of actuarial methods is their backward-looking perspective;
+their estimates are based entirely on past data. Furthermore, it is often the
+case, especially for smaller organisations, that for some business units there are
+no loss data at all. Regulators thus recommend developing models that can take
+into account different data streams, not only internal loss data (see BCBS, 2001).
+These streams may be: self assessment opinions, usually forward looking; external
+loss databases, usually gathered through consortia of companies; and data on
+key performance indicators.
+
+In the actuarial model, loss events are assumed independent and, for each one,
+it is assumed that the total loss in a given period (e.g. one year) is obtained as
+the sum of a random number (N) of impacts (Xi). In other words, for the jth
+event the loss is:
+
+L_j = SUM(i=1 to N_j) X_ij
+
+Usually the distribution of each j-specific loss is obtained from the specification
+of the distribution of the frequency N and the mean loss or severity S. The
+convolution of the two distributions leads to the distribution of L (typically via
+a Monte Carlo estimation step), from which a function of interest, such as the
+99.9 percentile (the value at risk) can be derived.
+
+--- Scorecard Approach ---
+
+The scorecard approach is based on the so-called self assessment, which is
+based on the experience and the opinions of a number of internal 'experts' of
+the company, who usually correspond to a particular business unit. An internal
+procedure of control self assessment can periodically be done by means of
+questionnaires. Questionnaires can be submitted to risk managers (experts), and
+give information such as the quality of internal and external control systems of
+the organisation based on their experience over a given period.
+
+In a more sophisticated version, experts can also assess the frequency and mean
+severity of the losses for such operational risks (usually in a qualitative way).
+Self assessment opinions can be summarised and modelled so as to obtain a
+ranking of the different risks, and a priority list of interventions in terms of
+improvement of the related controls.
+
+In order to derive a summary measure of operational risk, perceived losses
+contained in the self-assessment questionnaire can be represented graphically
+(e.g. in a histogram), leading to an empirical non-parametric distribution. Such a
+distribution can be employed to derive a function of interest, such as the VaR.
+
+Scorecard models are useful for prioritising interventions in the control system,
+so as to effectively reduce the impact of risks, ex ante and not a posteriori, by
+allocating capital for example (corresponding to the VaR).
+
+In Giudici (2008) a methodology aimed at summarising concisely and effectively
+the results of a self-assessment questionnaire has been proposed.
+
+================================================================================
+12.4 Model comparison
+================================================================================
+
+Suppose that we are given 80 events at risk (this is the order of magnitude
+employed in a typical operational risk management analysis in the banking sector).
+The events can be traced to the four main causes of operational risk: People,
+processes, systems and external events.
+
+First of all a sample of banking professionals (from headquarters and the local
+branches) is obtained. The aims of the questionnaire project are described in a
+group presentation. The nature and structure of each risk question will have been
+devised in a focus group discussion with the top manager of the bank.
+
+The result of this preliminary analysis is that each of the professionals is asked
+his/her opinion on the frequency, severity and effectiveness of the controls in
+place for each risk event.
+
+- Frequency classes (4): daily, weekly, monthly, and yearly.
+- Severity classes (6-7): ranging from 'an irrelevant loss' to 'a catastrophic loss'.
+- Control classes (3): not effective, to be adjusted, and effective.
+
+Once the interviews have been gathered together, the aim is to assign a 'rating'
+to each risk event, based on the distribution of the opinions on the frequency,
+controls and severity.
+
+Giudici (2008) suggests using:
+- The median class as a location measure for each distribution
+- The normalised Gini index as an indicator of the 'consensus' on such location measure
+
+This results in three rating measures for each event, denoted by the conventional
+risk letters: A for low risk, B for medium risk, C for higher risk and so on.
+
+While the median is used to assign a single-letter measure, the Gini index is
+used to double or triple the letter, depending on the value of the index.
+
+Example: if the median of the frequency distribution of a certain risk type
+(e.g. theft and robbery) is yearly, corresponding to the lowest risk category,
+a letter A is assigned. Then, if all the interviewees agree on that evaluation
+(e.g. the Gini index is equal to zero), A becomes AAA; if the Gini index
+corresponds to maximum heterogeneity, then A remains A. Intermediate cases
+will receive an AA rating.
+
+The same approach will serve for the severity as well as for the controls,
+leading to a complete scorecard that can be used for intervention purposes.
+
+For visualisation purposes, colours are associated with letters, using a
+traffic-light convention:
+- Green (grey) = A
+- Yellow (light grey) = B
+- Red (dark grey) = C and so on
+
+--- Figure 12.1: Scorecard Results ---
+
+Risk events caused by People (Internal Fraud) and External Events:
+
+Code   | Description                                      | Controls | Frequency | Severity
+-------|--------------------------------------------------|----------|-----------|--------
+1.1.1  | Transactions not reported (intentional)           |          |           |
+1.1.2  | Trans type unauthorised (w/ monetary loss)        |          |           |
+1.2.1  | Fraud/credit fraud/worthless deposits             |          |           |
+1.2.2  | Theft/extortion/embezzlement/robbery              |          |           |
+1.2.3  | Malicious destruction of assets                   |          |           |
+1.2.4  | Forgery                                           |          |           |
+1.2.5  | Check kiting or smuggling                         |          |           |
+1.2.6  | Account take-over/impersonation/etc.              |          |           |
+1.2.7  | Tax non-compliance/evasion (wilful)               |          |           |
+1.2.8  | Bribes/kickbacks                                  |          |           |
+1.2.9  | Insider trading (not on firm's account)           |          |           |
+1.2.10 | Theft of information (w/ monetary loss)           |          |           |
+2.1.2  | Hacking damage                                    |          |           |
+2.2.1  | Theft/Robbery                                     |          |           |
+2.2.2  | Forgery                                           |          |           |
+2.2.3  | Check kiting                                      |          |           |
+2.2.4  | Clonation of credit cards, p.o.s., atm            |          |           |
+5.1.1  | Natural disaster losses                           |          |           |
+5.1.2  | Losses from external sources (terrorism, vandal)  |          |           |
+
+Key finding: Event 1.2.6 should be given top priority for intervention, as
+controls are not effective, and both frequency and severity are yellow.
+Other events at risk include 2.2.1 and 2.2.4, which have a high frequency
+and medium quality controls.
+
+--- Integrated Model Comparison ---
+
+While scorecard methods typically use self-assessment data, actuarial models
+use internal loss data. The disadvantage of these approaches is that they consider
+only one part of the statistical information available.
+
+It thus becomes necessary to develop a statistical methodology that is able
+to merge three different data streams in an appropriate way. The proposed
+flexible non-parametric approach can be justified within a non-parametric
+Bayesian context.
+
+The approach considers, for each event, data on all losses that have occurred
+in the past as well as the expected self assessment losses for the next period.
+Putting together the self-assessment data point with the actual loss data points,
+we obtain an integrated loss distribution, from which a VaR can be calculated.
+
+--- Figure 12.2: VaR Comparison Results ---
+
+Method                    | VaR Value
+--------------------------|----------
+Historical losses         | 3,115
+Actuarial Monte Carlo VaR | 698,128
+Historical VaR            | 828,379
+Bayes Monte Carlo VaR     | 963,587
+Bayes VaR                 | 1,179,434
+Basic Indicator Approach  | 1,180,929
+Self-assessment VaR       | 4,608,800
+
+Key finding: Both proposed models (Bayes VaR and Bayes Monte Carlo) lead
+to an allocation of capital lower than the BIA and higher than the observed
+losses, providing a more prudential approach.
+
+================================================================================
+12.5 Summary conclusions
+================================================================================
+
+1. Context. We have shown how to develop efficient statistical methods for
+   measuring the performance of business controls, through the development of
+   appropriate operational risk indicators.
+
+2. Objectives. The advantages of measuring operational risk appropriately are
+   twofold. On the one hand, there is a prudential aspect which involves setting
+   aside an amount of capital that can cover unexpected losses. On the other
+   hand, there is a managerial aspect for which the issue is to rank operational
+   risks in an appropriate way, say from high priority to low priority, so as
+   to identify appropriate management actions directed at improving preventive
+   controls on such risks.
+
+3. Organisation of the data. The data analysed in operational risk usually
+   comes from three sources: expert opinion, often corrected by means of key
+   risk indicators; internal loss data; and external loss data. We have shown
+   how to scale and integrate these databases together.
+
+4. Exploratory data analysis. The exploratory data analysis is based on first
+   merging the databases available by means of scaling techniques. Simple
+   frequency distributions and graphs are usually obtained.
+
+5. Model specification. Different statistical models can be developed, compared
+   and then used, depending on the available databases. The main modelling
+   strategies are: actuarial, scorecard and Bayesian.
+
+6. Model comparison. Modelling strategies have been compared not only theoretically
+   but also with reference to an available database, according to the
+   data mining paradigm. The main comparison benchmark is predictive performance
+   (known in this context as backtesting).
+
+7. Model interpretation. The measurement of operational risk has been made
+   compulsory by recent legislative changes. We have shown that, when models
+   are transparent and interpretable, the measurement of operational risk leads to
+   the measurement of the efficacy of controls in place at a given organisation:
+   the higher the operational risks, the worse the controls.
