@@ -301,6 +301,85 @@
   .main::-webkit-scrollbar-track { background: transparent; }
   .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
+  /* --- Expander (details/summary) --- */
+  details {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin: 1rem 0;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  details[open] { box-shadow: var(--shadow); }
+  details summary {
+    padding: 0.9rem 1.2rem;
+    font-weight: 600; font-size: 0.92rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--primary-mid);
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    transition: background 0.2s;
+  }
+  details summary:hover { background: #e2e8f0; }
+  details summary::before {
+    content: '▶'; font-size: 0.7rem;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details summary::-webkit-details-marker { display: none; }
+  details .expander-body {
+    padding: 1.2rem 1.4rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+  }
+  details .expander-body h5 {
+    font-size: 0.92rem; font-weight: 700;
+    color: var(--primary-mid); margin: 1rem 0 0.5rem 0;
+  }
+  details .expander-body .glossary-table {
+    width: 100%; border-collapse: collapse; margin: 0.5rem 0;
+    font-size: 0.87rem;
+  }
+  details .expander-body .glossary-table td {
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  details .expander-body .glossary-table td:first-child {
+    font-weight: 600; white-space: nowrap; width: 30%;
+    color: var(--primary-mid);
+  }
+  .code-block {
+    background: #1e293b; color: #e2e8f0;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+    line-height: 1.6;
+  }
+  .mini-tabs { display: flex; gap: 0; margin: 0.8rem 0 0; }
+  .mini-tab {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    background: #f1f5f9;
+    cursor: pointer;
+    font-size: 0.82rem; font-weight: 600;
+    transition: all 0.15s;
+  }
+  .mini-tab:first-child { border-radius: 8px 0 0 8px; }
+  .mini-tab:last-child { border-radius: 0 8px 8px 0; }
+  .mini-tab.active {
+    background: var(--primary-light); color: white;
+    border-color: var(--primary-light);
+  }
+  .mini-tab-content { display: none; padding: 0.8rem 0; }
+  .mini-tab-content.active { display: block; }
+
   /* --- Loading shimmer --- */
   @keyframes shimmer {
     0% { background-position: -200% 0; }
@@ -354,6 +433,11 @@
       <br><em>— Giudici (2009), Bab 12.1</em>
     </div>
     <p>Risiko operasional = risiko kerugian akibat <strong>proses internal yang gagal</strong>, <strong>kesalahan manusia</strong>, <strong>kegagalan sistem</strong>, atau <strong>kejadian eksternal</strong> (termasuk penipuan/fraud).</p>
+    <p style="margin-top:0.6rem;">Contoh nyata: <strong>penipuan (fraud)</strong>, kesalahan input data, sistem IT down, bencana alam, pencurian, pemalsuan dokumen.</p>
+  </div>
+
+  <div class="info-box" style="margin:1rem 0;">
+    💡 <strong>Intinya:</strong> Semakin tinggi risiko operasional suatu bank, semakin buruk sistem kontrolnya. Mengukur risiko = mengukur seberapa efektif kontrol yang ada <em>(Giudici, 2009, hlm. 227)</em>.
   </div>
 
   <div class="section-title">🎯 Dua Tujuan Pengukuran (Bab 12.1)</div>
@@ -448,9 +532,39 @@
       <p><strong>Pendekatan:</strong> Bottom-up + Top-down</p>
     </div>
   </div>
-</div>
 
-<!-- ==================== DATA LENGKAP ==================== -->
+  <div class="section-title">🔄 Alur Keseluruhan Proyek</div>
+  <div class="card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Langkah</th><th>Apa yang Dilakukan</th><th>Output</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1. Kumpulkan Data</strong></td><td>Ambil 3 sumber data (internal, ahli, eksternal)</td><td>Dataset siap pakai</td></tr>
+          <tr><td><strong>2. Scorecard</strong></td><td>Ahli menilai 56 kategori risiko → rating & prioritas</td><td>Peringkat risiko 🟢🟡🔴</td></tr>
+          <tr><td><strong>3. VaR Aktuaria</strong></td><td>Simulasi Monte Carlo dari data fraud → distribusi kerugian</td><td>Cadangan modal (VaR)</td></tr>
+          <tr><td><strong>4. VaR Integrasi</strong></td><td>Gabungkan 3 sumber + bandingkan dengan BIA</td><td>7 estimasi VaR (Gambar 12.2)</td></tr>
+          <tr><td><strong>5. Kesimpulan</strong></td><td>Bandingkan semua metode → validasi silang</td><td>Estimasi yang bisa dipercaya</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">📚 Referensi Buku</div>
+  <div class="card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Bagian Buku</th><th>Model</th><th>Halaman</th></tr></thead>
+        <tbody>
+          <tr><td>Bab 12.1 — Kerangka Basel II</td><td>Dasar semua model</td><td>225–227</td></tr>
+          <tr><td>Bab 12.2 — Sumber Data</td><td>Data internal, ahli, eksternal</td><td>228–231</td></tr>
+          <tr><td>Bab 12.3 — Model Aktuaria</td><td>VaR Aktuaria (Model 2)</td><td>231–234</td></tr>
+          <tr><td>Bab 12.4 — Self-Assessment</td><td>Scorecard (Model 1) + Integrasi (Model 3)</td><td>234–240</td></tr>
+          <tr><td>Bab 12.5 — Kesimpulan</td><td>Perbandingan 7 metrik VaR</td><td>240–241</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <div id="page-data" class="page">
   <div class="hero">
     <h1>📂 Data Lengkap — Semua Dataset</h1>
@@ -504,6 +618,35 @@
     <div class="formula">G = 1 − Σ p<sub>k</sub>² → G<sub>norm</sub> = G × K/(K−1)</div>
     <div class="formula">Perceived Loss = frekuensi/tahun × nilai severity × faktor kontrol</div>
   </div>
+
+  <details>
+    <summary>📖 Istilah, Rumus, & Kenapa Dipakai</summary>
+    <div class="expander-body">
+      <h5>Daftar Istilah</h5>
+      <table class="glossary-table">
+        <tr><td>Median (nilai tengah)</td><td>Nilai yang persis di tengah setelah data diurutkan. Tahan terhadap nilai ekstrem.</td></tr>
+        <tr><td>Ordinal</td><td>Skala berjenjang (rendah/sedang/tinggi) tanpa jarak pasti antar tingkat.</td></tr>
+        <tr><td>Indeks Gini</td><td>Ukuran seberapa beragam jawaban para ahli: 0 = semua sama, 1 = sangat beragam.</td></tr>
+        <tr><td>Konsensus</td><td>Tingkat kesepakatan antar ahli.</td></tr>
+        <tr><td>Rating huruf (A/AA/AAA)</td><td>Seperti peringkat kredit. A = paling aman; makin banyak huruf = makin kuat keyakinannya.</td></tr>
+        <tr><td>Perceived loss</td><td>Perkiraan kerugian = seberapa sering × seberapa besar × faktor kontrol.</td></tr>
+      </table>
+
+      <h5>Rumus yang Dipakai</h5>
+      <div class="formula">G = 1 − Σ p<sub>k</sub>² &nbsp;→&nbsp; G<sub>norm</sub> = G × K/(K−1)</div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);">Indeks Gini ternormalisasi — mengukur keberagaman jawaban ahli (p<sub>k</sub> = proporsi ahli yang memilih kelas ke-k, K = jumlah kelas).</p>
+      <div class="formula">Perceived Loss = frekuensi/tahun × nilai severity × faktor kontrol</div>
+      <div class="formula">Skor Prioritas = r<sub>freq</sub> × r<sub>sev</sub> × r<sub>ctrl</sub></div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);">r = peringkat kelas median tiap dimensi (makin tinggi = makin berisiko).</p>
+
+      <h5>Kenapa Rumus Ini Dipakai?</h5>
+      <ul style="padding-left:1.2rem;">
+        <li><strong>Median (bukan rata-rata)</strong> — penilaian ahli bersifat <em>ordinal</em>, dan median tahan terhadap 1 ahli yang menjawab ekstrem.</li>
+        <li><strong>Indeks Gini</strong> — mengubah <em>seberapa kompak</em> pendapat ahli menjadi angka. Kalau ahli kompak (Gini kecil), kita lebih percaya → rating diperkuat (AAA). Inilah cara buku menilai <strong>kualitas konsensus</strong>.</li>
+        <li><strong>Frekuensi × Severity × Kontrol</strong> — definisi baku risiko: <strong>Risiko = Peluang × Dampak</strong>, lalu disesuaikan oleh kualitas kontrol.</li>
+      </ul>
+    </div>
+  </details>
 
   <h3 class="step">3️⃣ & 4️⃣ Dataset & Proses</h3>
   <div class="metrics c3" id="sc-dataset-metrics"></div>
@@ -564,6 +707,38 @@
     <div class="formula">VaR<sub>q</sub> = persentil ke-q dari distribusi L</div>
   </div>
 
+  <details>
+    <summary>📖 Istilah, Rumus, & Kenapa Dipakai</summary>
+    <div class="expander-body">
+      <h5>Daftar Istilah</h5>
+      <table class="glossary-table">
+        <tr><td>Frekuensi (N)</td><td>Berapa kali kejadian terjadi dalam satu periode.</td></tr>
+        <tr><td>Severity (X)</td><td>Besar kerugian setiap kejadian.</td></tr>
+        <tr><td>Distribusi Poisson</td><td>Model peluang untuk MENGHITUNG JUMLAH kejadian acak yang langka per periode (mis. jumlah klaim per hari).</td></tr>
+        <tr><td>Distribusi Lognormal</td><td>Model untuk BESARAN yang selalu positif & condong ke kanan: banyak kerugian kecil, sesekali sangat besar.</td></tr>
+        <tr><td>Monte Carlo</td><td>Teknik 'mengarang' ribuan skenario acak lalu meninjau hasil keseluruhannya.</td></tr>
+        <tr><td>VaR (Value at Risk)</td><td>Batas kerugian pada tingkat keyakinan tertentu.</td></tr>
+        <tr><td>Persentil</td><td>Nilai yang di bawahnya terdapat sekian persen data (P99,9 = 99,9% data di bawahnya).</td></tr>
+        <tr><td>μ dan σ</td><td>Rata-rata & simpangan dari logaritma kerugian (parameter lognormal).</td></tr>
+      </table>
+
+      <h5>Rumus yang Dipakai</h5>
+      <div class="formula">L = Σ<sub>i=1</sub><sup>N</sup> X<sub>i</sub></div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);">Total kerugian = menjumlahkan N kerugian individual (N pun acak).</p>
+      <div class="formula">N ~ Poisson(λ) &nbsp;&nbsp; X ~ Lognormal(μ, σ)</div>
+      <div class="formula">VaR<sub>q</sub> = persentil ke-q dari distribusi L &nbsp;&nbsp; x<sub>q</sub> = e<sup>μ + σz<sub>q</sub></sup></div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);">z<sub>q</sub> = nilai-z normal baku untuk peluang q.</p>
+
+      <h5>Kenapa Rumus Ini Dipakai?</h5>
+      <ul style="padding-left:1.2rem;">
+        <li><strong>Poisson untuk frekuensi</strong> — paling cocok menghitung <strong>jumlah kejadian langka & acak</strong> yang saling bebas per periode (standar di aktuaria/asuransi).</li>
+        <li><strong>Lognormal untuk severity</strong> — kerugian <strong>tidak pernah negatif</strong> dan punya <strong>ekor panjang</strong> (sesekali kerugian sangat besar), persis pola data fraud.</li>
+        <li><strong>Monte Carlo</strong> — menjumlahkan N (acak) kerugian (acak) sulit dihitung dengan satu rumus; menyimulasikan ribuan kali memberi gambaran utuh.</li>
+        <li><strong>VaR 99,9%</strong> — <strong>regulator Basel</strong> mewajibkan modal yang cukup menutup kerugian pada tingkat keyakinan sangat tinggi (hanya 0,1% boleh meleset).</li>
+      </ul>
+    </div>
+  </details>
+
   <h3 class="step">3️⃣ Dataset</h3>
   <div class="metrics c4" id="act-dataset-metrics"></div>
 
@@ -611,8 +786,49 @@
     <div class="formula">BIA = α × Gross Income, &nbsp; α = 15%</div>
   </div>
 
+  <details>
+    <summary>📖 Istilah, Rumus, & Kenapa Dipakai</summary>
+    <div class="expander-body">
+      <h5>Daftar Istilah</h5>
+      <table class="glossary-table">
+        <tr><td>Integrasi / Bayesian</td><td>Menggabungkan beberapa sumber informasi menjadi satu estimasi yang lebih kuat.</td></tr>
+        <tr><td>Bottom-up vs Top-down</td><td>Dari data rinci ke atas (Bayesian) vs dari indikator besar ke bawah (BIA).</td></tr>
+        <tr><td>Scaling</td><td>Menyetarakan skala data bank lain agar sebanding dengan data kita.</td></tr>
+        <tr><td>Gross income</td><td>Pendapatan kotor bank — indikator ukuran bisnis.</td></tr>
+        <tr><td>BIA</td><td>Basic Indicator Approach (Basel II): cadangan = 15% pendapatan kotor.</td></tr>
+        <tr><td>Konsorsium / DIPO</td><td>Basis data kerugian gabungan dari banyak bank.</td></tr>
+      </table>
+
+      <h5>Rumus yang Dipakai</h5>
+      <div class="formula">S<sub>gabungan</sub> = S<sub>internal</sub> ∪ {p<sub>self-assessment</sub>} ∪ S<sub>eksternal</sub><sup>scaled</sup></div>
+      <div class="formula">c = Σ kerugian eksternal / Σ kerugian internal &nbsp;&nbsp; S<sup>scaled</sup> = S<sub>eksternal</sub> / c</div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);">Konstanta scaling c menyetarakan ukuran data eksternal terhadap internal.</p>
+      <div class="formula">VaR<sub>q</sub> = persentil ke-q dari S<sub>gabungan</sub></div>
+      <div class="formula">BIA = α × Gross Income, &nbsp; α = 15%</div>
+
+      <h5>Kenapa Rumus Ini Dipakai?</h5>
+      <ul style="padding-left:1.2rem;">
+        <li><strong>Menggabungkan 3 sumber</strong> — tiap sumber punya kelemahan: internal (terbatas pengalaman sendiri), expert (subjektif), eksternal (beda konteks). Gabungan lebih <strong>lengkap</strong> dan tahan.</li>
+        <li><strong>Scaling</strong> — agar kerugian bank besar tidak 'membanjiri' estimasi bank kita; disesuaikan secara proporsional dulu.</li>
+        <li><strong>BIA (15% gross income)</strong> — pembanding sederhana yang <strong>diakui regulator</strong>. Kalau metode canggih (Bayesian) hasilnya <strong>dekat</strong> dengan BIA, itu memberi <strong>keyakinan silang</strong> bahwa angkanya masuk akal.</li>
+      </ul>
+    </div>
+  </details>
+
   <h3 class="step">3️⃣ Dataset</h3>
   <div class="metrics c3" id="int-dataset-metrics"></div>
+
+  <div class="card">
+    <h4>Data yang Digunakan (3 sumber)</h4>
+    <div class="mini-tabs" id="int-data-tabs">
+      <div class="mini-tab active" onclick="showMiniTab('int-data', 0)">① Internal (PaySim)</div>
+      <div class="mini-tab" onclick="showMiniTab('int-data', 1)">② Expert (ahli)</div>
+      <div class="mini-tab" onclick="showMiniTab('int-data', 2)">③ Eksternal (bank lain)</div>
+    </div>
+    <div id="int-data-tab-0" class="mini-tab-content active"></div>
+    <div id="int-data-tab-1" class="mini-tab-content"></div>
+    <div id="int-data-tab-2" class="mini-tab-content"></div>
+  </div>
 
   <h3 class="step">4️⃣ & 5️⃣ Hasil</h3>
   <div class="metrics c3" id="int-result-metrics"></div>
@@ -690,6 +906,12 @@ function showTab(page, tab) {
   document.querySelectorAll(`#page-${page} .tab-btn`).forEach(b => b.classList.remove('active'));
   document.getElementById(`${prefix}-tab-${tab}`).classList.add('active');
   event.target.classList.add('active');
+}
+function showMiniTab(prefix, idx) {
+  document.querySelectorAll(`[id^="${prefix}-tab-"]`).forEach(t => t.classList.remove('active'));
+  document.getElementById(`${prefix}-tab-${idx}`).classList.add('active');
+  const tabs = document.querySelectorAll(`#${prefix}-tabs .mini-tab`);
+  tabs.forEach((t, i) => i === idx ? t.classList.add('active') : t.classList.remove('active'));
 }
 
 // === Helpers ===
@@ -984,6 +1206,31 @@ function renderAll(D) {
     metricHTML('① Internal (baris)', fmt(D.internal.n_events)) +
     metricHTML('② Expert (baris)', fmt(D.expert.n_rows)) +
     metricHTML('③ Eksternal (baris)', fmt(D.external.n_rows));
+
+  // Integrated data tabs
+  let intTab0 = `<p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.5rem;">Sumber: PaySim (Kaggle) — fraud nyata. Kerugian = kolom amount.</p>
+    <table class="data-table"><thead><tr><th>Jumlah Kerugian</th><th>Hari ke-</th></tr></thead><tbody>`;
+  D.internal.loss_preview.slice(0, 10).forEach(r => {
+    intTab0 += `<tr><td>${fmt(r.amount)}</td><td>${r.day}</td></tr>`;
+  });
+  intTab0 += `</tbody></table><p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.5rem;">Total ${fmt(D.internal.n_events)} peristiwa, total kerugian ${fmt(D.internal.total_internal)}.</p>`;
+  document.getElementById('int-data-tab-0').innerHTML = intTab0;
+
+  let intTab1 = `<p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.5rem;">Sumber: penilaian ahli (sintetis) — kelas ordinal per kategori.</p>
+    <table class="data-table"><thead><tr><th>Ahli ke-</th><th>Lini Bisnis</th><th>Jenis Kejadian</th><th>Frekuensi</th><th>Severity</th><th>Kontrol</th></tr></thead><tbody>`;
+  D.expert.preview.slice(0, 10).forEach(r => {
+    intTab1 += `<tr><td>${r.expert}</td><td>${r.business_line}</td><td>${r.event_type}</td><td>${r.frequency}</td><td>${r.severity}</td><td>${r.control}</td></tr>`;
+  });
+  intTab1 += `</tbody></table><p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.5rem;">${D.expert.n_experts} ahli × 56 kategori = ${fmt(D.expert.n_rows)} baris.</p>`;
+  document.getElementById('int-data-tab-1').innerHTML = intTab1;
+
+  let intTab2 = `<p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.5rem;">Sumber: konsorsium bank lain (sintetis) — kerugian di atas ambang, di-scaling agar setara.</p>
+    <table class="data-table"><thead><tr><th>Kerugian (mentah)</th><th>Kerugian (ter-scaling)</th></tr></thead><tbody>`;
+  D.external.raw.slice(0, 10).forEach((v, i) => {
+    intTab2 += `<tr><td>${fmt(v)}</td><td>${fmt(D.external.scaled[i])}</td></tr>`;
+  });
+  intTab2 += `</tbody></table><p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.5rem;">Kerugian bank lain biasanya lebih besar; di-<em>scaling</em> dulu agar setara ukuran bank kita.</p>`;
+  document.getElementById('int-data-tab-2').innerHTML = intTab2;
 
   const compItems = D.comparison.items;
   document.getElementById('int-result-metrics').innerHTML =
