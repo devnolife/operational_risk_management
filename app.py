@@ -338,6 +338,51 @@ if page == "🏠 Beranda":
             "**Di proyek ini:** Data sintetis (ter-scaling)"
         )
 
+    # ---- Justifikasi dataset PaySim ----
+    st.markdown("---")
+    st.markdown("### 🎯 Mengapa Dataset PaySim?")
+    st.info(
+        "**Buku Bab 12.2** menjelaskan bahwa **data internal** bank harus berupa "
+        "tabel berisi: **jumlah kerugian (amount)**, **tanggal kejadian**, "
+        "**unit organisasi**, serta **lini bisnis & jenis kejadian** (Basel II).\n\n"
+        "**PaySim** (Kaggle: `ealaxi/paysim1`) dipilih karena memenuhi semua "
+        "syarat tersebut:"
+    )
+    j1, j2 = st.columns(2)
+    with j1:
+        st.markdown(
+            "**✅ Kenapa cocok sebagai data internal?**\n\n"
+            "| Syarat Buku | PaySim Punya? |\n"
+            "|---|---|\n"
+            "| Jumlah kerugian (amount) | ✅ Kolom `amount` |\n"
+            "| Tanggal/waktu kejadian | ✅ Kolom `step` (jam) → dikonversi ke hari |\n"
+            "| Label kejadian (fraud/tidak) | ✅ Kolom `isFraud` |\n"
+            "| Jenis transaksi | ✅ Kolom `type` (TRANSFER, CASH_OUT, dll) |\n"
+            "| Identitas pelaku/korban | ✅ Kolom `nameOrig`, `nameDest` |\n"
+            "| Jumlah data besar (realistis) | ✅ **6,3 juta** transaksi |"
+        )
+    with j2:
+        st.markdown(
+            "**📌 Untuk apa dataset ini dipakai?**\n\n"
+            "1. **Transaksi fraud** (`isFraud=1`) → menjadi **data kerugian internal** "
+            "bank, di mana kolom `amount` = besarnya kerugian\n"
+            "2. Dari data ini dihitung **frekuensi** (berapa kali fraud per tahun) "
+            "dan **severity** (distribusi besarnya kerugian)\n"
+            "3. Frekuensi & severity ini menjadi input utama model **VaR Aktuaria** "
+            "(Bab 12.3) dan model **VaR Integrasi Bayesian** (Bab 12.4)\n\n"
+            "*PaySim mensimulasikan transaksi mobile-money dunia nyata berdasarkan "
+            "pola transaksi asli dari sebuah perusahaan di Afrika — "
+            "sehingga distribusi fraud-nya realistis.*"
+        )
+
+    st.markdown(
+        "> 💡 **Mengapa bukan data bank asli?** — Data kerugian operasional bank "
+        "bersifat **sangat rahasia** dan tidak tersedia publik. PaySim adalah "
+        "alternatif terbaik karena ia **sintetis tetapi realistis**: pola frekuensi "
+        "dan severity fraud-nya menyerupai data bank sesungguhnya, sehingga metode "
+        "dari buku Giudici (2009) dapat diterapkan secara valid."
+    )
+
     # ---- 3 Model/Metode (dari buku Bab 12.3) ----
     st.markdown("---")
     st.markdown("### 🔧 Tiga Model yang Dipakai (Bab 12.3–12.4)")
@@ -1352,10 +1397,26 @@ elif page == "📂 Data Lengkap (semua data)":
         st.markdown(
             "### 📊 Data Internal — PaySim\n\n"
             "**PaySim** — *Synthetic Financial Datasets for Fraud Detection* "
-            "(Kaggle: `ealaxi/paysim1`). Dataset ini berisi simulasi transaksi "
-            "keuangan mobile-money yang memuat label penipuan.\n\n"
-            "**Peran di proyek:** Sebagai **data kerugian internal** bank — tiap "
-            "transaksi fraud = satu peristiwa kerugian operasional."
+            "(Kaggle: `ealaxi/paysim1`). Dataset sintetis berisi **6,3 juta** "
+            "transaksi mobile-money dengan label penipuan (fraud)."
+        )
+        st.info(
+            "**🎯 Mengapa PaySim dipilih?**\n\n"
+            "Buku Bab 12.2 mensyaratkan **data kerugian internal** bank berupa tabel "
+            "berisi: jumlah kerugian, tanggal, unit organisasi, dan jenis kejadian. "
+            "Data asli bank **tidak tersedia publik** (rahasia), sehingga dibutuhkan "
+            "dataset pengganti yang realistis.\n\n"
+            "**PaySim cocok karena:**\n"
+            "- ✅ Ada **kolom `amount`** → jumlah kerugian per peristiwa\n"
+            "- ✅ Ada **kolom `step`** → waktu kejadian (jam, dikonversi ke hari)\n"
+            "- ✅ Ada **label `isFraud`** → memisahkan fraud vs normal\n"
+            "- ✅ Ada **jenis transaksi** (`type`) → mirip jenis kejadian Basel II\n"
+            "- ✅ **Distribusi realistis** — dibuat dari pola transaksi mobile-money "
+            "nyata di Afrika\n\n"
+            "**Cara pemakaian:** Setiap transaksi fraud (`isFraud=1`) dianggap sebagai "
+            "**satu peristiwa kerugian operasional**, dan kolom `amount` = besarnya "
+            "kerugian. Dari sini dihitung **frekuensi** (berapa kali per tahun) dan "
+            "**severity** (distribusi besarnya kerugian) untuk model VaR."
         )
         a1, a2, a3 = st.columns(3)
         a1.metric("Total baris", f"{_rows:,}")
@@ -1393,10 +1454,20 @@ elif page == "📂 Data Lengkap (semua data)":
         st.markdown(
             "### 👥 Data Penilaian Ahli (Expert Opinion)\n\n"
             "Kuesioner **self-assessment** untuk seluruh kerangka Basel II: "
-            "**8 lini bisnis × 7 jenis kejadian = 56 kategori risiko**.\n\n"
-            "**Peran di proyek:** Sebagai **penilaian kualitatif** dari para ahli — "
-            "setiap ahli menilai frekuensi, severity, dan kontrol tiap risiko. "
-            "Data ini bersifat sintetis namun setia pada metode buku."
+            "**8 lini bisnis × 7 jenis kejadian = 56 kategori risiko**."
+        )
+        st.info(
+            "**🎯 Mengapa ada data expert?**\n\n"
+            "Buku Bab 12.2 menjelaskan bahwa data internal saja **tidak cukup** — "
+            "banyak kejadian risiko yang jarang terjadi atau belum pernah tercatat. "
+            "Oleh karena itu dibutuhkan **pendapat ahli** (*expert opinion*) yang "
+            "bersifat **forward-looking** (melihat ke depan).\n\n"
+            "**Cara pemakaian:** Setiap ahli menilai **frekuensi**, **severity**, dan "
+            "**kontrol** untuk seluruh 56 kategori risiko. Hasilnya diagregasi menjadi "
+            "**scorecard** (matriks traffic-light) yang dipakai di Model 1.\n\n"
+            "**Mengapa sintetis?** Data kuesioner ahli bank bersifat internal dan "
+            "rahasia. Kami membuat data sintetis mengikuti struktur buku: ordinal "
+            "scale (low/medium/high) untuk 8 BL × 7 ET."
         )
         n_exp = st.slider("Jumlah ahli (expert)", 3, 20, 8, key="data_n_exp")
         _exp_all = contoh_expert(n_exp, 42)
@@ -1432,11 +1503,21 @@ elif page == "📂 Data Lengkap (semua data)":
     with tabC:
         st.markdown(
             "### 🏢 Data Kerugian Eksternal (Bank Lain)\n\n"
-            "Data dari **konsorsium bank lain** (sintetis, analog DIPO). "
-            "Kerugian bank lain biasanya lebih besar karena merupakan gabungan "
-            "dari banyak bank.\n\n"
-            "**Peran di proyek:** Di-**scaling** (dibagi konstanta *c*) agar "
-            "setara ukuran bank kita, lalu digabung ke model integrasi Bayesian."
+            "Data dari **konsorsium bank lain** (sintetis, analog DIPO)."
+        )
+        st.info(
+            "**🎯 Mengapa ada data eksternal?**\n\n"
+            "Buku Bab 12.2 menjelaskan bahwa data internal & expert masih bisa memiliki "
+            "**missing values** — ada kategori risiko yang jarang/belum pernah terjadi "
+            "di bank kita. Data **konsorsium (DIPO)** dari banyak bank membantu "
+            "**mengisi celah** tersebut.\n\n"
+            "**Proses scaling:** Karena konsorsium menggabungkan banyak bank, "
+            "kerugiannya lebih besar. Buku (Bab 12.2) menerapkan **scaling** — "
+            "membagi kerugian konsorsium dengan konstanta *c* = rasio total "
+            "kerugian DIPO / total kerugian internal — agar setara ukuran bank kita.\n\n"
+            "**Mengapa sintetis?** Database DIPO hanya tersedia bagi anggota "
+            "konsorsium. Kami membuat data sintetis yang mengikuti distribusi "
+            "dan proses scaling sesuai buku."
         )
         _ext_raw, _ext_scaled = contoh_external()
         _ext_df = pd.DataFrame({
