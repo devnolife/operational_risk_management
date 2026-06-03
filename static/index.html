@@ -838,59 +838,69 @@ function renderAll(D) {
   document.getElementById('sc-table').innerHTML = scTable;
 
   // === Shared Plotly theme ===
-  const plotFont = { family: 'Segoe UI, system-ui, sans-serif', color: '#1a1a2e' };
+  const plotFont = { family: 'Inter, Segoe UI, system-ui, sans-serif', color: '#0f172a', size: 13 };
   const plotBg = 'rgba(0,0,0,0)';
-  const gridColor = 'rgba(0,0,0,0.06)';
+  const gridColor = 'rgba(15,23,42,0.05)';
   const plotCfg = { responsive: true, displayModeBar: false };
+  const axBase = { gridcolor: gridColor, zeroline: false, linecolor: 'rgba(15,23,42,0.08)', linewidth: 1 };
 
-  // Scorecard bar chart
+  // Scorecard bar chart — lollipop-style with gradient
   const top15 = D.scorecard.top15;
-  const barGrad = top15.map((_, i) => {
-    const t = i / (top15.length - 1);
-    const r = Math.round(214 + (30 - 214) * t);
-    const g = Math.round(39 + (58 - 39) * t);
-    const b = Math.round(40 + (138 - 40) * t);
-    return `rgb(${r},${g},${b})`;
+  const maxLoss = Math.max(...top15.map(r => r.perceived_loss));
+  const barColors15 = top15.map(r => {
+    const pct = r.perceived_loss / maxLoss;
+    if (pct > 0.7) return '#dc2626';
+    if (pct > 0.4) return '#f59e0b';
+    return '#10b981';
   });
   Plotly.newPlot('sc-bar-chart', [{
     type: 'bar', orientation: 'h',
-    y: top15.map(r => r.event_type),
+    y: top15.map((r, i) => `<b>${i+1}.</b> ${r.event_type}`),
     x: top15.map(r => r.perceived_loss),
-    text: top15.map(r => fmt(r.perceived_loss)),
+    text: top15.map(r => 'Rp ' + fmt(r.perceived_loss)),
     textposition: 'outside',
-    textfont: { size: 11, color: '#1a1a2e' },
-    hovertemplate: '<b>%{y}</b><br>%{customdata}<br>Kerugian: %{x:,.0f}<extra></extra>',
+    textfont: { size: 11, color: '#334155', family: 'Inter, sans-serif' },
+    hovertemplate: '<b>%{customdata}</b><br>%{y}<br>Kerugian: Rp %{x:,.0f}<extra></extra>',
     customdata: top15.map(r => r.business_line),
-    marker: { color: barGrad, line: { width: 0 }, cornerradius: 4 },
+    marker: {
+      color: barColors15,
+      opacity: 0.9,
+      line: { width: 0 },
+    },
   }], {
     font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
-    xaxis: { title: 'Perkiraan Kerugian (Rp)', tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
-    yaxis: { autorange: 'reversed', tickfont: { size: 11 } },
-    height: 480, margin: { l: 210, r: 90, t: 30, b: 50 },
-    bargap: 0.25,
+    xaxis: { ...axBase, title: { text: 'Perkiraan Kerugian (Rp)', font: { size: 12, color: '#64748b' } }, tickformat: ',.0f', showgrid: true },
+    yaxis: { autorange: 'reversed', tickfont: { size: 10.5 }, automargin: true },
+    height: 520, margin: { l: 10, r: 100, t: 20, b: 55 },
+    bargap: 0.35,
   }, plotCfg);
 
-  // Scorecard heatmap
+  // Scorecard heatmap — refined colorscale
   const hm = D.scorecard.heatmap;
-  const hmCustomScale = [
-    [0, '#f0fdf4'], [0.15, '#bbf7d0'], [0.3, '#86efac'],
-    [0.45, '#fde68a'], [0.6, '#fbbf24'],
-    [0.75, '#fb923c'], [0.9, '#ef4444'], [1, '#991b1b']
+  const hmScale = [
+    [0, '#ecfdf5'], [0.12, '#a7f3d0'], [0.25, '#6ee7b7'],
+    [0.4, '#fde68a'], [0.55, '#fbbf24'],
+    [0.7, '#f97316'], [0.85, '#ef4444'], [1, '#7f1d1d']
   ];
   Plotly.newPlot('sc-heatmap', [{
     type: 'heatmap',
     z: hm.values, x: hm.cols, y: hm.rows,
-    colorscale: hmCustomScale,
+    colorscale: hmScale,
     text: hm.values.map(r => r.map(v => v ? fmt(v) : '—')),
-    texttemplate: '%{text}', textfont: { size: 11, color: '#1a1a2e' },
-    hovertemplate: '<b>%{y}</b><br>%{x}<br>Loss: %{z:,.0f}<extra></extra>',
-    xgap: 3, ygap: 3,
-    colorbar: { title: 'Kerugian', tickformat: ',.0f', thickness: 15, outlinewidth: 0 },
+    texttemplate: '<b>%{text}</b>',
+    textfont: { size: 10, color: '#1e293b' },
+    hovertemplate: '<b>%{y}</b><br>%{x}<br>Loss: Rp %{z:,.0f}<extra></extra>',
+    xgap: 4, ygap: 4,
+    colorbar: {
+      title: { text: 'Kerugian (Rp)', font: { size: 11 } },
+      tickformat: ',.0f', thickness: 14, outlinewidth: 0,
+      len: 0.8, yanchor: 'middle', y: 0.5,
+    },
   }], {
     font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
-    height: 480, margin: { l: 195, r: 30, t: 30, b: 120 },
-    xaxis: { tickangle: -35, tickfont: { size: 10 } },
-    yaxis: { tickfont: { size: 11 } },
+    height: 500, margin: { l: 200, r: 40, t: 20, b: 130 },
+    xaxis: { tickangle: -40, tickfont: { size: 9.5 }, side: 'bottom' },
+    yaxis: { tickfont: { size: 10.5 }, automargin: true },
   }, plotCfg);
 
   // Scorecard conclusion
@@ -910,34 +920,52 @@ function renderAll(D) {
     metricHTML('VaR 99,9% (simulasi)', fmt(D.actuarial.mc_var)) +
     metricHTML('VaR 99,9% (historis)', fmt(D.actuarial.hist_var));
 
-  // Histogram
+  // Histogram — area-style with gradient fill
   const hist = D.actuarial.histogram;
   const binCenters = hist.bin_edges.slice(0, -1).map((e, i) => (e + hist.bin_edges[i + 1]) / 2);
-  const histColors = binCenters.map(x => x >= hist.var_line ? 'rgba(220,38,38,0.85)' : 'rgba(45,106,159,0.75)');
-  Plotly.newPlot('act-histogram', [{
-    type: 'bar',
-    x: binCenters, y: hist.counts,
-    marker: { color: histColors, line: { width: 0.5, color: 'rgba(255,255,255,0.4)' }, cornerradius: 2 },
-    hovertemplate: 'Kerugian: %{x:,.0f}<br>Skenario: %{y}<extra></extra>',
-    name: 'Skenario',
-  }], {
+  const safeZone = binCenters.filter(x => x < hist.var_line);
+  const dangerZone = binCenters.filter(x => x >= hist.var_line);
+  const safeCounts = hist.counts.slice(0, safeZone.length);
+  const dangerCounts = hist.counts.slice(safeZone.length);
+
+  Plotly.newPlot('act-histogram', [
+    {
+      type: 'bar', x: safeZone, y: safeCounts,
+      marker: { color: 'rgba(59,130,246,0.7)', line: { width: 0.5, color: 'rgba(59,130,246,0.9)' } },
+      hovertemplate: 'Kerugian: Rp %{x:,.0f}<br>Skenario: %{y:,}<extra>✅ Di bawah VaR</extra>',
+      name: '✅ Di bawah VaR', showlegend: true,
+    },
+    {
+      type: 'bar', x: dangerZone, y: dangerCounts,
+      marker: { color: 'rgba(239,68,68,0.75)', line: { width: 0.5, color: 'rgba(239,68,68,0.9)' } },
+      hovertemplate: 'Kerugian: Rp %{x:,.0f}<br>Skenario: %{y:,}<extra>⚠️ Melebihi VaR</extra>',
+      name: '⚠️ Melebihi VaR', showlegend: true,
+    },
+  ], {
     font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
-    xaxis: { title: 'Total Kerugian (Rp)', tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
-    yaxis: { title: 'Jumlah Skenario', type: 'log', gridcolor: gridColor, zeroline: false },
-    shapes: [{
-      type: 'line', x0: hist.var_line, x1: hist.var_line, y0: 0, y1: 1,
-      yref: 'paper', line: { color: '#dc2626', width: 2.5, dash: 'dot' },
-    }],
+    xaxis: { ...axBase, title: { text: 'Total Kerugian (Rp)', font: { size: 12, color: '#64748b' } }, tickformat: ',.0f', showgrid: true },
+    yaxis: { ...axBase, title: { text: 'Jumlah Skenario', font: { size: 12, color: '#64748b' } }, type: 'log', showgrid: true },
+    legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center', font: { size: 11 }, bgcolor: 'rgba(0,0,0,0)' },
+    shapes: [
+      {
+        type: 'line', x0: hist.var_line, x1: hist.var_line, y0: 0, y1: 1,
+        yref: 'paper', line: { color: '#dc2626', width: 2, dash: 'dot' },
+      },
+      {
+        type: 'rect', x0: hist.var_line, x1: Math.max(...binCenters) * 1.05, y0: 0, y1: 1,
+        yref: 'paper', fillcolor: 'rgba(239,68,68,0.04)', line: { width: 0 },
+      },
+    ],
     annotations: [{
-      x: hist.var_line, y: 0.97, yref: 'paper',
-      text: '<b>VaR 99,9%</b><br>' + fmt(hist.var_line),
-      showarrow: true, arrowhead: 2, arrowcolor: '#dc2626',
-      ax: 50, ay: -30,
-      font: { color: '#dc2626', size: 12 },
-      bgcolor: 'rgba(255,255,255,0.9)', bordercolor: '#dc2626', borderwidth: 1, borderpad: 5,
+      x: hist.var_line, y: 0.92, yref: 'paper',
+      text: '<b>⚠️ VaR 99,9%</b><br>Rp ' + fmt(hist.var_line),
+      showarrow: true, arrowhead: 3, arrowsize: 1.2, arrowcolor: '#dc2626', arrowwidth: 1.5,
+      ax: 65, ay: -35,
+      font: { color: '#991b1b', size: 12, family: 'Inter, sans-serif' },
+      bgcolor: 'rgba(254,226,226,0.95)', bordercolor: '#fca5a5', borderwidth: 1.5, borderpad: 6,
     }],
-    height: 430, margin: { l: 70, r: 30, t: 30, b: 60 },
-    bargap: 0.03,
+    height: 460, margin: { l: 75, r: 35, t: 45, b: 60 },
+    bargap: 0.02, barmode: 'stack',
   }, plotCfg);
 
   document.getElementById('act-conclusion').innerHTML =
@@ -955,23 +983,49 @@ function renderAll(D) {
     metricHTML('Pendapatan kotor (asumsi)', fmt(D.comparison.gross_income)) +
     metricHTML('BIA = 15% pendapatan', fmt(D.comparison.bia));
 
-  // Comparison bar chart — gradient palette
-  const compGrad = ['#10b981','#34d399','#a3e635','#facc15','#fb923c','#f87171','#dc2626'];
-  const compColors = compItems.map((_, i) => compGrad[Math.min(i, compGrad.length - 1)]);
+  // Comparison bar chart — refined with method-based coloring
+  const methodColors = {
+    'Historical': '#94a3b8',
+    'Self-assessment': '#8b5cf6',
+    'Basic Indicator': '#06b6d4',
+    'Historical VaR': '#3b82f6',
+    'Bayes VaR': '#f59e0b',
+    'Actuarial Montecarlo': '#ef4444',
+    'Bayes Montecarlo': '#dc2626',
+  };
+  const compColors = compItems.map(c => {
+    const key = Object.keys(methodColors).find(k => c.method.includes(k));
+    return key ? methodColors[key] : '#64748b';
+  });
+  const medianVal = compItems[Math.floor(compItems.length / 2)]?.value || 0;
+
   Plotly.newPlot('int-comparison-chart', [{
     type: 'bar', orientation: 'h',
     y: compItems.map(c => c.method),
     x: compItems.map(c => c.value),
-    marker: { color: compColors, line: { width: 0 }, cornerradius: 4 },
+    marker: {
+      color: compColors, opacity: 0.88,
+      line: { width: 1.5, color: compColors.map(c => c) },
+    },
     text: compItems.map(c => 'Rp ' + fmt(c.value)),
-    textposition: 'outside', textfont: { size: 12, color: '#1a1a2e' },
+    textposition: 'outside',
+    textfont: { size: 11.5, color: '#334155', family: 'Inter, sans-serif' },
     hovertemplate: '<b>%{y}</b><br>Rp %{x:,.0f}<extra></extra>',
   }], {
     font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
-    xaxis: { title: 'Estimasi Cadangan (Rp)', tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
-    yaxis: { tickfont: { size: 12 } },
-    height: 420, margin: { l: 230, r: 130, t: 30, b: 55 },
-    bargap: 0.3,
+    xaxis: { ...axBase, title: { text: 'Estimasi Cadangan (Rp)', font: { size: 12, color: '#64748b' } }, tickformat: ',.0f', showgrid: true },
+    yaxis: { tickfont: { size: 11.5 }, automargin: true },
+    shapes: [{
+      type: 'line', x0: medianVal, x1: medianVal, y0: -0.5, y1: compItems.length - 0.5,
+      line: { color: '#94a3b8', width: 1.5, dash: 'dash' },
+    }],
+    annotations: [{
+      x: medianVal, y: compItems.length - 0.5,
+      text: 'Median', showarrow: false,
+      font: { size: 10, color: '#64748b' }, yshift: 12,
+    }],
+    height: 440, margin: { l: 10, r: 130, t: 25, b: 55 },
+    bargap: 0.32,
   }, plotCfg);
 
   const highest = compItems[compItems.length - 1];
@@ -1003,38 +1057,47 @@ function renderAll(D) {
       </div>`;
   }
 
-  // Summary heatmap
+  // Summary heatmap — same refined style
   Plotly.newPlot('sum-heatmap', [{
     type: 'heatmap',
     z: hm.values, x: hm.cols, y: hm.rows,
-    colorscale: hmCustomScale,
+    colorscale: hmScale,
     text: hm.values.map(r => r.map(v => v ? fmt(v) : '—')),
-    texttemplate: '%{text}', textfont: { size: 10, color: '#1a1a2e' },
-    hovertemplate: '<b>%{y}</b><br>%{x}<br>Loss: %{z:,.0f}<extra></extra>',
-    xgap: 3, ygap: 3,
-    colorbar: { title: 'Kerugian', tickformat: ',.0f', thickness: 15, outlinewidth: 0 },
+    texttemplate: '<b>%{text}</b>',
+    textfont: { size: 9.5, color: '#1e293b' },
+    hovertemplate: '<b>%{y}</b><br>%{x}<br>Loss: Rp %{z:,.0f}<extra></extra>',
+    xgap: 4, ygap: 4,
+    colorbar: {
+      title: { text: 'Kerugian (Rp)', font: { size: 10 } },
+      tickformat: ',.0f', thickness: 12, outlinewidth: 0, len: 0.75,
+    },
   }], {
     font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
-    height: 480, margin: { l: 195, r: 30, t: 30, b: 120 },
-    xaxis: { tickangle: -35, tickfont: { size: 10 } },
-    yaxis: { tickfont: { size: 11 } },
+    height: 480, margin: { l: 200, r: 40, t: 20, b: 130 },
+    xaxis: { tickangle: -40, tickfont: { size: 9 } },
+    yaxis: { tickfont: { size: 10 }, automargin: true },
   }, plotCfg);
 
-  // Summary comparison chart
+  // Summary comparison chart — same method-based coloring
   Plotly.newPlot('sum-comparison-chart', [{
     type: 'bar', orientation: 'h',
     y: compItems.map(c => c.method),
     x: compItems.map(c => c.value),
-    marker: { color: compColors, line: { width: 0 }, cornerradius: 4 },
+    marker: { color: compColors, opacity: 0.88, line: { width: 1.5, color: compColors } },
     text: compItems.map(c => 'Rp ' + fmt(c.value)),
-    textposition: 'outside', textfont: { size: 11, color: '#1a1a2e' },
+    textposition: 'outside',
+    textfont: { size: 11, color: '#334155', family: 'Inter, sans-serif' },
     hovertemplate: '<b>%{y}</b><br>Rp %{x:,.0f}<extra></extra>',
   }], {
     font: plotFont, paper_bgcolor: plotBg, plot_bgcolor: plotBg,
-    xaxis: { tickformat: ',.0f', gridcolor: gridColor, zeroline: false },
-    yaxis: { tickfont: { size: 11 } },
-    height: 380, margin: { l: 230, r: 130, t: 30, b: 50 },
-    bargap: 0.3,
+    xaxis: { ...axBase, tickformat: ',.0f', showgrid: true },
+    yaxis: { tickfont: { size: 11 }, automargin: true },
+    shapes: [{
+      type: 'line', x0: medianVal, x1: medianVal, y0: -0.5, y1: compItems.length - 0.5,
+      line: { color: '#94a3b8', width: 1.5, dash: 'dash' },
+    }],
+    height: 400, margin: { l: 10, r: 130, t: 20, b: 50 },
+    bargap: 0.32,
   }, plotCfg);
 
   // Summary model table
