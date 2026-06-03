@@ -225,15 +225,6 @@ page = st.sidebar.radio(
 )
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    "**Cara baca tiap halaman model:**\n\n"
-    "1️⃣ Rumusan Masalah\n\n"
-    "2️⃣ Metode (dari buku)\n\n"
-    "3️⃣ Dataset\n\n"
-    "4️⃣ Proses\n\n"
-    "5️⃣ Hasil & Kesimpulan"
-)
-st.sidebar.markdown("---")
-st.sidebar.markdown(
     "**Anggota Kelompok:**\n\n"
     "👤 Anggota 1 → Scorecard\n\n"
     "👤 Anggota 2 → VaR Aktuaria\n\n"
