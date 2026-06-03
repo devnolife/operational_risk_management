@@ -316,26 +316,44 @@ if page == "🏠 Beranda":
     with d1:
         st.markdown(
             "#### 📊 Data Internal\n"
-            "Riwayat kerugian **bank sendiri** — "
-            "setiap peristiwa dicatat: tanggal, jumlah, jenis.\n\n"
-            "🔹 *Melihat ke belakang (backward-looking)*\n\n"
-            "**Di proyek ini:** Data fraud PaySim (Kaggle)"
+            "*(Bab 12.2, hal. 221)*\n\n"
+            "Buku menjelaskan bahwa data internal adalah **tabel riwayat "
+            "kerugian bank sendiri** — berisi: jumlah kerugian (*amount*), "
+            "tanggal kejadian, unit organisasi, lini bisnis & jenis kejadian.\n\n"
+            "🔹 *Backward-looking* — melihat apa yang sudah terjadi.\n\n"
+            "**Di proyek ini:** Dataset **PaySim** (Kaggle) — simulasi "
+            "transaksi mobile-money dengan label fraud. Dipilih karena "
+            "data bank asli bersifat **rahasia**."
         )
     with d2:
         st.markdown(
             "#### 👥 Penilaian Ahli\n"
-            "Pendapat para **ahli/manajer** bank tentang "
-            "frekuensi, severity, dan kontrol tiap risiko.\n\n"
-            "🔹 *Melihat ke depan (forward-looking)*\n\n"
-            "**Di proyek ini:** Kuesioner sintetis (56 kategori)"
+            "*(Bab 12.2, hal. 222–224)*\n\n"
+            "Buku menjelaskan bahwa **kepala cabang, kepala area, "
+            "dan manajer** diminta menilai setiap risiko dalam skala "
+            "ordinal: **frekuensi** (seberapa sering), **severity** "
+            "(seberapa besar), dan **kontrol** (sebaik apa mitigasinya).\n\n"
+            "Penilaian mengacu pada **8 lini bisnis × 7 jenis kejadian "
+            "Basel II = 56 kategori**.\n\n"
+            "🔹 *Forward-looking* — melihat persepsi risiko ke depan, "
+            "bukan hanya data masa lalu.\n\n"
+            "**Di proyek ini:** Karena kuesioner bank asli bersifat "
+            "**rahasia**, kami membuat data sintetis yang mengikuti "
+            "struktur persis dari buku."
         )
     with d3:
         st.markdown(
             "#### 🏢 Data Eksternal\n"
-            "Data kerugian dari **bank lain** (konsorsium/DIPO) — "
-            "di-*scaling* agar setara ukuran bank kita.\n\n"
-            "🔹 *Perspektif industri*\n\n"
-            "**Di proyek ini:** Data sintetis (ter-scaling)"
+            "*(Bab 12.2, hal. 221–222)*\n\n"
+            "Buku menjelaskan bahwa **konsorsium bank** (contoh: DIPO di Italia) "
+            "mengumpulkan data kerugian dari banyak bank. Karena gabungan "
+            "banyak bank, angkanya lebih besar → perlu di-**scaling** "
+            "(dibagi konstanta *c*) agar setara ukuran bank kita.\n\n"
+            "🔹 *Perspektif industri* — mengisi celah data yang belum "
+            "pernah terjadi di bank kita.\n\n"
+            "**Di proyek ini:** Data sintetis yang mengikuti proses "
+            "scaling sesuai buku. Database DIPO asli hanya untuk anggota "
+            "konsorsium."
         )
 
     # ---- Justifikasi dataset PaySim ----
