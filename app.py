@@ -133,6 +133,85 @@ def contoh_external():
     return ext, ext_scaled
 
 
+# Kamus 11 kolom ASLI (raw) dataset PaySim.
+PAYSIM_RAW_FIELDS: list[tuple[str, str, str]] = [
+    ("step",            "int",   "Satuan waktu simulasi (1 step = 1 jam). Total 744 step ≈ 31 hari"),
+    ("type",            "str",   "Jenis transaksi: PAYMENT, TRANSFER, CASH_OUT, CASH_IN, DEBIT"),
+    ("amount",          "float", "Jumlah uang yang ditransaksikan"),
+    ("nameOrig",        "str",   "ID nasabah pengirim (contoh: C1231006815)"),
+    ("oldbalanceOrg",   "float", "Saldo awal pengirim sebelum transaksi"),
+    ("newbalanceOrig",  "float", "Saldo pengirim setelah transaksi"),
+    ("nameDest",        "str",   "ID nasabah penerima (C = customer, M = merchant)"),
+    ("oldbalanceDest",  "float", "Saldo awal penerima sebelum transaksi"),
+    ("newbalanceDest",  "float", "Saldo penerima setelah transaksi"),
+    ("isFraud",         "int",   "Label target: 1 = fraud, 0 = normal"),
+    ("isFlaggedFraud",  "int",   "Flag otomatis sistem jika transfer > 200.000 (hampir selalu 0)"),
+]
+
+# Kolom yang DIBUANG dari fitur model (ada di dataframe tapi tidak jadi input model).
+DROPPED_FIELDS: list[tuple[str, str]] = [
+    ("nameOrig",       "ID unik per transaksi — tidak informatif untuk pola fraud"),
+    ("nameDest",       "ID unik penerima — terlalu banyak kategori, tidak bisa di-encode"),
+    ("isFlaggedFraud", "Flag buatan sistem (bukan fitur alami) — hanya menandai transfer > 200K, hampir selalu 0"),
+]
+
+# Kolom asli yang DIPERTAHANKAN sebagai fitur model.
+KEPT_FIELDS: list[tuple[str, str, str]] = [
+    ("step",           "Diturunkan",     "Dipakai untuk membuat `hourOfDay` dan `day`"),
+    ("type",           "Di-encode",      "Di-one-hot-encode → 5 kolom: type_CASH_IN, type_CASH_OUT, type_DEBIT, type_PAYMENT, type_TRANSFER"),
+    ("amount",         "Fitur langsung", "Jumlah transaksi — langsung dipakai"),
+    ("oldbalanceOrg",  "Fitur langsung", "Saldo awal pengirim"),
+    ("newbalanceOrig", "Fitur langsung", "Saldo akhir pengirim"),
+    ("oldbalanceDest", "Fitur langsung", "Saldo awal penerima"),
+    ("newbalanceDest", "Fitur langsung", "Saldo akhir penerima"),
+    ("isFraud",        "Target (y)",     "Label yang diprediksi oleh model"),
+]
+
+# Fitur BARU hasil feature engineering.
+NEW_FEATURES: list[tuple[str, str, str]] = [
+    ("errorBalanceOrig",    "newbalanceOrig + amount − oldbalanceOrg",
+     "Ketidakcocokan saldo pengirim — jika ≠ 0, ada indikasi fraud"),
+    ("errorBalanceDest",    "oldbalanceDest + amount − newbalanceDest",
+     "Ketidakcocokan saldo penerima"),
+    ("origZeroBalance",     "(oldbalanceOrg == 0) & (newbalanceOrig == 0)",
+     "Pengirim saldonya nol sebelum & sesudah — pola fraud umum"),
+    ("destZeroBalance",     "(oldbalanceDest == 0) & (newbalanceDest == 0)",
+     "Penerima saldonya nol sebelum & sesudah"),
+    ("amountToBalanceRatio", "amount / (oldbalanceOrg + 1)",
+     "Rasio transaksi vs saldo — fraud sering punya rasio sangat tinggi"),
+    ("hourOfDay",           "step % 24",
+     "Jam dalam sehari (0–23) — menangkap pola waktu fraud"),
+    ("day",                 "step // 24",
+     "Hari ke berapa (0–30) — pola harian"),
+]
+
+
+@st.cache_data(show_spinner="Memuat data mentah…")
+def paysim_raw_preview(n: int = 50):
+    """Pratinjau n baris pertama data mentah (CSV asli, sebelum proses)."""
+    from src.data import find_raw_csv
+    return pd.read_csv(find_raw_csv(), nrows=n)
+
+
+@st.cache_data(show_spinner=False)
+def paysim_raw_stats():
+    """Statistik ringkas data mentah: jumlah baris, distribusi type, null counts."""
+    from src.data import find_raw_csv
+    df = pd.read_csv(find_raw_csv())
+    return {
+        "total_rows": len(df),
+        "total_cols": len(df.columns),
+        "columns": list(df.columns),
+        "dtypes": {c: str(df[c].dtype) for c in df.columns},
+        "n_unique": {c: int(df[c].nunique()) for c in df.columns},
+        "nulls": {c: int(df[c].isnull().sum()) for c in df.columns},
+        "type_dist": df["type"].value_counts().to_dict(),
+        "fraud_count": int(df["isFraud"].sum()),
+        "flagged_count": int(df["isFlaggedFraud"].sum()),
+        "describe": df.describe().T,
+    }
+
+
 # Kamus seluruh field dataset PaySim (semua 22 kolom data processed).
 PAYSIM_FIELDS: list[tuple[str, str]] = [
     ("step", "Satuan waktu simulasi (1 step = 1 jam)"),
@@ -495,11 +574,139 @@ elif page == "📂 Data Lengkap (semua data)":
     g3.metric("Jumlah field PaySim", f"{len(_cols)}")
     g4.metric("Sumber data", "3 jenis")
 
-    tabA, tabB, tabC = st.tabs([
+    tabR, tabA, tabB, tabC = st.tabs([
+        "🔍 Data Mentah & Penjelasan Field",
         "① PaySim — Data Internal (utama)",
         "② Penilaian Ahli (Expert Opinion)",
         "③ Kerugian Eksternal (Bank Lain)",
     ])
+
+    # ---- Tab R: Data Mentah (Raw) & Penjelasan Field ----
+    with tabR:
+        st.markdown(
+            "### 🔍 Data Mentah (Raw) — Sebelum Diproses\n\n"
+            "Langkah pertama: **melihat keseluruhan data mentah** apa adanya dari file CSV asli, "
+            "sebelum pembersihan atau feature engineering apapun."
+        )
+
+        raw_stats = paysim_raw_stats()
+
+        r1, r2, r3, r4 = st.columns(4)
+        r1.metric("Total baris (raw)", f"{raw_stats['total_rows']:,}")
+        r2.metric("Total kolom (raw)", f"{raw_stats['total_cols']}")
+        r3.metric("Transaksi fraud", f"{raw_stats['fraud_count']:,}")
+        r4.metric("Flagged otomatis", f"{raw_stats['flagged_count']:,}")
+
+        # ---- 1. Tampilan semua kolom asli ----
+        st.markdown("#### 📋 Seluruh 11 Kolom Data Mentah")
+        st.markdown(
+            "Berikut **semua field** yang ada di file CSV asli PaySim, lengkap dengan "
+            "tipe data dan penjelasan:"
+        )
+        st.dataframe(
+            pd.DataFrame(PAYSIM_RAW_FIELDS, columns=["Kolom", "Tipe", "Penjelasan"]),
+            use_container_width=True, hide_index=True,
+        )
+
+        # ---- 2. Pratinjau data mentah ----
+        st.markdown("#### 👀 Pratinjau Data Mentah (Semua Kolom)")
+        n_raw = st.slider("Jumlah baris ditampilkan", 10, 500, 50, key="raw_preview_rows")
+        raw_preview = paysim_raw_preview(n_raw)
+        st.dataframe(raw_preview, use_container_width=True, hide_index=True)
+        st.caption(
+            f"Menampilkan {n_raw} dari {raw_stats['total_rows']:,} baris. "
+            "Data **belum dibersihkan** dan **belum ada feature engineering**."
+        )
+
+        # ---- 3. Statistik deskriptif data mentah ----
+        with st.expander("📊 Statistik Deskriptif Data Mentah (kolom numerik)", expanded=False):
+            st.dataframe(raw_stats["describe"], use_container_width=True)
+
+        # ---- 4. Ringkasan per kolom ----
+        with st.expander("🔢 Ringkasan per Kolom (jumlah unik, null, tipe data)", expanded=False):
+            col_summary = pd.DataFrame({
+                "Kolom": raw_stats["columns"],
+                "Tipe Data": [raw_stats["dtypes"][c] for c in raw_stats["columns"]],
+                "Jumlah Unik": [raw_stats["n_unique"][c] for c in raw_stats["columns"]],
+                "Jumlah Null": [raw_stats["nulls"][c] for c in raw_stats["columns"]],
+            })
+            st.dataframe(col_summary, use_container_width=True, hide_index=True)
+
+        # ---- 5. Distribusi tipe transaksi ----
+        with st.expander("💳 Distribusi Tipe Transaksi", expanded=False):
+            type_df = pd.DataFrame(
+                list(raw_stats["type_dist"].items()),
+                columns=["Tipe Transaksi", "Jumlah"],
+            ).sort_values("Jumlah", ascending=False)
+            type_df["Persentase"] = (type_df["Jumlah"] / raw_stats["total_rows"] * 100).round(2)
+            st.dataframe(type_df, use_container_width=True, hide_index=True)
+            fig_type = px.bar(
+                type_df, x="Tipe Transaksi", y="Jumlah", color="Tipe Transaksi",
+                text="Persentase", title="Distribusi Tipe Transaksi",
+            )
+            fig_type.update_traces(texttemplate="%{text}%", textposition="outside")
+            st.plotly_chart(fig_type, use_container_width=True)
+
+        # ==================================================================
+        # PENJELASAN FIELD: DIBUANG vs DIGUNAKAN
+        # ==================================================================
+        st.markdown("---")
+        st.markdown(
+            "### ⚙️ Field yang Dibuang vs Digunakan\n\n"
+            "Tidak semua kolom asli masuk ke model. Berikut pembagiannya:"
+        )
+
+        col_drop, col_keep = st.columns(2)
+
+        with col_drop:
+            st.markdown("#### ❌ Kolom yang **DIBUANG** dari fitur model")
+            st.markdown(
+                "Kolom-kolom ini **tetap ada di dataframe** untuk referensi, "
+                "tetapi **tidak dimasukkan** ke input model klasifikasi/anomali."
+            )
+            st.dataframe(
+                pd.DataFrame(DROPPED_FIELDS, columns=["Kolom", "Alasan Dibuang"]),
+                use_container_width=True, hide_index=True,
+            )
+
+        with col_keep:
+            st.markdown("#### ✅ Kolom yang **DIGUNAKAN**")
+            st.markdown(
+                "Kolom-kolom ini dipertahankan dan menjadi input model, "
+                "baik langsung maupun setelah transformasi."
+            )
+            st.dataframe(
+                pd.DataFrame(KEPT_FIELDS, columns=["Kolom", "Peran", "Keterangan"]),
+                use_container_width=True, hide_index=True,
+            )
+
+        # ---- Fitur baru (feature engineering) ----
+        st.markdown("#### 🆕 Fitur Baru Hasil Feature Engineering")
+        st.markdown(
+            "Dari kolom asli, dibuat **fitur turunan** yang lebih informatif untuk deteksi fraud:"
+        )
+        st.dataframe(
+            pd.DataFrame(NEW_FEATURES, columns=["Fitur Baru", "Formula / Logika", "Alasan"]),
+            use_container_width=True, hide_index=True,
+        )
+
+        # ---- Diagram alir ringkas ----
+        st.markdown("#### 🔄 Ringkasan Alur Data")
+        st.markdown(
+            "| Tahap | Input | Output | Kolom |\n"
+            "|-------|-------|--------|-------|\n"
+            f"| **1. Data Mentah** | CSV PaySim | — | **{raw_stats['total_cols']} kolom** asli |\n"
+            "| **2. Pembersihan** | Hapus duplikat, validasi tipe, isi NA | — | Tetap 11 kolom |\n"
+            "| **3. Feature Engineering** | Buat fitur turunan + one-hot encode `type` | — | Tambah 12 kolom baru |\n"
+            f"| **4. Data Processed** | Parquet siap model | `data/processed/` | **{len(_cols)} kolom** total |\n"
+            f"| **5. Input Model** | Buang 3 kolom (ID + flag) | Fitur X + Target y | **{len(_cols) - 3} fitur** + 1 target |"
+        )
+
+        st.success(
+            f"**Ringkasan:** Dari **{raw_stats['total_cols']} kolom mentah** → "
+            f"**3 dibuang** dari fitur, **{len(_cols) - raw_stats['total_cols']} fitur baru** "
+            f"ditambahkan → total **{len(_cols)} kolom** di data processed."
+        )
 
     # ---- Tab A: PaySim lengkap ----
     with tabA:
