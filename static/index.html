@@ -393,171 +393,239 @@
     min-height: 200px;
   }
 
-  /* ========== ANIMATED PIPELINE FLOW ========== */
-  .pipeline-flow {
-    display: flex; align-items: stretch; gap: 0;
-    margin: 1.5rem 0 2rem; position: relative;
+  /* ========== ANIMATED STEP-BY-STEP PROCESS ========== */
+  .anim-process {
+    position: relative;
+    margin: 1.5rem 0 2rem;
+    padding-left: 36px;
+  }
+  .anim-process::before {
+    content: '';
+    position: absolute; left: 15px; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--primary-light), var(--accent));
+    border-radius: 2px;
+    opacity: 0; transform: scaleY(0); transform-origin: top;
+    transition: all 1s ease;
+  }
+  .anim-process.in-view::before {
+    opacity: 1; transform: scaleY(1);
+  }
+
+  /* Each step block */
+  .proc-step {
+    position: relative;
+    margin-bottom: 2rem;
+    opacity: 0; transform: translateX(-30px);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .proc-step.visible {
+    opacity: 1; transform: translateX(0);
+  }
+
+  /* Dot on timeline */
+  .proc-step::before {
+    content: '';
+    position: absolute; left: -29px; top: 18px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-light);
+    background: white;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+  .proc-step.visible::before {
+    background: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+  }
+  .proc-step[data-color="purple"]::before { border-color: #8b5cf6; }
+  .proc-step[data-color="purple"].visible::before {
+    background: #8b5cf6; box-shadow: 0 0 0 4px rgba(139,92,246,0.15);
+  }
+  .proc-step[data-color="orange"]::before { border-color: #f59e0b; }
+  .proc-step[data-color="orange"].visible::before {
+    background: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,0.15);
+  }
+  .proc-step[data-color="green"]::before { border-color: #10b981; }
+  .proc-step[data-color="green"].visible::before {
+    background: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.15);
+  }
+
+  /* Step header */
+  .proc-step .ps-header {
+    font-size: 0.95rem; font-weight: 700; color: var(--primary-mid);
+    margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .proc-step .ps-header .ps-badge {
+    display: inline-block; padding: 0.15rem 0.6rem;
+    border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; color: white;
+  }
+  .ps-badge.b-data { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .ps-badge.b-formula { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+  .ps-badge.b-process { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .ps-badge.b-result { background: linear-gradient(135deg, #10b981, #059669); }
+
+  /* Two-column: code + data */
+  .proc-step .ps-body {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .proc-step .ps-body { grid-template-columns: 1fr; }
+  }
+
+  /* Source code panel */
+  .ps-code {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+  .ps-code .code-header {
+    background: #1e293b;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.72rem; font-weight: 600;
+    color: #94a3b8; display: flex; align-items: center; gap: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .ps-code .code-header .dots {
+    display: flex; gap: 4px;
+  }
+  .ps-code .code-header .dots span {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .ps-code .code-header .dots span:nth-child(1) { background: #ef4444; }
+  .ps-code .code-header .dots span:nth-child(2) { background: #f59e0b; }
+  .ps-code .code-header .dots span:nth-child(3) { background: #10b981; }
+
+  .ps-code .code-body {
+    padding: 0.7rem 0.9rem;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.78rem; line-height: 1.7;
+    overflow-x: auto;
+  }
+  .ps-code .cl {
+    opacity: 0; transform: translateX(-12px);
+    transition: all 0.35s ease;
+    white-space: pre;
+  }
+  .proc-step.visible .ps-code .cl {
+    opacity: 1; transform: translateX(0);
+  }
+  .proc-step.visible .ps-code .cl:nth-child(1) { transition-delay: 0.2s; }
+  .proc-step.visible .ps-code .cl:nth-child(2) { transition-delay: 0.35s; }
+  .proc-step.visible .ps-code .cl:nth-child(3) { transition-delay: 0.5s; }
+  .proc-step.visible .ps-code .cl:nth-child(4) { transition-delay: 0.65s; }
+  .proc-step.visible .ps-code .cl:nth-child(5) { transition-delay: 0.8s; }
+  .proc-step.visible .ps-code .cl:nth-child(6) { transition-delay: 0.95s; }
+  .proc-step.visible .ps-code .cl:nth-child(7) { transition-delay: 1.1s; }
+  .proc-step.visible .ps-code .cl:nth-child(8) { transition-delay: 1.25s; }
+
+  /* Syntax colors */
+  .sk { color: #c084fc; }   /* keyword: def, for, if */
+  .sf { color: #60a5fa; }   /* function */
+  .sn { color: #34d399; }   /* number */
+  .ss { color: #fbbf24; }   /* string */
+  .sv { color: #f472b6; }   /* variable highlight */
+  .sc { color: #64748b; font-style: italic; } /* comment */
+
+  /* Data panel */
+  .ps-data-panel {
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid var(--border);
     overflow: hidden;
   }
-  .pipeline-step {
-    flex: 1; padding: 1.2rem 1rem; text-align: center;
-    position: relative; border-radius: var(--radius-sm);
-    opacity: 0; transform: translateY(30px) scale(0.95);
-    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  .ps-data-panel .dp-header {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.72rem; font-weight: 600; color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.4rem;
   }
-  .pipeline-step.visible {
-    opacity: 1; transform: translateY(0) scale(1);
-  }
-  .pipeline-step:nth-child(1) { transition-delay: 0.1s; }
-  .pipeline-step:nth-child(2) { transition-delay: 0.35s; }
-  .pipeline-step:nth-child(3) { transition-delay: 0.6s; }
-  .pipeline-step:nth-child(4) { transition-delay: 0.85s; }
-
-  .pipeline-step .step-icon {
-    width: 56px; height: 56px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 0.7rem; font-size: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-    position: relative; z-index: 2;
-  }
-  .pipeline-step .step-label {
-    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.06em; margin-bottom: 0.3rem;
-    opacity: 0.7;
-  }
-  .pipeline-step .step-title {
-    font-size: 0.92rem; font-weight: 700; margin-bottom: 0.4rem;
-    line-height: 1.3;
-  }
-  .pipeline-step .step-detail {
-    font-size: 0.78rem; line-height: 1.5; opacity: 0.85;
+  .ps-data-panel .dp-body {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    max-height: 240px; overflow-y: auto;
   }
 
-  /* Step color themes */
-  .pipeline-step.ps-data {
-    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03));
-    border: 1px solid rgba(59,130,246,0.15);
+  /* Animated table rows */
+  .ps-data-panel .dp-body table {
+    width: 100%; border-collapse: collapse; font-size: 0.8rem;
   }
-  .pipeline-step.ps-data .step-icon {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
+  .ps-data-panel .dp-body th {
+    background: var(--primary); color: white;
+    padding: 0.35rem 0.5rem; text-align: left;
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
   }
-  .pipeline-step.ps-formula {
-    background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(139,92,246,0.03));
-    border: 1px solid rgba(139,92,246,0.15);
+  .ps-data-panel .dp-body td {
+    padding: 0.3rem 0.5rem; border-bottom: 1px solid #f1f5f9;
   }
-  .pipeline-step.ps-formula .step-icon {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
+  .ps-data-panel .dp-body tr.arow {
+    opacity: 0; transform: translateY(8px);
+    transition: all 0.3s ease;
   }
-  .pipeline-step.ps-process {
-    background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03));
-    border: 1px solid rgba(245,158,11,0.15);
+  .proc-step.visible .dp-body tr.arow:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+  .proc-step.visible .dp-body tr.arow:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+  .proc-step.visible .dp-body tr.arow:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+  .proc-step.visible .dp-body tr.arow:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
+  .proc-step.visible .dp-body tr.arow:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.7s; }
+
+  /* Highlighted cells */
+  .ps-data-panel td.hl-green {
+    background: rgba(16,185,129,0.12); font-weight: 600; color: #065f46;
   }
-  .pipeline-step.ps-process .step-icon {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
+  .ps-data-panel td.hl-red {
+    background: rgba(239,68,68,0.1); font-weight: 600; color: #991b1b;
   }
-  .pipeline-step.ps-result {
-    background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.03));
-    border: 1px solid rgba(16,185,129,0.15);
+  .ps-data-panel td.hl-yellow {
+    background: rgba(245,158,11,0.12); font-weight: 600; color: #92400e;
   }
-  .pipeline-step.ps-result .step-icon {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
+  .ps-data-panel td.hl-blue {
+    background: rgba(59,130,246,0.1); font-weight: 600; color: #1e40af;
   }
 
-  /* Animated arrow between steps */
-  .pipeline-arrow {
-    display: flex; align-items: center; justify-content: center;
-    width: 50px; min-width: 50px; position: relative;
-    opacity: 0; transform: scaleX(0);
+  /* Single-value result display */
+  .dp-result {
+    text-align: center; padding: 1rem 0.5rem;
+  }
+  .dp-result .dp-big {
+    font-size: 1.6rem; font-weight: 800;
+    color: var(--primary-mid);
+    opacity: 0; transform: scale(0.5);
     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  .pipeline-arrow.visible { opacity: 1; transform: scaleX(1); }
-  .pipeline-arrow:nth-of-type(2) { transition-delay: 0.25s; }
-  .pipeline-arrow:nth-of-type(4) { transition-delay: 0.5s; }
-  .pipeline-arrow:nth-of-type(6) { transition-delay: 0.75s; }
+  .proc-step.visible .dp-result .dp-big {
+    opacity: 1; transform: scale(1); transition-delay: 0.5s;
+  }
+  .dp-result .dp-label {
+    font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;
+  }
 
-  .pipeline-arrow svg {
-    width: 40px; height: 24px;
-  }
-  .pipeline-arrow .arrow-line {
-    stroke: #94a3b8; stroke-width: 2; fill: none;
-    stroke-dasharray: 30; stroke-dashoffset: 30;
-    animation: drawArrow 0.8s ease forwards;
-    animation-play-state: paused;
-  }
-  .pipeline-arrow.visible .arrow-line {
-    animation-play-state: running;
-  }
-  .pipeline-arrow .arrow-head {
-    fill: #94a3b8;
+  /* Arrow connector between steps */
+  .proc-connector {
+    display: flex; justify-content: center; padding: 0.2rem 0 0.2rem 0;
+    margin-left: -36px;
     opacity: 0;
-    transition: opacity 0.3s ease 0.6s;
+    transition: opacity 0.4s ease 0.3s;
   }
-  .pipeline-arrow.visible .arrow-head {
-    opacity: 1;
+  .proc-connector.visible { opacity: 1; }
+  .proc-connector svg { width: 24px; height: 30px; }
+  .proc-connector .conn-line {
+    stroke: #cbd5e1; stroke-width: 2; fill: none;
+    stroke-dasharray: 20; stroke-dashoffset: 20;
   }
+  .proc-connector.visible .conn-line {
+    animation: drawConn 0.6s ease forwards 0.2s;
+  }
+  @keyframes drawConn { to { stroke-dashoffset: 0; } }
+  .proc-connector .conn-head { fill: #cbd5e1; opacity: 0; }
+  .proc-connector.visible .conn-head {
+    animation: fadeIn 0.3s ease forwards 0.7s;
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
 
-  @keyframes drawArrow {
-    to { stroke-dashoffset: 0; }
-  }
-
-  /* Pulse animation for icons */
-  @keyframes iconPulse {
-    0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
-    50% { box-shadow: 0 4px 25px rgba(0,0,0,0.25), 0 0 20px rgba(59,130,246,0.2); }
-  }
-  .pipeline-step.visible .step-icon {
-    animation: iconPulse 2s ease-in-out 1s 1;
-  }
-
-  /* Data flow particles */
-  @keyframes flowParticle {
-    0% { left: -8px; opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { left: calc(100% + 8px); opacity: 0; }
-  }
-  .pipeline-arrow .particle {
-    position: absolute; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--primary-light);
-    opacity: 0;
-  }
-  .pipeline-arrow.visible .particle {
-    animation: flowParticle 1.8s ease-in-out infinite;
-  }
-  .pipeline-arrow.visible .particle:nth-child(2) {
-    animation-delay: 0.6s; background: #8b5cf6;
-  }
-  .pipeline-arrow.visible .particle:nth-child(3) {
-    animation-delay: 1.2s; background: #10b981;
-  }
-
-  /* Code snippet animation inside pipeline */
-  .pipeline-code {
-    background: #1e293b; color: #93c5fd; border-radius: 6px;
-    padding: 0.4rem 0.6rem; font-family: 'Cascadia Code', 'Fira Code', monospace;
-    font-size: 0.68rem; text-align: left; margin-top: 0.5rem;
-    overflow: hidden; position: relative;
-    max-height: 0; opacity: 0;
-    transition: max-height 0.6s ease, opacity 0.4s ease;
-  }
-  .pipeline-step.visible .pipeline-code {
-    max-height: 200px; opacity: 1;
-    transition-delay: 0.8s;
-  }
-  .pipeline-code .code-line {
-    opacity: 0; transform: translateX(-10px);
-    transition: all 0.3s ease;
-    white-space: nowrap;
-  }
-  .pipeline-step.visible .pipeline-code .code-line:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 1.0s; }
-  .pipeline-step.visible .pipeline-code .code-line:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 1.15s; }
-  .pipeline-step.visible .pipeline-code .code-line:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 1.3s; }
-
-  /* Typing cursor effect */
+  /* Typing cursor */
   @keyframes blink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
@@ -565,28 +633,6 @@
   .typing-cursor::after {
     content: '▌'; color: #60a5fa;
     animation: blink 1s infinite;
-    font-weight: 400;
-  }
-
-  /* Number count-up highlight */
-  @keyframes countUpGlow {
-    0% { color: var(--primary-light); text-shadow: 0 0 10px rgba(59,130,246,0.4); }
-    100% { color: inherit; text-shadow: none; }
-  }
-  .count-up {
-    animation: countUpGlow 1.5s ease-out forwards;
-  }
-
-  /* Responsive pipeline */
-  @media (max-width: 900px) {
-    .pipeline-flow {
-      flex-direction: column; align-items: center;
-    }
-    .pipeline-arrow {
-      transform: rotate(90deg) scaleX(0);
-      width: 24px; min-width: 24px; height: 40px;
-    }
-    .pipeline-arrow.visible { transform: rotate(90deg) scaleX(1); }
   }
 </style>
 </head>
@@ -729,73 +775,138 @@
     </div>
   </div>
 
-  <div class="section-title">🔄 Alur Keseluruhan Proyek</div>
+  <div class="section-title">🔄 Alur Keseluruhan Proyek (Animasi)</div>
 
-  <div class="pipeline-flow" data-pipeline="beranda">
-    <!-- STEP 1: Dataset -->
-    <div class="pipeline-step ps-data">
-      <div class="step-icon">📥</div>
-      <div class="step-label">Langkah 1</div>
-      <div class="step-title">Kumpulkan Data</div>
-      <div class="step-detail">3 sumber: Internal (PaySim), Expert Opinion, Eksternal (konsorsium)</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#f59e0b;">internal</span> = PaySim.csv</div>
-        <div class="code-line"><span style="color:#f59e0b;">expert</span> = 8 ahli × 56 kat</div>
-        <div class="code-line"><span style="color:#f59e0b;">external</span> = DIPO bank</div>
+  <div class="anim-process" id="ap-beranda">
+    <!-- STEP 1 -->
+    <div class="proc-step" data-color="blue">
+      <div class="ps-header"><span class="ps-badge b-data">Step 1</span> Kumpulkan 3 Sumber Data</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> data_collection.py</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Bab 12.2 — Tiga aliran data</span></div>
+            <div class="cl"><span class="sk">import</span> pandas <span class="sk">as</span> pd</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sv">internal</span> = pd.read_csv(<span class="ss">"paysim.csv"</span>)</div>
+            <div class="cl"><span class="sv">fraud</span> = internal[internal[<span class="ss">"isFraud"</span>] == <span class="sn">1</span>]</div>
+            <div class="cl"><span class="sv">expert</span>  = generate_expert_opinions(<span class="sn">8</span>, <span class="sn">56</span>)</div>
+            <div class="cl"><span class="sv">external</span>= generate_consortium_data()</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📊 Data Terkumpul</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Sumber</th><th>Jenis</th><th>Jumlah</th></tr>
+              <tr class="arow"><td>① Internal</td><td>PaySim (fraud)</td><td class="hl-blue">8.213 event</td></tr>
+              <tr class="arow"><td>② Expert</td><td>8 ahli × 56 kat</td><td class="hl-blue">448 penilaian</td></tr>
+              <tr class="arow"><td>③ Eksternal</td><td>Konsorsium DIPO</td><td class="hl-blue">200 kerugian</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 2: Rumus -->
-    <div class="pipeline-step ps-formula">
-      <div class="step-icon">📐</div>
-      <div class="step-label">Langkah 2</div>
-      <div class="step-title">Terapkan Rumus</div>
-      <div class="step-detail">Scorecard (Gini), Aktuaria (Poisson×Lognormal), Integrasi (Bayesian + BIA)</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#c4b5fd;">M1</span> = Median + Gini</div>
-        <div class="code-line"><span style="color:#c4b5fd;">M2</span> = Poisson × Lognorm</div>
-        <div class="code-line"><span style="color:#c4b5fd;">M3</span> = Bayesian + BIA</div>
+    <!-- STEP 2 -->
+    <div class="proc-step" data-color="purple">
+      <div class="ps-header"><span class="ps-badge b-formula">Step 2</span> Terapkan 3 Model Rumus</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> models.py</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Model 1: Scorecard</span></div>
+            <div class="cl"><span class="sv">gini</span> = <span class="sn">1</span> - sum(p_k**<span class="sn">2</span>)  <span class="sc"># kesepakatan ahli</span></div>
+            <div class="cl"><span class="sv">loss</span>  = freq * severity * control</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Model 2: VaR Aktuaria</span></div>
+            <div class="cl"><span class="sv">N</span> ~ Poisson(λ);  <span class="sv">X</span> ~ Lognormal(μ, σ)</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Model 3: Integrasi + BIA</span></div>
+            <div class="cl"><span class="sv">BIA</span> = <span class="sn">0.15</span> * gross_income</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📐 Rumus yang Diterapkan</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Model</th><th>Rumus Utama</th></tr>
+              <tr class="arow"><td>Scorecard</td><td class="hl-yellow">G = 1 − Σpₖ² → Rating</td></tr>
+              <tr class="arow"><td>VaR Aktuaria</td><td class="hl-yellow">L = Σ Xᵢ → VaR 99,9%</td></tr>
+              <tr class="arow"><td>Integrasi</td><td class="hl-yellow">S₁ ∪ exp ∪ S₃/c</td></tr>
+              <tr class="arow"><td>BIA</td><td class="hl-yellow">15% × Gross Income</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 3: Proses -->
-    <div class="pipeline-step ps-process">
-      <div class="step-icon">⚙️</div>
-      <div class="step-label">Langkah 3</div>
-      <div class="step-title">Proses & Simulasi</div>
-      <div class="step-detail">Monte Carlo 100K skenario, rating 56 kategori, integrasi 3 sumber data</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#fcd34d;">simulate</span>(100_000)</div>
-        <div class="code-line"><span style="color:#fcd34d;">rate</span>(56_categories)</div>
-        <div class="code-line"><span style="color:#fcd34d;">integrate</span>(3_sources)</div>
+    <!-- STEP 3 -->
+    <div class="proc-step" data-color="orange">
+      <div class="ps-header"><span class="ps-badge b-process">Step 3</span> Proses & Simulasi</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> process.py</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Scorecard: rating 56 kategori</span></div>
+            <div class="cl"><span class="sk">for</span> cat <span class="sk">in</span> categories:</div>
+            <div class="cl">    rating[cat] = <span class="sf">median</span>(votes[cat])</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Monte Carlo: 100.000 skenario</span></div>
+            <div class="cl"><span class="sk">for</span> s <span class="sk">in</span> <span class="sf">range</span>(<span class="sn">100_000</span>):</div>
+            <div class="cl">    n = <span class="sf">poisson</span>(λ)</div>
+            <div class="cl">    L[s] = <span class="sf">sum</span>(<span class="sf">lognorm</span>(μ, σ, n))</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">⚙️ Proses Berjalan</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Proses</th><th>Status</th></tr>
+              <tr class="arow"><td>Rating 56 kategori</td><td class="hl-green">✅ 56/56 selesai</td></tr>
+              <tr class="arow"><td>Monte Carlo simulasi</td><td class="hl-green">✅ 100K skenario</td></tr>
+              <tr class="arow"><td>Integrasi 3 sumber</td><td class="hl-green">✅ Digabung</td></tr>
+              <tr class="arow"><td>Hitung 7 metode VaR</td><td class="hl-green">✅ 7/7 selesai</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 4: Hasil -->
-    <div class="pipeline-step ps-result">
-      <div class="step-icon">📊</div>
-      <div class="step-label">Langkah 4</div>
-      <div class="step-title">Hasil & Validasi</div>
-      <div class="step-detail">Rating risiko 🟢🟡🔴, VaR 99,9%, 7 metode saling validasi (Gambar 12.2)</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#86efac;">risk</span> = 🟢🟡🔴 ranked</div>
-        <div class="code-line"><span style="color:#86efac;">VaR</span> = 99.9% capital</div>
-        <div class="code-line"><span style="color:#86efac;">validated</span> = ✅ 7 methods</div>
+    <!-- STEP 4 -->
+    <div class="proc-step" data-color="green">
+      <div class="ps-header"><span class="ps-badge b-result">Step 4</span> Hasil & Validasi Silang</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> results.py</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Output akhir</span></div>
+            <div class="cl"><span class="sv">scorecard</span>  = traffic_light_ratings 🟢🟡🔴</div>
+            <div class="cl"><span class="sv">var_99_9</span>   = <span class="sf">percentile</span>(L, <span class="sn">99.9</span>)</div>
+            <div class="cl"><span class="sv">bia</span>        = <span class="sn">0.15</span> * gross_income</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Validasi: BIA ≈ Bayes VaR → konsisten!</span></div>
+            <div class="cl"><span class="sf">assert</span> <span class="sf">abs</span>(bia - bayes_var) < threshold</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📊 Hasil Akhir</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Output</th><th>Nilai</th></tr>
+              <tr class="arow"><td>Risiko Tertinggi</td><td class="hl-red">🔴 Prioritas 1</td></tr>
+              <tr class="arow"><td>VaR 99,9%</td><td class="hl-red">Modal cadangan</td></tr>
+              <tr class="arow"><td>BIA vs Bayes</td><td class="hl-green">✅ Konsisten</td></tr>
+              <tr class="arow"><td>7 metode VaR</td><td class="hl-green">✅ Tervalidasi</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -914,76 +1025,138 @@
     </div>
   </details>
 
-  <h3 class="step">3️⃣ & 4️⃣ Dataset → Rumus → Proses → Hasil</h3>
+  <h3 class="step">3️⃣ & 4️⃣ Proses Langkah demi Langkah</h3>
 
-  <div class="pipeline-flow" data-pipeline="scorecard">
-    <!-- STEP 1: Dataset -->
-    <div class="pipeline-step ps-data">
-      <div class="step-icon">📂</div>
-      <div class="step-label">Dataset</div>
-      <div class="step-title">Penilaian Ahli</div>
-      <div class="step-detail">8 ahli menilai 56 kategori risiko (8 BL × 7 ET) pada 3 dimensi: frekuensi, severity, kontrol</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#f59e0b;">experts</span> = <span style="color:#a5f3fc;">8</span></div>
-        <div class="code-line"><span style="color:#f59e0b;">categories</span> = <span style="color:#a5f3fc;">8</span> × <span style="color:#a5f3fc;">7</span> = <span style="color:#a5f3fc;">56</span></div>
-        <div class="code-line"><span style="color:#f59e0b;">dims</span> = [<span style="color:#86efac;">freq, sev, ctrl</span>]</div>
+  <div class="anim-process" id="ap-scorecard">
+    <!-- STEP 1: Ambil Data -->
+    <div class="proc-step" data-color="blue">
+      <div class="ps-header"><span class="ps-badge b-data">Dataset</span> Ambil Data Penilaian Ahli</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> scorecard.py — ambil data</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># 8 ahli menilai 56 kategori risiko</span></div>
+            <div class="cl"><span class="sv">business_lines</span> = [<span class="ss">"Corporate Finance"</span>, <span class="ss">"Trading"</span>, ...]  <span class="sc"># 8 BL</span></div>
+            <div class="cl"><span class="sv">event_types</span>   = [<span class="ss">"Internal Fraud"</span>, <span class="ss">"External Fraud"</span>, ...]  <span class="sc"># 7 ET</span></div>
+            <div class="cl"><span class="sv">n_experts</span>     = <span class="sn">8</span></div>
+            <div class="cl"><span class="sv">categories</span>    = <span class="sn">8</span> * <span class="sn">7</span>  <span class="sc"># = 56 kategori Basel II</span></div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Tiap ahli beri nilai ordinal (1-5) untuk 3 dimensi</span></div>
+            <div class="cl"><span class="sv">dims</span> = [<span class="ss">"frequency"</span>, <span class="ss">"severity"</span>, <span class="ss">"control"</span>]</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📊 Contoh Data Penilaian Ahli (mentah)</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Ahli</th><th>Lini Bisnis</th><th>Jenis</th><th>Freq</th><th>Sev</th><th>Ctrl</th></tr>
+              <tr class="arow"><td>1</td><td>Corporate Finance</td><td>Int. Fraud</td><td class="hl-blue">3</td><td class="hl-blue">4</td><td class="hl-blue">2</td></tr>
+              <tr class="arow"><td>2</td><td>Corporate Finance</td><td>Int. Fraud</td><td class="hl-blue">4</td><td class="hl-blue">4</td><td class="hl-blue">3</td></tr>
+              <tr class="arow"><td>3</td><td>Corporate Finance</td><td>Int. Fraud</td><td class="hl-blue">3</td><td class="hl-blue">5</td><td class="hl-blue">2</td></tr>
+              <tr class="arow"><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+              <tr class="arow"><td>8</td><td>Corporate Finance</td><td>Int. Fraud</td><td class="hl-blue">3</td><td class="hl-blue">4</td><td class="hl-blue">2</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 1 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 2: Rumus -->
-    <div class="pipeline-step ps-formula">
-      <div class="step-icon">📐</div>
-      <div class="step-label">Rumus</div>
-      <div class="step-title">Median + Gini</div>
-      <div class="step-detail">Median = nilai tengah ordinal. Gini mengukur kesepakatan ahli → rating A/AA/AAA</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#c4b5fd;">G</span> = 1 − Σ p<sub>k</sub>²</div>
-        <div class="code-line"><span style="color:#c4b5fd;">G_norm</span> = G × K/(K−1)</div>
-        <div class="code-line"><span style="color:#c4b5fd;">loss</span> = freq × sev × ctrl</div>
+    <!-- STEP 2: Rumus Median + Gini -->
+    <div class="proc-step" data-color="purple">
+      <div class="ps-header"><span class="ps-badge b-formula">Rumus</span> Hitung Median & Indeks Gini</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> scorecard.py — rumus</div>
+          <div class="code-body">
+            <div class="cl"><span class="sk">def</span> <span class="sf">gini_index</span>(votes, K):</div>
+            <div class="cl">    <span class="sc"># Hitung proporsi tiap kelas</span></div>
+            <div class="cl">    p = [votes.count(k) / <span class="sf">len</span>(votes) <span class="sk">for</span> k <span class="sk">in</span> <span class="sf">range</span>(K)]</div>
+            <div class="cl">    G = <span class="sn">1</span> - <span class="sf">sum</span>(pk**<span class="sn">2</span> <span class="sk">for</span> pk <span class="sk">in</span> p)</div>
+            <div class="cl">    <span class="sk">return</span> G * K / (K - <span class="sn">1</span>)  <span class="sc"># normalisasi</span></div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sv">median_freq</span> = <span class="sf">np.median</span>([<span class="sn">3,4,3,3,4,3,3,3</span>])  <span class="sc"># = 3</span></div>
+            <div class="cl"><span class="sv">gini_freq</span>  = <span class="sf">gini_index</span>([<span class="sn">3,4,3,3,4,3,3,3</span>], <span class="sn">5</span>)  <span class="sc"># = 0.375</span></div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📐 Data Berubah → Median & Gini dihitung</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Dimensi</th><th>8 Votes</th><th>→ Median</th><th>→ Gini</th></tr>
+              <tr class="arow"><td>Frequency</td><td>3,4,3,3,4,3,3,3</td><td class="hl-yellow">3</td><td class="hl-yellow">0.375</td></tr>
+              <tr class="arow"><td>Severity</td><td>4,4,5,4,3,4,4,4</td><td class="hl-yellow">4</td><td class="hl-yellow">0.344</td></tr>
+              <tr class="arow"><td>Control</td><td>2,3,2,2,2,3,2,2</td><td class="hl-yellow">2</td><td class="hl-yellow">0.375</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 2 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 3: Proses -->
-    <div class="pipeline-step ps-process">
-      <div class="step-icon">⚙️</div>
-      <div class="step-label">Proses</div>
-      <div class="step-title">Hitung Rating & Prioritas</div>
-      <div class="step-detail">Untuk 56 kategori: hitung median tiap dimensi → tentukan rating → hitung perceived loss → urutkan</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#fcd34d;">for</span> cat <span style="color:#fcd34d;">in</span> 56_categories:</div>
-        <div class="code-line">&nbsp; rating = <span style="color:#fcd34d;">median</span>(votes)</div>
-        <div class="code-line">&nbsp; priority = <span style="color:#fcd34d;">sort</span>(loss)</div>
+    <!-- STEP 3: Proses Rating -->
+    <div class="proc-step" data-color="orange">
+      <div class="ps-header"><span class="ps-badge b-process">Proses</span> Tentukan Rating & Perceived Loss</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> scorecard.py — proses</div>
+          <div class="code-body">
+            <div class="cl"><span class="sk">for</span> cat <span class="sk">in</span> all_56_categories:</div>
+            <div class="cl">    <span class="sc"># Gini kecil → konsensus kuat → rating AAA</span></div>
+            <div class="cl">    <span class="sk">if</span> gini &lt; <span class="sn">0.3</span>:   rating = <span class="ss">"AAA"</span>  <span class="sc"># 🟢</span></div>
+            <div class="cl">    <span class="sk">elif</span> gini &lt; <span class="sn">0.5</span>: rating = <span class="ss">"AA"</span>   <span class="sc"># 🟡</span></div>
+            <div class="cl">    <span class="sk">else</span>:             rating = <span class="ss">"A"</span>    <span class="sc"># 🔴</span></div>
+            <div class="cl"></div>
+            <div class="cl">    <span class="sc"># Perceived Loss = Freq × Sev × Ctrl factor</span></div>
+            <div class="cl">    <span class="sv">loss</span> = freq_per_year * sev_value * ctrl_factor</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">⚙️ Data Berubah → Rating & Loss muncul</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Kategori</th><th>Rating</th><th>Warna</th><th>Loss</th></tr>
+              <tr class="arow"><td>Corp.Fin × Int.Fraud</td><td class="hl-red">A</td><td>🔴</td><td class="hl-red">480.000</td></tr>
+              <tr class="arow"><td>Trading × Ext.Fraud</td><td class="hl-yellow">AA</td><td>🟡</td><td class="hl-yellow">240.000</td></tr>
+              <tr class="arow"><td>Retail × Sys.Failure</td><td class="hl-green">AAA</td><td>🟢</td><td class="hl-green">60.000</td></tr>
+              <tr class="arow"><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+              <tr class="arow"><td><em>56 kategori total</em></td><td>—</td><td>—</td><td><strong>Σ total</strong></td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 3 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
     <!-- STEP 4: Hasil -->
-    <div class="pipeline-step ps-result">
-      <div class="step-icon">✅</div>
-      <div class="step-label">Hasil</div>
-      <div class="step-title">Peringkat Risiko 🟢🟡🔴</div>
-      <div class="step-detail">56 kategori berperingkat: traffic light + rating huruf. Risiko tertinggi di-prioritaskan manajemen</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#86efac;">output</span> = traffic_light 🟢🟡🔴</div>
-        <div class="code-line"><span style="color:#86efac;">top_risk</span> = kategori #1</div>
-        <div class="code-line"><span style="color:#86efac;">action</span> = prioritas mitigasi</div>
+    <div class="proc-step" data-color="green">
+      <div class="ps-header"><span class="ps-badge b-result">Hasil</span> Peringkat Risiko Final</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> scorecard.py — output</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Urutkan dari yang paling berisiko</span></div>
+            <div class="cl"><span class="sv">ranked</span> = sorted(scorecard, key=<span class="ss">"priority"</span>, reverse=<span class="sn">True</span>)</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">"🔴 Risiko #1:"</span>, ranked[<span class="sn">0</span>].name)</div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">"🟡 Risiko #2:"</span>, ranked[<span class="sn">1</span>].name)</div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">"Total perceived loss:"</span>, <span class="sf">sum</span>(losses))</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">✅ Hasil Akhir — Peringkat Risiko</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>#</th><th>Kategori Risiko</th><th>Lampu</th><th>Aksi</th></tr>
+              <tr class="arow"><td class="hl-red">1</td><td class="hl-red">Paling berbahaya</td><td>🔴</td><td>Segera mitigasi</td></tr>
+              <tr class="arow"><td class="hl-yellow">2</td><td class="hl-yellow">Risiko menengah</td><td>🟡</td><td>Pantau ketat</td></tr>
+              <tr class="arow"><td class="hl-green">3</td><td class="hl-green">Risiko rendah</td><td>🟢</td><td>Cukup monitor</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1078,76 +1251,137 @@
     </div>
   </details>
 
-  <h3 class="step">3️⃣ Dataset → Rumus → Proses → Hasil</h3>
+  <h3 class="step">3️⃣ Proses Langkah demi Langkah</h3>
 
-  <div class="pipeline-flow" data-pipeline="actuarial">
-    <!-- STEP 1: Dataset -->
-    <div class="pipeline-step ps-data">
-      <div class="step-icon">📂</div>
-      <div class="step-label">Dataset</div>
-      <div class="step-title">PaySim (Fraud)</div>
-      <div class="step-detail">6,3 juta transaksi, filter isFraud=1 → data kerugian internal. Kolom amount = besar kerugian</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#f59e0b;">df</span> = paysim[isFraud==<span style="color:#a5f3fc;">1</span>]</div>
-        <div class="code-line"><span style="color:#f59e0b;">losses</span> = df[<span style="color:#86efac;">'amount'</span>]</div>
-        <div class="code-line"><span style="color:#f59e0b;">n_fraud</span> = <span style="color:#a5f3fc;">8.213</span> events</div>
+  <div class="anim-process" id="ap-actuarial">
+    <!-- STEP 1: Ambil Data -->
+    <div class="proc-step" data-color="blue">
+      <div class="ps-header"><span class="ps-badge b-data">Dataset</span> Ambil Data Fraud dari PaySim</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> actuarial.py — ambil data</div>
+          <div class="code-body">
+            <div class="cl"><span class="sk">import</span> pandas <span class="sk">as</span> pd</div>
+            <div class="cl"><span class="sk">import</span> numpy <span class="sk">as</span> np</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sv">df</span> = pd.read_csv(<span class="ss">"paysim.csv"</span>)</div>
+            <div class="cl"><span class="sv">fraud</span> = df[df[<span class="ss">"isFraud"</span>] == <span class="sn">1</span>]</div>
+            <div class="cl"><span class="sv">losses</span> = fraud[<span class="ss">"amount"</span>].values</div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">f"Total fraud: <span class="sv">{len(fraud)}</span>"</span>)</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📊 Data Fraud (isFraud = 1)</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>No</th><th>type</th><th>amount</th><th>isFraud</th></tr>
+              <tr class="arow"><td>1</td><td>TRANSFER</td><td class="hl-blue">181.000</td><td>1</td></tr>
+              <tr class="arow"><td>2</td><td>CASH_OUT</td><td class="hl-blue">339.682</td><td>1</td></tr>
+              <tr class="arow"><td>3</td><td>TRANSFER</td><td class="hl-blue">4.205.533</td><td>1</td></tr>
+              <tr class="arow"><td>4</td><td>CASH_OUT</td><td class="hl-blue">1.325.012</td><td>1</td></tr>
+              <tr class="arow"><td>…</td><td>…</td><td>…</td><td class="hl-blue">8.213 total</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 1 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 2: Rumus -->
-    <div class="pipeline-step ps-formula">
-      <div class="step-icon">📐</div>
-      <div class="step-label">Rumus</div>
-      <div class="step-title">Poisson × Lognormal</div>
-      <div class="step-detail">N ~ Poisson(λ) = frekuensi kejadian. X ~ Lognormal(μ,σ) = besar tiap kerugian. L = ΣXᵢ</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#c4b5fd;">N</span> ~ Poisson(λ)</div>
-        <div class="code-line"><span style="color:#c4b5fd;">X</span> ~ Lognormal(μ, σ)</div>
-        <div class="code-line"><span style="color:#c4b5fd;">L</span> = Σ<sub>i=1</sub><sup>N</sup> X<sub>i</sub></div>
+    <!-- STEP 2: Fit Distribusi -->
+    <div class="proc-step" data-color="purple">
+      <div class="ps-header"><span class="ps-badge b-formula">Rumus</span> Fit Distribusi Poisson & Lognormal</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> actuarial.py — fit distribusi</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Frekuensi: berapa kali fraud/hari?</span></div>
+            <div class="cl"><span class="sv">lambda_</span> = fraud_per_day.mean()  <span class="sc"># → λ ≈ 27.3</span></div>
+            <div class="cl"><span class="sc"># N ~ Poisson(λ=27.3)</span></div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Severity: distribusi besarnya kerugian</span></div>
+            <div class="cl"><span class="sv">log_losses</span> = np.log(losses)</div>
+            <div class="cl"><span class="sv">mu</span>    = log_losses.mean()     <span class="sc"># → μ ≈ 13.2</span></div>
+            <div class="cl"><span class="sv">sigma</span> = log_losses.std()      <span class="sc"># → σ ≈ 1.8</span></div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📐 Parameter Terhitung</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Parameter</th><th>Distribusi</th><th>Nilai</th></tr>
+              <tr class="arow"><td class="hl-yellow">λ (lambda)</td><td>Poisson — frekuensi</td><td class="hl-yellow">≈ 27,3 fraud/hari</td></tr>
+              <tr class="arow"><td class="hl-yellow">μ (mu)</td><td>Lognormal — lokasi</td><td class="hl-yellow">≈ 13,2</td></tr>
+              <tr class="arow"><td class="hl-yellow">σ (sigma)</td><td>Lognormal — skala</td><td class="hl-yellow">≈ 1,8</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 2 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 3: Proses -->
-    <div class="pipeline-step ps-process">
-      <div class="step-icon">⚙️</div>
-      <div class="step-label">Proses</div>
-      <div class="step-title">Monte Carlo Simulasi</div>
-      <div class="step-detail">Simulasikan 100.000 skenario: tiap skenario acak N kejadian × acak besar kerugian → distribusi L</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#fcd34d;">for</span> s <span style="color:#fcd34d;">in</span> range(<span style="color:#a5f3fc;">100000</span>):</div>
-        <div class="code-line">&nbsp; n = poisson(λ)</div>
-        <div class="code-line">&nbsp; L[s] = <span style="color:#fcd34d;">sum</span>(lognorm(n))</div>
+    <!-- STEP 3: Monte Carlo -->
+    <div class="proc-step" data-color="orange">
+      <div class="ps-header"><span class="ps-badge b-process">Proses</span> Simulasi Monte Carlo (100.000×)</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> actuarial.py — simulasi</div>
+          <div class="code-body">
+            <div class="cl"><span class="sv">n_sim</span> = <span class="sn">100_000</span></div>
+            <div class="cl"><span class="sv">total_losses</span> = []</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sk">for</span> s <span class="sk">in</span> <span class="sf">range</span>(n_sim):</div>
+            <div class="cl">    n = np.random.<span class="sf">poisson</span>(lambda_)      <span class="sc"># acak: brp kejadian?</span></div>
+            <div class="cl">    x = np.random.<span class="sf">lognormal</span>(mu, sigma, n) <span class="sc"># acak: brp besar?</span></div>
+            <div class="cl">    total_losses.<span class="sf">append</span>(<span class="sf">sum</span>(x))            <span class="sc"># L = Σ Xᵢ</span></div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">⚙️ Simulasi Berjalan...</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Skenario</th><th>N (kejadian)</th><th>Total Loss (L)</th></tr>
+              <tr class="arow"><td>#1</td><td>24</td><td class="hl-green">12.450.000</td></tr>
+              <tr class="arow"><td>#2</td><td>31</td><td class="hl-yellow">89.200.000</td></tr>
+              <tr class="arow"><td>#3</td><td>28</td><td class="hl-green">34.100.000</td></tr>
+              <tr class="arow"><td>#4</td><td>19</td><td class="hl-red">245.000.000</td></tr>
+              <tr class="arow"><td>…</td><td>…</td><td><em>100.000 skenario</em></td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 3 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 4: Hasil -->
-    <div class="pipeline-step ps-result">
-      <div class="step-icon">✅</div>
-      <div class="step-label">Hasil</div>
-      <div class="step-title">VaR 99,9%</div>
-      <div class="step-detail">Persentil ke-99,9 dari distribusi L = cadangan modal minimum. Hanya 0,1% skenario melebihi batas ini</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#86efac;">VaR</span> = percentile(L, <span style="color:#a5f3fc;">99.9</span>)</div>
-        <div class="code-line"><span style="color:#86efac;">capital</span> = VaR_amount</div>
-        <div class="code-line"><span style="color:#86efac;">confidence</span> = <span style="color:#a5f3fc;">99.9</span>%</div>
+    <!-- STEP 4: Hitung VaR -->
+    <div class="proc-step" data-color="green">
+      <div class="ps-header"><span class="ps-badge b-result">Hasil</span> Hitung VaR 99,9% → Cadangan Modal</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> actuarial.py — output</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Ambil persentil ke-99,9</span></div>
+            <div class="cl"><span class="sv">var_999</span> = np.<span class="sf">percentile</span>(total_losses, <span class="sn">99.9</span>)</div>
+            <div class="cl"><span class="sv">expected</span> = np.<span class="sf">mean</span>(total_losses)</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">f"VaR 99.9%: Rp <span class="sv">{var_999:,.0f}</span>"</span>)</div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">"→ Siapkan modal cadangan sebesar ini"</span>)</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">✅ Hasil Akhir</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Metrik</th><th>Nilai</th></tr>
+              <tr class="arow"><td>Rata-rata kerugian</td><td class="hl-blue">E[L] = dari simulasi</td></tr>
+              <tr class="arow"><td class="hl-red"><strong>VaR 99,9%</strong></td><td class="hl-red"><strong>= cadangan modal</strong></td></tr>
+              <tr class="arow"><td>Keyakinan</td><td class="hl-green">99,9% aman</td></tr>
+              <tr class="arow"><td>Skenario melebihi</td><td>Hanya 0,1% (100 dari 100K)</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1227,76 +1461,142 @@
     </div>
   </details>
 
-  <h3 class="step">3️⃣ Dataset → Rumus → Proses → Hasil</h3>
+  <h3 class="step">3️⃣ Proses Langkah demi Langkah</h3>
 
-  <div class="pipeline-flow" data-pipeline="integrated">
-    <!-- STEP 1: Dataset -->
-    <div class="pipeline-step ps-data">
-      <div class="step-icon">📂</div>
-      <div class="step-label">Dataset</div>
-      <div class="step-title">3 Sumber Data</div>
-      <div class="step-detail">① Internal (PaySim fraud) + ② Expert (penilaian ahli) + ③ Eksternal (konsorsium bank lain, di-scaling)</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#f59e0b;">S1</span> = internal_losses</div>
-        <div class="code-line"><span style="color:#f59e0b;">S2</span> = expert_assessment</div>
-        <div class="code-line"><span style="color:#f59e0b;">S3</span> = external / <span style="color:#a5f3fc;">c</span></div>
+  <div class="anim-process" id="ap-integrated">
+    <!-- STEP 1: Kumpulkan 3 Sumber Data -->
+    <div class="proc-step" data-color="blue">
+      <div class="ps-header"><span class="ps-badge b-data">Dataset</span> Kumpulkan 3 Sumber Data</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> integration.py — load data</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Sumber 1: Data internal (PaySim fraud)</span></div>
+            <div class="cl"><span class="sv">S_internal</span> = paysim[paysim.<span class="sv">isFraud</span>==<span class="sn">1</span>][<span class="ss">"amount"</span>]</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Sumber 2: Penilaian ahli (expert)</span></div>
+            <div class="cl"><span class="sv">S_expert</span> = expert_assessment[<span class="ss">"perceived_loss"</span>]</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Sumber 3: Data eksternal (konsorsium bank)</span></div>
+            <div class="cl"><span class="sv">S_external</span> = external_data[<span class="ss">"loss_amount"</span>]</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📂 3 Sumber Data Terkumpul</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Sumber</th><th>Tipe</th><th>Jumlah</th></tr>
+              <tr class="arow"><td class="hl-blue">① Internal</td><td>PaySim fraud records</td><td>8.213 kejadian</td></tr>
+              <tr class="arow"><td class="hl-yellow">② Expert</td><td>Self-assessment ahli</td><td>7 kategori</td></tr>
+              <tr class="arow"><td class="hl-green">③ Eksternal</td><td>Konsorsium bank lain</td><td>Scaled data</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 1 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 2: Rumus -->
-    <div class="pipeline-step ps-formula">
-      <div class="step-icon">📐</div>
-      <div class="step-label">Rumus</div>
-      <div class="step-title">Integrasi Bayesian + BIA</div>
-      <div class="step-detail">S_gabungan = S₁ ∪ expert ∪ S₃ˢᶜᵃˡᵉᵈ. Scaling: c = Σext/Σint. BIA = 15% × Gross Income</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#c4b5fd;">c</span> = Σext / Σint</div>
-        <div class="code-line"><span style="color:#c4b5fd;">S</span> = S1 ∪ exp ∪ S3/c</div>
-        <div class="code-line"><span style="color:#c4b5fd;">BIA</span> = 0.15 × GI</div>
+    <!-- STEP 2: Scaling & Gabungkan -->
+    <div class="proc-step" data-color="purple">
+      <div class="ps-header"><span class="ps-badge b-formula">Rumus</span> Scaling & Integrasi Bayesian</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> integration.py — rumus</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Scaling: samakan skala data eksternal</span></div>
+            <div class="cl"><span class="sv">c</span> = S_external.<span class="sf">sum</span>() / S_internal.<span class="sf">sum</span>()</div>
+            <div class="cl"><span class="sv">S_ext_scaled</span> = S_external / <span class="sv">c</span></div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Gabungkan semua sumber (Bayesian)</span></div>
+            <div class="cl"><span class="sv">S_combined</span> = <span class="sf">concat</span>([S_internal, S_expert, S_ext_scaled])</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># BIA sebagai pembanding</span></div>
+            <div class="cl"><span class="sv">BIA</span> = <span class="sn">0.15</span> * gross_income</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">📐 Rumus Diterapkan</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Variabel</th><th>Rumus</th><th>Hasil</th></tr>
+              <tr class="arow"><td class="hl-yellow">c (scaling)</td><td>Σ ext / Σ int</td><td>faktor penyesuaian</td></tr>
+              <tr class="arow"><td class="hl-yellow">S_combined</td><td>S₁ ∪ S₂ ∪ S₃/c</td><td>data gabungan</td></tr>
+              <tr class="arow"><td class="hl-yellow">BIA</td><td>15% × Gross Income</td><td>pembanding top-down</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 2 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 3: Proses -->
-    <div class="pipeline-step ps-process">
-      <div class="step-icon">⚙️</div>
-      <div class="step-label">Proses</div>
-      <div class="step-title">7 Metode VaR</div>
-      <div class="step-detail">Hitung VaR dari tiap sumber & gabungan: Historical, Bayes, Monte Carlo, Self-Assessment, BIA → 7 estimasi</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#fcd34d;">for</span> src <span style="color:#fcd34d;">in</span> [int, bay, mc]:</div>
-        <div class="code-line">&nbsp; VaR[src] = p99.9(src)</div>
-        <div class="code-line">&nbsp; compare(VaR, BIA)</div>
+    <!-- STEP 3: Hitung 7 Metode VaR -->
+    <div class="proc-step" data-color="orange">
+      <div class="ps-header"><span class="ps-badge b-process">Proses</span> Hitung VaR dengan 7 Metode</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> integration.py — hitung</div>
+          <div class="code-body">
+            <div class="cl"><span class="sv">methods</span> = {</div>
+            <div class="cl">    <span class="ss">"Internal_Hist"</span>:  <span class="sf">percentile</span>(S_int,  <span class="sn">99.9</span>),</div>
+            <div class="cl">    <span class="ss">"Bayes_Hist"</span>:    <span class="sf">percentile</span>(S_comb, <span class="sn">99.9</span>),</div>
+            <div class="cl">    <span class="ss">"Bayes_MonteCar"</span>: <span class="sf">mc_sim</span>(S_comb),</div>
+            <div class="cl">    <span class="ss">"Self_Assess"</span>:   <span class="sf">var_expert</span>(S_exp),</div>
+            <div class="cl">    <span class="ss">"External"</span>:      <span class="sf">percentile</span>(S_ext, <span class="sn">99.9</span>),</div>
+            <div class="cl">    <span class="ss">"Actuarial"</span>:     actuarial_var,</div>
+            <div class="cl">    <span class="ss">"BIA"</span>:           <span class="sn">0.15</span> * gross_income,</div>
+            <div class="cl">}</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">⚙️ 7 Estimasi VaR Terhitung</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>No</th><th>Metode</th><th>Sumber</th></tr>
+              <tr class="arow"><td>1</td><td>Internal Historical</td><td class="hl-blue">Internal saja</td></tr>
+              <tr class="arow"><td>2</td><td>Bayes Historical</td><td class="hl-yellow">Gabungan</td></tr>
+              <tr class="arow"><td>3</td><td>Bayes Monte Carlo</td><td class="hl-yellow">Gabungan</td></tr>
+              <tr class="arow"><td>4</td><td>Self Assessment</td><td class="hl-green">Expert</td></tr>
+              <tr class="arow"><td>5</td><td>External VaR</td><td class="hl-green">Eksternal</td></tr>
+              <tr class="arow"><td>6</td><td>Actuarial VaR</td><td class="hl-blue">Model 2</td></tr>
+              <tr class="arow"><td>7</td><td>BIA</td><td class="hl-red">Top-down</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ARROW 3 -->
-    <div class="pipeline-arrow">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <svg viewBox="0 0 40 24"><line class="arrow-line" x1="2" y1="12" x2="30" y2="12"/><polygon class="arrow-head" points="28,6 38,12 28,18"/></svg>
-    </div>
+    <div class="proc-connector"><svg viewBox="0 0 24 30"><line class="conn-line" x1="12" y1="2" x2="12" y2="22"/><polygon class="conn-head" points="6,20 12,28 18,20"/></svg></div>
 
-    <!-- STEP 4: Hasil -->
-    <div class="pipeline-step ps-result">
-      <div class="step-icon">✅</div>
-      <div class="step-label">Hasil</div>
-      <div class="step-title">Validasi Silang</div>
-      <div class="step-detail">7 estimasi VaR dibandingkan (analog Gambar 12.2). BIA ≈ Bayes VaR → konsisten, model valid</div>
-      <div class="pipeline-code">
-        <div class="code-line"><span style="color:#86efac;">methods</span> = <span style="color:#a5f3fc;">7</span> estimasi</div>
-        <div class="code-line"><span style="color:#86efac;">BIA</span> ≈ Bayes VaR ✅</div>
-        <div class="code-line"><span style="color:#86efac;">status</span> = validated!</div>
+    <!-- STEP 4: Validasi Silang -->
+    <div class="proc-step" data-color="green">
+      <div class="ps-header"><span class="ps-badge b-result">Hasil</span> Validasi Silang — 7 Metode Dibandingkan</div>
+      <div class="ps-body">
+        <div class="ps-code">
+          <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> integration.py — validasi</div>
+          <div class="code-body">
+            <div class="cl"><span class="sc"># Bandingkan semua metode (Gambar 12.2)</span></div>
+            <div class="cl"><span class="sk">for</span> name, val <span class="sk">in</span> methods.items():</div>
+            <div class="cl">    <span class="sf">print</span>(<span class="ss">f"<span class="sv">{name}</span>: Rp <span class="sv">{val:,.0f}</span>"</span>)</div>
+            <div class="cl"></div>
+            <div class="cl"><span class="sc"># Apakah BIA ≈ Bayes? → validasi!</span></div>
+            <div class="cl"><span class="sv">ratio</span> = methods[<span class="ss">"BIA"</span>] / methods[<span class="ss">"Bayes_Hist"</span>]</div>
+            <div class="cl"><span class="sf">print</span>(<span class="ss">f"BIA/Bayes ratio: <span class="sv">{ratio:.2f}</span> ✅"</span>)</div>
+          </div>
+        </div>
+        <div class="ps-data-panel">
+          <div class="dp-header">✅ Hasil Validasi Silang</div>
+          <div class="dp-body">
+            <table>
+              <tr><th>Cek</th><th>Hasil</th></tr>
+              <tr class="arow"><td>7 metode dihitung</td><td class="hl-green">✅ Selesai</td></tr>
+              <tr class="arow"><td>BIA ≈ Bayes VaR?</td><td class="hl-green">✅ Konsisten</td></tr>
+              <tr class="arow"><td>Metode saling dekat?</td><td class="hl-green">✅ Tervalidasi</td></tr>
+              <tr class="arow"><td><strong>Status Model</strong></td><td class="hl-green"><strong>VALID ✅</strong></td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1889,57 +2189,67 @@ function renderAll(D) {
 </script>
 
 <script>
-// === Pipeline Animation via IntersectionObserver ===
-function initPipelineAnimations() {
+// === Step-by-Step Process Animation ===
+function initProcessAnimations() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const flow = entry.target;
-        const steps = flow.querySelectorAll('.pipeline-step');
-        const arrows = flow.querySelectorAll('.pipeline-arrow');
-        steps.forEach(s => s.classList.add('visible'));
-        arrows.forEach(a => a.classList.add('visible'));
-        observer.unobserve(flow);
+        const proc = entry.target;
+        proc.classList.add('in-view');
+        const steps = proc.querySelectorAll('.proc-step');
+        const connectors = proc.querySelectorAll('.proc-connector');
+        let delay = 0;
+        steps.forEach((step, i) => {
+          setTimeout(() => step.classList.add('visible'), delay);
+          delay += 600;
+          if (connectors[i]) {
+            setTimeout(() => connectors[i].classList.add('visible'), delay);
+            delay += 400;
+          }
+        });
+        observer.unobserve(proc);
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.15 });
 
-  document.querySelectorAll('.pipeline-flow').forEach(flow => {
-    observer.observe(flow);
-  });
+  document.querySelectorAll('.anim-process').forEach(p => observer.observe(p));
 }
 
-// Reset pipeline animations when switching pages
-function resetPipelineAnimations(pageId) {
+function resetProcessAnimations(pageId) {
   const page = document.getElementById('page-' + pageId);
   if (!page) return;
-  page.querySelectorAll('.pipeline-flow').forEach(flow => {
-    flow.querySelectorAll('.pipeline-step').forEach(s => s.classList.remove('visible'));
-    flow.querySelectorAll('.pipeline-arrow').forEach(a => a.classList.remove('visible'));
+  page.querySelectorAll('.anim-process').forEach(proc => {
+    proc.classList.remove('in-view');
+    proc.querySelectorAll('.proc-step').forEach(s => s.classList.remove('visible'));
+    proc.querySelectorAll('.proc-connector').forEach(c => c.classList.remove('visible'));
   });
-  // Re-trigger after a short delay to let the page become visible
   setTimeout(() => {
-    page.querySelectorAll('.pipeline-flow').forEach(flow => {
-      const steps = flow.querySelectorAll('.pipeline-step');
-      const arrows = flow.querySelectorAll('.pipeline-arrow');
-      steps.forEach(s => s.classList.add('visible'));
-      arrows.forEach(a => a.classList.add('visible'));
+    page.querySelectorAll('.anim-process').forEach(proc => {
+      proc.classList.add('in-view');
+      let delay = 0;
+      const steps = proc.querySelectorAll('.proc-step');
+      const connectors = proc.querySelectorAll('.proc-connector');
+      steps.forEach((step, i) => {
+        setTimeout(() => step.classList.add('visible'), delay);
+        delay += 600;
+        if (connectors[i]) {
+          setTimeout(() => connectors[i].classList.add('visible'), delay);
+          delay += 400;
+        }
+      });
     });
-  }, 150);
+  }, 200);
 }
 
-// Patch the page navigation to include pipeline reset
 const _origShowPage = showPage;
 showPage = function(id) {
   _origShowPage(id);
-  resetPipelineAnimations(id);
+  resetProcessAnimations(id);
 };
 
-// Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
-  initPipelineAnimations();
-  // Trigger for the initially active page
-  resetPipelineAnimations('beranda');
+  initProcessAnimations();
+  resetProcessAnimations('beranda');
 });
 </script>
 </body>
