@@ -1140,55 +1140,235 @@
 
   <!-- Metode 2: VaR Aktuaria -->
   <div class="card" style="border-left:4px solid var(--warn);">
-    <h3>📈 Metode 2 — VaR Aktuaria (Loss Distribution Approach)</h3>
+    <h3>📈 Metode 2 — Actuarial Monte Carlo VaR (Loss Distribution Approach)</h3>
     <div class="badge yellow" style="margin:0.5rem 0;">Tujuan: Prudensial — Cadangan Modal</div>
-    <p style="margin-top:0.6rem;">
-      Metode aktuaria menghitung <strong>Value-at-Risk (VaR)</strong> — yaitu estimasi kerugian maksimum
-      yang mungkin terjadi dalam satu tahun pada tingkat kepercayaan tertentu (99,9%). VaR inilah yang
-      menentukan berapa cadangan modal yang harus disiapkan bank.
+
+    <!-- Penjelasan istilah -->
+    <div class="info-box" style="margin-top:1rem;border-left:4px solid var(--warn);background:rgba(245,158,11,0.06);">
+      <strong>📝 Arti Istilah dalam Nama Metode:</strong>
+      <div style="margin-top:0.6rem;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0.5rem;font-weight:700;width:180px;vertical-align:top;color:var(--warn);">Actuarial</td>
+            <td style="padding:0.5rem;">Pendekatan dari ilmu <strong>aktuaria</strong> (ilmu menghitung risiko di asuransi/keuangan). Intinya: memodelkan <em>"berapa sering"</em> dan <em>"berapa besar"</em> kerugian terjadi secara statistik.</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;font-weight:700;vertical-align:top;color:var(--warn);">Monte Carlo</td>
+            <td style="padding:0.5rem;">Teknik <strong>simulasi komputer</strong> yang menjalankan ribuan skenario acak untuk mendapatkan gambaran kemungkinan yang terjadi. Namanya dari kasino Monte Carlo — karena pakai "keberuntungan acak" berulang kali.</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;font-weight:700;vertical-align:top;color:var(--warn);">VaR (Value-at-Risk)</td>
+            <td style="padding:0.5rem;">Angka yang menjawab: <em>"Dalam skenario <strong>terburuk</strong> yang masih wajar (99,9%), berapa <strong>kerugian maksimum</strong> dalam setahun?"</em> — Bank harus siapkan uang sebesar ini.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Analogi -->
+    <div class="info-box" style="margin-top:1rem;border-left:4px solid var(--warn);background:rgba(245,158,11,0.06);">
+      <strong>💡 Analogi Sederhana:</strong><br>
+      Bayangkan Anda pemilik toko dan ingin tahu <strong>berapa uang cadangan</strong> untuk menutup kerugian pencurian tahun depan.<br><br>
+      Anda punya data 3 tahun terakhir: pencurian terjadi <strong>rata-rata 10× setahun</strong> (frekuensi),
+      dan setiap kali rata-rata rugi <strong>Rp 5 juta</strong> (severity).<br><br>
+      Tapi Anda tidak cukup kalikan 10 × 5 juta = 50 juta, karena kadang pencurian bisa 15×, kadang ruginya Rp 20 juta.
+      Jadi Anda <strong>simulasikan 20.000 kemungkinan tahun</strong> → lihat di skenario terburuk, berapa total kerugiannya.
+      Itulah <strong>Monte Carlo VaR</strong>.
+    </div>
+
+    <h4 style="margin-top:1.5rem;">🔢 Langkah 1: Modelkan Frekuensi — "Berapa Kali?"</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Pertama, kita modelkan <strong>berapa kali</strong> fraud terjadi dalam setahun.
+    </p>
+    <div class="cols c2">
+      <div class="card" style="background:var(--bg);">
+        <h4 style="color:var(--warn);">📐 Distribusi yang Dipakai: Poisson</h4>
+        <div style="text-align:center;margin:0.8rem 0;padding:0.8rem;background:rgba(245,158,11,0.08);border-radius:10px;font-size:1.1rem;">
+          <code><strong>N ~ Poisson(λ)</strong></code>
+        </div>
+        <p><strong>λ (lambda)</strong> = rata-rata kejadian fraud per tahun</p>
+        <p style="margin-top:0.4rem;font-size:0.85rem;color:var(--text-secondary);">
+          Contoh: Jika λ = 10, artinya rata-rata 10 fraud per tahun.
+          Tapi bisa saja tahun ini 7, tahun depan 13 — Poisson memodelkan ketidakpastian ini.
+        </p>
+      </div>
+      <div class="card" style="background:var(--bg);">
+        <h4>🤔 Kenapa Poisson?</h4>
+        <ul style="padding-left:1.2rem;margin-top:0.5rem;line-height:1.8;">
+          <li>Fraud adalah kejadian <strong>langka</strong> (dari jutaan transaksi, hanya sedikit yang fraud)</li>
+          <li>Setiap fraud <strong>independen</strong> satu sama lain</li>
+          <li>Rata-rata kejadian <strong>relatif stabil</strong> per periode</li>
+          <li>Ini persis sifat distribusi Poisson!</li>
+        </ul>
+        <div class="info-box" style="margin-top:0.5rem;padding:0.5rem 0.8rem;">
+          💡 Contoh Poisson lain: jumlah kecelakaan per bulan, jumlah antrian per jam
+        </div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:1.5rem;">💰 Langkah 2: Modelkan Severity — "Berapa Besar?"</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Kedua, kita modelkan <strong>berapa besar kerugian</strong> setiap kali fraud terjadi.
+    </p>
+    <div class="cols c2">
+      <div class="card" style="background:var(--bg);">
+        <h4 style="color:var(--warn);">📐 Distribusi yang Dipakai: Lognormal</h4>
+        <div style="text-align:center;margin:0.8rem 0;padding:0.8rem;background:rgba(245,158,11,0.08);border-radius:10px;font-size:1.1rem;">
+          <code><strong>X ~ Lognormal(μ, σ)</strong></code>
+        </div>
+        <p><strong>μ (mu)</strong> = rata-rata log kerugian</p>
+        <p><strong>σ (sigma)</strong> = variasi log kerugian</p>
+        <p style="margin-top:0.4rem;font-size:0.85rem;color:var(--text-secondary);">
+          Contoh: Kebanyakan fraud rugi Rp 1–10 juta, tapi sesekali ada yang Rp 500 juta (ekor panjang).
+        </p>
+      </div>
+      <div class="card" style="background:var(--bg);">
+        <h4>🤔 Kenapa Lognormal?</h4>
+        <ul style="padding-left:1.2rem;margin-top:0.5rem;line-height:1.8;">
+          <li>Kerugian <strong>selalu positif</strong> (tidak bisa negatif)</li>
+          <li>Kebanyakan kerugian <strong>kecil</strong>, sedikit yang <strong>sangat besar</strong></li>
+          <li>Distribusinya <strong>miring ke kanan</strong> (right-skewed / berekor panjang)</li>
+          <li>Ini persis ciri distribusi Lognormal!</li>
+        </ul>
+        <div class="info-box" style="margin-top:0.5rem;padding:0.5rem 0.8rem;">
+          💡 Contoh Lognormal lain: harga saham, pendapatan masyarakat, ukuran klaim asuransi
+        </div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:1.5rem;">🎰 Langkah 3: Simulasi Monte Carlo — "Coba 20.000 Skenario"</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Sekarang gabungkan keduanya: untuk setiap "tahun simulasi", tentukan berapa kali fraud terjadi
+      dan berapa besar masing-masing, lalu jumlahkan.
     </p>
 
-    <h4 style="margin-top:1rem;">🔢 Langkah-langkah Metode VaR Aktuaria:</h4>
-    <ol style="padding-left:1.4rem;margin-top:0.6rem;line-height:2;">
-      <li><strong>Estimasi Frekuensi</strong> — Berapa kali fraud terjadi per tahun?
-        <div class="info-box" style="margin:0.5rem 0;padding:0.6rem 1rem;">
-          <code style="font-size:1rem;">N ~ Poisson(λ)</code> &nbsp; dimana λ = rata-rata kejadian fraud per tahun<br>
-          <span style="font-size:0.85rem;color:var(--text-secondary);">
-            Distribusi Poisson cocok karena fraud adalah kejadian langka dan independen.
-          </span>
-        </div>
-      </li>
-      <li><strong>Estimasi Severity</strong> — Seberapa besar kerugian per kejadian?
-        <div class="info-box" style="margin:0.5rem 0;padding:0.6rem 1rem;">
-          <code style="font-size:1rem;">X ~ Lognormal(μ, σ)</code> &nbsp; dimana μ, σ diestimasi dari data fraud aktual<br>
-          <span style="font-size:0.85rem;color:var(--text-secondary);">
-            Distribusi Lognormal cocok karena kerugian selalu positif dan berdistribusi miring ke kanan (skewed).
-          </span>
-        </div>
-      </li>
-      <li><strong>Simulasi Monte Carlo</strong> — Gabungkan frekuensi & severity:
-        <div class="info-box" style="margin:0.5rem 0;padding:0.6rem 1rem;">
-          Untuk setiap simulasi <em>s</em> dari 20.000 skenario:<br>
-          <code style="font-size:1rem;">L(s) = Σᵢ₌₁ᴺ⁽ˢ⁾ Xᵢ</code> &nbsp; (total kerugian = jumlahkan semua kerugian individual)<br>
-          <span style="font-size:0.85rem;color:var(--text-secondary);">
-            N(s) diambil dari Poisson, setiap Xᵢ dari Lognormal → menghasilkan distribusi kerugian agregat.
-          </span>
-        </div>
-      </li>
-      <li><strong>Hitung VaR</strong>:
-        <div class="info-box" style="margin:0.5rem 0;padding:0.6rem 1rem;">
-          <code style="font-size:1rem;">VaR₉₉,₉% = Percentile(L, 99.9%)</code><br>
-          <span style="font-size:0.85rem;color:var(--text-secondary);">
-            Artinya: Dengan kepercayaan 99,9%, kerugian tahunan <strong>tidak akan melebihi</strong> nilai VaR ini.
-            Bank harus menyediakan modal sebesar VaR sebagai cadangan.
-          </span>
-        </div>
-      </li>
-    </ol>
+    <div class="info-box" style="border-left:4px solid var(--warn);">
+      <strong>🎲 Cara Kerja Monte Carlo (Langkah demi Langkah):</strong>
+      <div style="margin-top:0.8rem;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr style="background:rgba(245,158,11,0.06);">
+            <td style="padding:0.6rem;font-weight:700;width:40px;text-align:center;">①</td>
+            <td style="padding:0.6rem;"><strong>Acak frekuensi:</strong> Ambil angka acak dari Poisson(λ) → misalnya N = 12 kejadian</td>
+          </tr>
+          <tr>
+            <td style="padding:0.6rem;font-weight:700;text-align:center;">②</td>
+            <td style="padding:0.6rem;"><strong>Acak severity:</strong> Untuk setiap dari 12 kejadian, ambil angka acak dari Lognormal → misal: Rp 2jt, Rp 8jt, Rp 1jt, ...</td>
+          </tr>
+          <tr style="background:rgba(245,158,11,0.06);">
+            <td style="padding:0.6rem;font-weight:700;text-align:center;">③</td>
+            <td style="padding:0.6rem;"><strong>Jumlahkan:</strong> Total kerugian skenario ini = Rp 2jt + Rp 8jt + Rp 1jt + ... = <strong>Rp 45 juta</strong></td>
+          </tr>
+          <tr>
+            <td style="padding:0.6rem;font-weight:700;text-align:center;">④</td>
+            <td style="padding:0.6rem;"><strong>Ulangi 20.000×:</strong> Lakukan langkah ①–③ sebanyak 20.000 kali → dapat 20.000 kemungkinan total kerugian</td>
+          </tr>
+        </table>
+      </div>
+      <div style="text-align:center;margin:1rem 0;padding:1rem;background:rgba(245,158,11,0.08);border-radius:10px;">
+        <code style="font-size:1.1rem;"><strong>L(s) = X₁ + X₂ + X₃ + ... + Xₙ</strong></code><br>
+        <span style="font-size:0.85rem;color:var(--text-secondary);">
+          Total kerugian = jumlahkan semua kerugian individual dalam satu skenario
+        </span>
+      </div>
+    </div>
+
+    <!-- Ilustrasi contoh 5 skenario -->
+    <div class="card" style="background:var(--bg);margin-top:1rem;">
+      <h4>📊 Ilustrasi: Contoh 5 dari 20.000 Skenario</h4>
+      <div class="table-scroll" style="margin-top:0.5rem;">
+        <table class="data-table">
+          <thead><tr><th>Skenario</th><th>Frekuensi (N)</th><th>Kerugian per Kejadian</th><th>Total Kerugian</th></tr></thead>
+          <tbody>
+            <tr><td>#1</td><td>8 fraud</td><td>Rp 3jt, 1jt, 7jt, 2jt, 5jt, 1jt, 4jt, 2jt</td><td style="font-weight:700;">Rp 25 juta</td></tr>
+            <tr><td>#2</td><td>12 fraud</td><td>Rp 5jt, 2jt, 15jt, 1jt, ... (12 nilai)</td><td style="font-weight:700;">Rp 68 juta</td></tr>
+            <tr><td>#3</td><td>5 fraud</td><td>Rp 2jt, 3jt, 1jt, 4jt, 2jt</td><td style="font-weight:700;">Rp 12 juta</td></tr>
+            <tr style="background:rgba(239,68,68,0.06);">
+              <td>#4 ⚠️</td><td>15 fraud</td><td>Rp 10jt, 50jt, 8jt, ... (ada yg besar!)</td><td style="font-weight:700;color:var(--danger);">Rp 180 juta</td></tr>
+            <tr><td>#5</td><td>9 fraud</td><td>Rp 4jt, 2jt, 6jt, 1jt, 3jt, ...</td><td style="font-weight:700;">Rp 35 juta</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;">
+        Perhatikan skenario #4 — frekuensi tinggi + ada kerugian besar = total jauh lebih tinggi.
+        Inilah "ekor" distribusi yang berbahaya.
+      </p>
+    </div>
+
+    <h4 style="margin-top:1.5rem;">📏 Langkah 4: Ambil VaR — "Skenario Terburuk yang Masih Wajar"</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Dari 20.000 skenario, urutkan total kerugian dari kecil ke besar. VaR 99,9% = nilai di posisi ke-99,9%.
+    </p>
+
+    <div class="info-box" style="border-left:4px solid var(--danger);">
+      <strong>📏 Cara Membaca VaR 99,9%:</strong>
+      <div style="text-align:center;margin:1rem 0;padding:1rem;background:rgba(239,68,68,0.06);border-radius:10px;">
+        <code style="font-size:1.2rem;"><strong>VaR₉₉,₉% = Percentile ke-99,9 dari 20.000 skenario</strong></code>
+      </div>
+      <div style="margin-top:0.8rem;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0.5rem;width:40px;text-align:center;font-size:1.2rem;">📊</td>
+            <td style="padding:0.5rem;">Dari 20.000 skenario, <strong>19.980 skenario</strong> (99,9%) punya kerugian <strong>di bawah</strong> VaR</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;text-align:center;font-size:1.2rem;">⚠️</td>
+            <td style="padding:0.5rem;">Hanya <strong>20 skenario</strong> (0,1%) yang kerugiannya <strong>melebihi</strong> VaR — ini skenario ekstrem</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;text-align:center;font-size:1.2rem;">🏦</td>
+            <td style="padding:0.5rem;">Bank harus siapkan cadangan modal <strong>minimal sebesar VaR</strong> agar aman di 99,9% kemungkinan</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="cols c2" style="margin-top:1rem;">
+      <div class="card" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);">
+        <h4 style="color:var(--accent);">✅ Kenapa 99,9%?</h4>
+        <p>Basel II menetapkan tingkat kepercayaan <strong>99,9%</strong> — artinya bank harus siap menghadapi
+        kejadian yang terjadi <strong>paling buruk 1× dalam 1.000 tahun</strong>.</p>
+      </div>
+      <div class="card" style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);">
+        <h4 style="color:var(--primary-light);">🎯 Kenapa 20.000 Simulasi?</h4>
+        <p>Semakin banyak simulasi, semakin <strong>stabil dan akurat</strong> hasilnya.
+        20.000 sudah cukup untuk mendapat estimasi yang reliable pada persentil 99,9%.</p>
+      </div>
+    </div>
+
+    <!-- Ringkasan visual -->
+    <div style="margin-top:1.5rem;padding:1.2rem;background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(239,68,68,0.06));border-radius:12px;border:1px solid var(--border);">
+      <h4 style="margin-bottom:0.8rem;">🔄 Ringkasan Alur Metode 2 (Mudah Diingat)</h4>
+      <div class="table-scroll">
+        <table class="data-table" style="margin:0;">
+          <tbody>
+            <tr style="background:rgba(245,158,11,0.06);">
+              <td style="width:2rem;text-align:center;font-size:1.2rem;">①</td>
+              <td><strong>Frekuensi:</strong> Dari data historis → hitung rata-rata fraud/tahun (λ) → model Poisson</td>
+              <td style="text-align:right;">🎲</td>
+            </tr>
+            <tr style="background:rgba(245,158,11,0.04);">
+              <td style="text-align:center;font-size:1.2rem;">②</td>
+              <td><strong>Severity:</strong> Dari data kerugian → hitung μ dan σ → model Lognormal</td>
+              <td style="text-align:right;">💰</td>
+            </tr>
+            <tr style="background:rgba(239,68,68,0.04);">
+              <td style="text-align:center;font-size:1.2rem;">③</td>
+              <td><strong>Simulasi:</strong> Ulangi 20.000× — setiap kali acak N dari Poisson, acak N kerugian dari Lognormal, jumlahkan</td>
+              <td style="text-align:right;">🎰</td>
+            </tr>
+            <tr style="background:rgba(239,68,68,0.06);">
+              <td style="text-align:center;font-size:1.2rem;">④</td>
+              <td><strong>VaR:</strong> Urutkan 20.000 total → ambil persentil 99,9% → <strong>itulah cadangan modal</strong></td>
+              <td style="text-align:right;">🏦</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <div class="info-box" style="margin-top:1rem;">
       <strong>📖 Referensi:</strong> Giudici (2009), Bab 12.3, hlm. 231–234.
-      Metode ini bersifat <em>backward-looking</em> (berdasarkan data kerugian historis).
+      Metode ini bersifat <em>backward-looking</em> (berdasarkan data kerugian historis) dan termasuk kategori
+      <strong>AMA (Advanced Measurement Approach)</strong> dalam Basel II.
     </div>
   </div>
 
