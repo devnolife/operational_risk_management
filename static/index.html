@@ -1196,51 +1196,208 @@
   <div class="card" style="border-left:4px solid var(--accent);">
     <h3>🧮 Metode 3 — VaR Integrasi Bayesian & BIA</h3>
     <div class="badge" style="background:var(--accent);color:white;margin:0.5rem 0;">Tujuan: Validasi Silang — Cross-Check</div>
-    <p style="margin-top:0.6rem;">
-      Metode integrasi menggabungkan <strong>tiga sumber data</strong> (internal, ahli, eksternal) menggunakan
-      pendekatan <strong>Bayesian</strong> untuk menghasilkan estimasi VaR yang lebih robust. Hasilnya kemudian
-      dibandingkan dengan estimasi sederhana dari <strong>BIA (Basic Indicator Approach)</strong>.
+
+    <!-- Penjelasan Sederhana -->
+    <div class="info-box" style="margin-top:1rem;border-left:4px solid var(--accent);background:rgba(16,185,129,0.06);">
+      <strong>💡 Analogi Sederhana:</strong><br>
+      Bayangkan Anda ingin tahu <strong>berapa uang yang harus disiapkan</strong> untuk keadaan darurat tahun depan.
+      Anda bertanya ke <strong>3 sumber</strong>: (1) riwayat pengeluaran darurat Anda sendiri,
+      (2) pendapat ahli keuangan, (3) data pengeluaran darurat orang lain yang mirip dengan Anda.
+      Lalu Anda <strong>menggabungkan</strong> ketiga jawaban itu — yang datanya lebih banyak, lebih Anda percaya.
+      Itulah inti dari <strong>Integrasi Bayesian</strong>.
+    </div>
+
+    <h4 style="margin-top:1.5rem;">📦 Langkah 1: Kenali 3 Sumber Data</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">Setiap sumber punya kelebihan dan kekurangan — makanya perlu digabung.</p>
+    <div class="cols c3">
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--primary-light);">
+        <h4 style="color:var(--primary-light);">📊 S₁ — Data Internal</h4>
+        <p><strong>Apa:</strong> Data fraud dari bank kita sendiri (PaySim)</p>
+        <p><strong>Kelebihan:</strong> Paling relevan — dari bank kita</p>
+        <p><strong>Kekurangan:</strong> Hanya melihat masa lalu</p>
+        <div class="badge" style="background:var(--primary-light);color:white;margin-top:0.5rem;">Backward-looking</div>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--warn);">
+        <h4 style="color:var(--warn);">👥 S₂ — Penilaian Ahli</h4>
+        <p><strong>Apa:</strong> 8 ahli menilai risiko → dikonversi ke nilai uang</p>
+        <p><strong>Kelebihan:</strong> Bisa melihat risiko masa depan</p>
+        <p><strong>Kekurangan:</strong> Subjektif, bisa bias</p>
+        <div class="badge yellow" style="margin-top:0.5rem;">Forward-looking</div>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid #7c3aed;">
+        <h4 style="color:#7c3aed;">🏢 S₃ — Data Eksternal</h4>
+        <p><strong>Apa:</strong> Data kerugian dari bank-bank lain (konsorsium DIPO)</p>
+        <p><strong>Kelebihan:</strong> Lebih banyak data, perspektif industri</p>
+        <p><strong>Kekurangan:</strong> Beda bank → perlu di-<em>scaling</em></p>
+        <div class="badge" style="background:#7c3aed;color:white;margin-top:0.5rem;">Industri-wide</div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:1.5rem;">🔀 Langkah 2: Gabungkan dengan Integrasi Bayesian</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Ide kuncinya: <strong>sumber data yang lebih banyak/reliable otomatis dapat bobot lebih besar</strong>.
     </p>
 
-    <h4 style="margin-top:1rem;">🔢 Langkah-langkah:</h4>
-    <ol style="padding-left:1.4rem;margin-top:0.6rem;line-height:2;">
-      <li><strong>Siapkan 3 sumber data</strong>:
-        <ul style="padding-left:1.2rem;margin-top:0.3rem;">
-          <li><strong>S₁ (Internal)</strong> — Data fraud dari PaySim (backward-looking)</li>
-          <li><strong>S₂ (Expert)</strong> — Penilaian ahli terkonversi ke monetary value (forward-looking)</li>
-          <li><strong>S₃ (Eksternal)</strong> — Data konsorsium DIPO, di-<em>scaling</em> ke ukuran bank kita</li>
-        </ul>
-      </li>
-      <li><strong>Integrasi Bayesian</strong> — Gabungkan ketiga sumber dengan pembobotan:
-        <div class="info-box" style="margin:0.5rem 0;padding:0.6rem 1rem;">
-          <code style="font-size:1rem;">μ_posterior = (n₁μ₁ + n₂μ₂ + n₃μ₃) / (n₁ + n₂ + n₃)</code><br>
-          <span style="font-size:0.85rem;color:var(--text-secondary);">
-            Sumber data yang lebih banyak/reliable mendapat bobot lebih besar secara alami.
-          </span>
-        </div>
-      </li>
-      <li><strong>Hitung 7 variasi VaR</strong> (sesuai Gambar 12.2 buku):
-        <div class="table-scroll" style="margin-top:0.6rem;">
-          <table class="data-table">
-            <thead><tr><th>#</th><th>Sumber Data</th><th>Keterangan</th></tr></thead>
-            <tbody>
-              <tr><td>VaR₁</td><td>Internal saja</td><td>Hanya data fraud bank sendiri</td></tr>
-              <tr><td>VaR₂</td><td>Expert saja</td><td>Hanya penilaian ahli</td></tr>
-              <tr><td>VaR₃</td><td>Eksternal saja</td><td>Hanya data konsorsium (di-scale)</td></tr>
-              <tr><td>VaR₄</td><td>Internal + Expert</td><td>Gabungan Bayesian 2 sumber</td></tr>
-              <tr><td>VaR₅</td><td>Internal + Eksternal</td><td>Gabungan Bayesian 2 sumber</td></tr>
-              <tr><td>VaR₆</td><td>Internal + Expert + Eksternal</td><td>Gabungan Bayesian 3 sumber (terlengkap)</td></tr>
-              <tr><td>BIA</td><td>Gross Income</td><td>15% × rata-rata Gross Income 3 tahun</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </li>
-      <li><strong>Validasi silang</strong>: Bandingkan semua 7 estimasi — jika BIA ≈ VaR Bayesian, estimasi <em>konsisten</em></li>
-    </ol>
+    <div class="info-box" style="border-left:4px solid var(--accent);">
+      <strong>🧠 Cara Kerja (Disederhanakan):</strong><br><br>
+      Misalkan setiap sumber memberikan estimasi rata-rata kerugian:
+      <div style="margin:0.8rem 0;padding:0.8rem;background:rgba(0,0,0,0.03);border-radius:8px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0.4rem;"><strong>S₁ Internal:</strong></td>
+            <td style="padding:0.4rem;">rata-rata kerugian = <strong>μ₁</strong></td>
+            <td style="padding:0.4rem;">dari <strong>n₁</strong> data</td>
+          </tr>
+          <tr>
+            <td style="padding:0.4rem;"><strong>S₂ Expert:</strong></td>
+            <td style="padding:0.4rem;">rata-rata kerugian = <strong>μ₂</strong></td>
+            <td style="padding:0.4rem;">dari <strong>n₂</strong> penilaian</td>
+          </tr>
+          <tr>
+            <td style="padding:0.4rem;"><strong>S₃ Eksternal:</strong></td>
+            <td style="padding:0.4rem;">rata-rata kerugian = <strong>μ₃</strong></td>
+            <td style="padding:0.4rem;">dari <strong>n₃</strong> data</td>
+          </tr>
+        </table>
+      </div>
+      Maka hasil gabungannya (<em>posterior</em>) adalah <strong>rata-rata tertimbang</strong>:
+      <div style="text-align:center;margin:1rem 0;padding:1rem;background:rgba(16,185,129,0.08);border-radius:10px;font-size:1.1rem;">
+        <code><strong>μ_gabungan = (n₁ × μ₁ + n₂ × μ₂ + n₃ × μ₃) ÷ (n₁ + n₂ + n₃)</strong></code>
+      </div>
+      <strong>Artinya:</strong> Jika data internal punya 8.197 kejadian dan expert hanya 448 penilaian,
+      maka data internal otomatis mendapat bobot <strong>~18× lebih besar</strong> — karena datanya lebih banyak dan lebih terpercaya.
+    </div>
 
-    <div class="info-box" style="margin-top:1rem;">
+    <h4 style="margin-top:1.5rem;">📊 Langkah 3: Buat 7 Variasi VaR (Gambar 12.2)</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Kenapa 7? Untuk melihat bagaimana hasil berubah saat kita menggunakan kombinasi sumber data yang berbeda.
+      Ini seperti melihat masalah dari <strong>7 sudut pandang</strong>.
+    </p>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Sumber Data yang Dipakai</th><th>Analogi</th><th>Kekuatan</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(59,130,246,0.04);">
+            <td><strong>VaR₁</strong></td>
+            <td>📊 Internal saja</td>
+            <td>Hanya lihat riwayat keuangan sendiri</td>
+            <td>Paling relevan, tapi perspektif terbatas</td>
+          </tr>
+          <tr style="background:rgba(245,158,11,0.04);">
+            <td><strong>VaR₂</strong></td>
+            <td>👥 Expert saja</td>
+            <td>Hanya dengar pendapat ahli</td>
+            <td>Bisa prediksi masa depan, tapi subjektif</td>
+          </tr>
+          <tr style="background:rgba(124,58,237,0.04);">
+            <td><strong>VaR₃</strong></td>
+            <td>🏢 Eksternal saja</td>
+            <td>Hanya lihat data orang lain</td>
+            <td>Data banyak, tapi belum tentu cocok</td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.04);">
+            <td><strong>VaR₄</strong></td>
+            <td>📊+👥 Internal + Expert</td>
+            <td>Gabung pengalaman sendiri + saran ahli</td>
+            <td>Seimbang antara data & penilaian</td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.04);">
+            <td><strong>VaR₅</strong></td>
+            <td>📊+🏢 Internal + Eksternal</td>
+            <td>Bandingkan dengan pengalaman bank lain</td>
+            <td>Data kuat dari 2 sumber kuantitatif</td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.08);">
+            <td><strong>VaR₆</strong></td>
+            <td>📊+👥+🏢 Semua 3 sumber</td>
+            <td>Gunakan semua informasi yang tersedia</td>
+            <td>⭐ <strong>Paling lengkap & robust</strong></td>
+          </tr>
+          <tr style="background:rgba(239,68,68,0.04);">
+            <td><strong>BIA</strong></td>
+            <td>🏛️ 15% × Gross Income</td>
+            <td>Standar regulasi paling sederhana</td>
+            <td>Mudah tapi kasar — sebagai pembanding</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 style="margin-top:1.5rem;">🏛️ Langkah 4: Hitung BIA sebagai Pembanding</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      BIA adalah pendekatan paling sederhana dari Basel II — cukup <strong>satu rumus</strong>:
+    </p>
+    <div style="text-align:center;margin:1rem 0;padding:1.2rem;background:rgba(239,68,68,0.06);border-radius:10px;border:1px solid rgba(239,68,68,0.15);">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;">
+        <code>BIA = 15% × Rata-rata Gross Income (3 tahun terakhir)</code>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text-secondary);">
+        Gross Income = pendapatan kotor bank. Contoh: jika GI rata-rata = Rp 1 Triliun → BIA = Rp 150 Miliar
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:0.8rem;">
+      💡 <strong>Mengapa perlu BIA?</strong> BIA adalah "jangkar" dari regulasi.
+      Jika hasil VaR Bayesian kita mendekati nilai BIA, berarti model kita <strong>konsisten</strong> dengan standar regulasi.
+      Jika jauh berbeda, perlu diperiksa ulang.
+    </div>
+
+    <h4 style="margin-top:1.5rem;">✅ Langkah 5: Validasi Silang (Cross-Check)</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Bandingkan semua 7 hasil. Jika hasilnya saling mendekati → model kita bisa dipercaya.
+    </p>
+    <div class="cols c2" style="margin-top:0.8rem;">
+      <div class="card" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);">
+        <h4 style="color:var(--accent);">✅ Hasil Konsisten</h4>
+        <p>VaR₆ (Bayesian lengkap) ≈ BIA</p>
+        <p style="margin-top:0.5rem;">→ Model internal <strong>tervalidasi</strong>, bank bisa percaya diri dengan estimasi cadangan modal</p>
+      </div>
+      <div class="card" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);">
+        <h4 style="color:var(--danger);">❌ Hasil Tidak Konsisten</h4>
+        <p>VaR₆ ≫ BIA atau VaR₆ ≪ BIA</p>
+        <p style="margin-top:0.5rem;">→ Perlu periksa ulang: apakah data bias? Model salah? Asumsi keliru?</p>
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-top:1.2rem;">
       <strong>📖 Referensi:</strong> Giudici (2009), Bab 12.4, hlm. 238–241 & Gambar 12.2.
-      Integrasi Bayesian memungkinkan penggabungan data kuantitatif (internal, eksternal) dengan data kualitatif (expert).
+      Integrasi Bayesian memungkinkan penggabungan data kuantitatif (internal, eksternal) dengan data kualitatif (expert)
+      secara matematis dan objektif.
+    </div>
+
+    <!-- Ringkasan Visual Metode 3 -->
+    <div style="margin-top:1.5rem;padding:1.2rem;background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.06));border-radius:12px;border:1px solid var(--border);">
+      <h4 style="margin-bottom:0.8rem;">🔄 Ringkasan Alur Metode 3 (Mudah Diingat)</h4>
+      <div class="table-scroll">
+        <table class="data-table" style="margin:0;">
+          <tbody>
+            <tr style="background:rgba(59,130,246,0.06);">
+              <td style="width:2rem;text-align:center;font-size:1.2rem;">①</td>
+              <td><strong>Kumpulkan</strong> 3 sumber data (internal + expert + eksternal)</td>
+              <td style="text-align:right;">📊 👥 🏢</td>
+            </tr>
+            <tr style="background:rgba(16,185,129,0.06);">
+              <td style="text-align:center;font-size:1.2rem;">②</td>
+              <td><strong>Gabungkan</strong> dengan rumus Bayesian (rata-rata tertimbang otomatis)</td>
+              <td style="text-align:right;">🔀</td>
+            </tr>
+            <tr style="background:rgba(245,158,11,0.06);">
+              <td style="text-align:center;font-size:1.2rem;">③</td>
+              <td><strong>Buat 6 kombinasi</strong> VaR dari berbagai gabungan sumber</td>
+              <td style="text-align:right;">📊</td>
+            </tr>
+            <tr style="background:rgba(239,68,68,0.06);">
+              <td style="text-align:center;font-size:1.2rem;">④</td>
+              <td><strong>Hitung BIA</strong> (15% × Gross Income) sebagai pembanding regulasi</td>
+              <td style="text-align:right;">🏛️</td>
+            </tr>
+            <tr style="background:rgba(124,58,237,0.06);">
+              <td style="text-align:center;font-size:1.2rem;">⑤</td>
+              <td><strong>Bandingkan</strong> semua 7 hasil → jika saling mendekati = ✅ VALID</td>
+              <td style="text-align:right;">✅</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
