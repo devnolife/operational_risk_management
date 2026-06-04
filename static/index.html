@@ -2172,55 +2172,289 @@
     <strong>📌 Halaman ini menjawab:</strong> Jika kita gabungkan <strong>semua sumber data</strong> (internal + ahli + bank lain), berapa estimasi VaR-nya? Dan apakah hasilnya <strong>konsisten</strong> dengan cara sederhana (BIA = 15% pendapatan)?
   </div>
 
+  <!-- PENJELASAN MUDAH -->
+  <div class="card" style="border-left:4px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));">
+    <h3>💡 Penjelasan Sederhana — Apa yang Dilakukan Model 3?</h3>
+    <div class="info-box" style="margin-top:0.8rem;border-left:4px solid var(--accent);background:rgba(16,185,129,0.06);">
+      <strong>🏥 Analogi "Second Opinion Dokter":</strong><br><br>
+      Bayangkan Anda sakit dan ingin tahu <strong>berapa biaya pengobatan</strong> yang harus disiapkan:<br>
+      <div style="margin:0.8rem 0;padding:0.8rem;background:rgba(0,0,0,0.03);border-radius:8px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0.5rem;font-size:1.2rem;width:40px;text-align:center;">👤</td>
+            <td style="padding:0.5rem;"><strong>Dokter 1 (Internal)</strong> — melihat riwayat kesehatan <em>Anda sendiri</em></td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;font-size:1.2rem;text-align:center;">👨‍⚕️</td>
+            <td style="padding:0.5rem;"><strong>Dokter 2 (Expert)</strong> — spesialis berpengalaman memberikan <em>perkiraan</em></td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;font-size:1.2rem;text-align:center;">🏢</td>
+            <td style="padding:0.5rem;"><strong>Dokter 3 (Eksternal)</strong> — melihat data pasien lain yang <em>mirip kondisinya</em></td>
+          </tr>
+        </table>
+      </div>
+      Lalu Anda <strong>gabungkan ketiga pendapat</strong> — yang datanya lebih banyak, lebih Anda percaya.<br>
+      Terakhir, Anda <strong>cek</strong> dengan standar asuransi (BIA) — kalau hasilnya mirip, berarti estimasi masuk akal! ✅
+    </div>
+
+    <h4 style="margin-top:1.2rem;">📝 Arti Setiap Istilah:</h4>
+    <div class="table-scroll" style="margin-top:0.5rem;">
+      <table class="data-table">
+        <thead><tr><th>Istilah</th><th>Arti</th><th>Dalam Bahasa Sehari-hari</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Integrasi Bayesian</strong></td>
+            <td>Metode statistik untuk menggabungkan beberapa sumber informasi dengan pembobotan otomatis</td>
+            <td>🔀 "Campur semua info, yang lebih banyak datanya lebih dipercaya"</td>
+          </tr>
+          <tr>
+            <td><strong>BIA (Basic Indicator)</strong></td>
+            <td>Pendekatan paling sederhana Basel II: cadangan = 15% × Gross Income</td>
+            <td>🏛️ "Standar minimum dari regulator — 15% dari pendapatan"</td>
+          </tr>
+          <tr>
+            <td><strong>Scaling</strong></td>
+            <td>Menyesuaikan skala data bank lain agar sebanding dengan bank kita</td>
+            <td>📏 "Kecilkan/besarkan data bank lain agar apple-to-apple"</td>
+          </tr>
+          <tr>
+            <td><strong>Bottom-up</strong></td>
+            <td>Menghitung dari data rinci per kejadian → naik ke total</td>
+            <td>🔼 "Mulai dari detail kecil, jumlahkan ke atas"</td>
+          </tr>
+          <tr>
+            <td><strong>Top-down</strong></td>
+            <td>Menghitung dari indikator besar (pendapatan) → turun ke estimasi risiko</td>
+            <td>🔽 "Mulai dari angka besar, turunkan ke risiko"</td>
+          </tr>
+          <tr>
+            <td><strong>Validasi silang</strong></td>
+            <td>Membandingkan hasil beberapa metode — jika mirip, hasilnya bisa dipercaya</td>
+            <td>✅ "Kalau semua metode bilang mirip, berarti bener"</td>
+          </tr>
+          <tr>
+            <td><strong>Gambar 12.2</strong></td>
+            <td>Grafik di buku Giudici yang menampilkan 7 estimasi VaR berdampingan</td>
+            <td>📊 "Bagan batang perbandingan 7 metode"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <h3 class="step">1️⃣ Rumusan Masalah</h3>
   <div class="card">
     <p><strong>Kalau kerugian dihitung dengan beberapa metode berbeda, berapa hasilnya dan apakah saling konsisten?</strong></p>
     <p style="margin-top:0.5rem;">Mengandalkan satu metode saja berisiko. Lebih aman bila kita menghitung dengan <strong>beberapa cara</strong> lalu membandingkannya.</p>
+    <div class="info-box" style="margin-top:0.8rem;">
+      💡 <strong>Prinsip:</strong> Satu dokter bisa salah, tapi kalau <strong>3 dokter sepakat</strong> → diagnosis kemungkinan besar benar.
+      Begitu juga dengan estimasi risiko: <strong>banyak metode sepakat = lebih bisa dipercaya</strong>.
+    </div>
   </div>
 
-  <h3 class="step">2️⃣ Metode (dari buku)</h3>
+  <h3 class="step">2️⃣ Metode — Dijelaskan Langkah demi Langkah</h3>
+
+  <!-- Langkah A: 3 Sumber Data -->
   <div class="card">
-    <ol style="padding-left:1.2rem;">
-      <li><strong>Integrasi Bayesian</strong> (bottom-up) — menggabungkan 3 sumber data menjadi satu estimasi</li>
-      <li><strong>Basic Indicator Approach / BIA</strong> (top-down) — cadangan = <strong>15% dari pendapatan kotor</strong></li>
-    </ol>
-    <div class="info-box yellow" style="margin-top:1rem;">
-      🧩 <strong>Perumpamaan:</strong> Seperti minta <em>second opinion</em> ke beberapa dokter. Kalau semua sepakat, kita jauh lebih yakin.
+    <h4>📦 Langkah A: Kenali 3 Sumber Data</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">Setiap sumber punya kelebihan dan kekurangan — makanya harus digabung.</p>
+    <div class="cols c3">
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--primary-light);">
+        <h4 style="color:var(--primary-light);">📊 S₁ — Internal</h4>
+        <p><strong>Apa:</strong> Data fraud dari bank kita sendiri (PaySim: 8.197 kejadian)</p>
+        <p><strong>Kelebihan:</strong> Paling relevan</p>
+        <p><strong>Kekurangan:</strong> Hanya masa lalu</p>
+        <div class="badge" style="background:var(--primary-light);color:white;margin-top:0.3rem;">Backward-looking</div>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--warn);">
+        <h4 style="color:var(--warn);">👥 S₂ — Expert</h4>
+        <p><strong>Apa:</strong> 8 ahli menilai 56 kategori risiko → dikonversi ke nilai uang (448 penilaian)</p>
+        <p><strong>Kelebihan:</strong> Bisa lihat masa depan</p>
+        <p><strong>Kekurangan:</strong> Subjektif</p>
+        <div class="badge yellow" style="margin-top:0.3rem;">Forward-looking</div>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid #7c3aed;">
+        <h4 style="color:#7c3aed;">🏢 S₃ — Eksternal</h4>
+        <p><strong>Apa:</strong> Data kerugian dari bank lain (konsorsium DIPO: 1.999 kejadian)</p>
+        <p><strong>Kelebihan:</strong> Perspektif industri</p>
+        <p><strong>Kekurangan:</strong> Beda skala → perlu scaling</p>
+        <div class="badge" style="background:#7c3aed;color:white;margin-top:0.3rem;">Industri-wide</div>
+      </div>
     </div>
-    <div class="formula">S<sub>gabungan</sub> = S<sub>internal</sub> ∪ {p<sub>self-assessment</sub>} ∪ S<sub>eksternal</sub><sup>scaled</sup></div>
-    <div class="formula">BIA = α × Gross Income, &nbsp; α = 15%</div>
   </div>
 
-  <details>
-    <summary>📖 Istilah, Rumus, & Kenapa Dipakai</summary>
-    <div class="expander-body">
-      <h5>Daftar Istilah</h5>
-      <table class="glossary-table">
-        <tr><td>Integrasi / Bayesian</td><td>Menggabungkan beberapa sumber informasi menjadi satu estimasi yang lebih kuat.</td></tr>
-        <tr><td>Bottom-up vs Top-down</td><td>Dari data rinci ke atas (Bayesian) vs dari indikator besar ke bawah (BIA).</td></tr>
-        <tr><td>Scaling</td><td>Menyetarakan skala data bank lain agar sebanding dengan data kita.</td></tr>
-        <tr><td>Gross income</td><td>Pendapatan kotor bank — indikator ukuran bisnis.</td></tr>
-        <tr><td>BIA</td><td>Basic Indicator Approach (Basel II): cadangan = 15% pendapatan kotor.</td></tr>
-        <tr><td>Konsorsium / DIPO</td><td>Basis data kerugian gabungan dari banyak bank.</td></tr>
-      </table>
-
-      <h5>Rumus yang Dipakai</h5>
-      <div class="formula">S<sub>gabungan</sub> = S<sub>internal</sub> ∪ {p<sub>self-assessment</sub>} ∪ S<sub>eksternal</sub><sup>scaled</sup></div>
-      <div class="formula">c = Σ kerugian eksternal / Σ kerugian internal &nbsp;&nbsp; S<sup>scaled</sup> = S<sub>eksternal</sub> / c</div>
-      <p style="font-size:0.82rem;color:var(--text-secondary);">Konstanta scaling c menyetarakan ukuran data eksternal terhadap internal.</p>
-      <div class="formula">VaR<sub>q</sub> = persentil ke-q dari S<sub>gabungan</sub></div>
-      <div class="formula">BIA = α × Gross Income, &nbsp; α = 15%</div>
-
-      <h5>Kenapa Rumus Ini Dipakai?</h5>
-      <ul style="padding-left:1.2rem;">
-        <li><strong>Menggabungkan 3 sumber</strong> — tiap sumber punya kelemahan: internal (terbatas pengalaman sendiri), expert (subjektif), eksternal (beda konteks). Gabungan lebih <strong>lengkap</strong> dan tahan.</li>
-        <li><strong>Scaling</strong> — agar kerugian bank besar tidak 'membanjiri' estimasi bank kita; disesuaikan secara proporsional dulu.</li>
-        <li><strong>BIA (15% gross income)</strong> — pembanding sederhana yang <strong>diakui regulator</strong>. Kalau metode canggih (Bayesian) hasilnya <strong>dekat</strong> dengan BIA, itu memberi <strong>keyakinan silang</strong> bahwa angkanya masuk akal.</li>
-      </ul>
+  <!-- Langkah B: Scaling -->
+  <div class="card">
+    <h4>📏 Langkah B: Scaling Data Eksternal</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Data dari bank lain tidak bisa langsung dipakai — bank besar punya kerugian lebih besar bukan karena lebih berisiko, tapi karena skala bisnis lebih besar. Harus disesuaikan dulu!
+    </p>
+    <div class="info-box" style="border-left:4px solid #7c3aed;">
+      <strong>🧮 Cara Scaling (Disederhanakan):</strong>
+      <div style="margin:0.8rem 0;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0.5rem;font-size:1.2rem;width:40px;text-align:center;">①</td>
+            <td style="padding:0.5rem;">Hitung rasio: <code><strong>c = Total kerugian eksternal ÷ Total kerugian internal</strong></code></td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;font-size:1.2rem;text-align:center;">②</td>
+            <td style="padding:0.5rem;">Bagi semua data eksternal dengan c: <code><strong>S₃_scaled = S₃ ÷ c</strong></code></td>
+          </tr>
+        </table>
+      </div>
+      <strong>Analogi:</strong> Kalau bank lain 5× lebih besar, kerugian mereka dibagi 5 dulu agar setara dengan ukuran bank kita.
     </div>
-  </details>
+  </div>
 
-  <h3 class="step">3️⃣ Proses Langkah demi Langkah</h3>
+  <!-- Langkah C: Integrasi Bayesian -->
+  <div class="card">
+    <h4>🔀 Langkah C: Gabungkan dengan Integrasi Bayesian</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Sekarang gabungkan ketiga sumber. Yang datanya lebih banyak otomatis dapat bobot lebih besar.
+    </p>
+    <div style="text-align:center;margin:1rem 0;padding:1.2rem;background:rgba(16,185,129,0.06);border-radius:12px;border:1px solid rgba(16,185,129,0.15);">
+      <div style="font-size:1.1rem;margin-bottom:0.5rem;">
+        <code><strong>S_gabungan = S₁(internal) + S₂(expert) + S₃(eksternal/c)</strong></code>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text-secondary);">
+        Semua data kerugian dari 3 sumber digabung menjadi satu "kolam" data besar
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:0.8rem;">
+      💡 <strong>Kenapa "Bayesian"?</strong> Karena prinsipnya sama: <em>update keyakinan kita dengan data baru</em>.
+      Mulai dari data internal (prior), lalu update dengan data expert dan eksternal (evidence) → dapat estimasi gabungan yang lebih baik (posterior).
+    </div>
+  </div>
+
+  <!-- Langkah D: 7 Variasi VaR -->
+  <div class="card">
+    <h4>📊 Langkah D: Buat 7 Variasi VaR (Gambar 12.2)</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Kenapa 7? Untuk melihat bagaimana hasil berubah tergantung sumber data & metode yang dipakai — seperti melihat dari <strong>7 sudut pandang berbeda</strong>.
+    </p>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Nama Metode</th><th>Sumber Data</th><th>Penjelasan Sederhana</th><th>Tipe</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(59,130,246,0.04);">
+            <td><strong>1</strong></td>
+            <td>Internal Historical</td>
+            <td>📊 Internal saja</td>
+            <td>VaR hanya dari data fraud bank sendiri — <em>pengalaman pribadi</em></td>
+            <td><span class="badge" style="background:var(--primary-light);color:white;">Bottom-up</span></td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.04);">
+            <td><strong>2</strong></td>
+            <td>Bayes Historical</td>
+            <td>📊+👥+🏢 Gabungan</td>
+            <td>VaR dari data gabungan 3 sumber (percentile langsung) — <em>3 dokter</em></td>
+            <td><span class="badge green">Bayesian</span></td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.04);">
+            <td><strong>3</strong></td>
+            <td>Bayes Monte Carlo</td>
+            <td>📊+👥+🏢 Gabungan</td>
+            <td>Sama spt #2, tapi pakai simulasi 20K — lebih <em>halus & stabil</em></td>
+            <td><span class="badge green">Bayesian + MC</span></td>
+          </tr>
+          <tr style="background:rgba(245,158,11,0.04);">
+            <td><strong>4</strong></td>
+            <td>Self Assessment</td>
+            <td>👥 Expert saja</td>
+            <td>VaR hanya dari penilaian ahli — <em>pendapat spesialis</em></td>
+            <td><span class="badge yellow">Forward</span></td>
+          </tr>
+          <tr style="background:rgba(124,58,237,0.04);">
+            <td><strong>5</strong></td>
+            <td>External VaR</td>
+            <td>🏢 Eksternal saja</td>
+            <td>VaR dari data bank lain (sudah di-scale) — <em>benchmarking</em></td>
+            <td><span class="badge" style="background:#7c3aed;color:white;">Eksternal</span></td>
+          </tr>
+          <tr style="background:rgba(245,158,11,0.04);">
+            <td><strong>6</strong></td>
+            <td>Actuarial VaR</td>
+            <td>📊 Internal</td>
+            <td>Dari Model 2 (Poisson × Lognormal → Monte Carlo) — <em>pembanding</em></td>
+            <td><span class="badge yellow">Aktuaria</span></td>
+          </tr>
+          <tr style="background:rgba(239,68,68,0.04);">
+            <td><strong>7</strong></td>
+            <td>BIA</td>
+            <td>🏛️ Gross Income</td>
+            <td>15% × pendapatan kotor — <em>standar regulasi paling simpel</em></td>
+            <td><span class="badge" style="background:var(--danger);color:white;">Top-down</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box" style="margin-top:0.8rem;">
+      ⭐ <strong>Metode terlengkap = #2 & #3 (Bayes)</strong> karena menggunakan SEMUA sumber data.
+      <strong>BIA (#7)</strong> adalah "jangkar regulasi" — jika Bayes ≈ BIA, berarti model kita konsisten dengan standar Basel II.
+    </div>
+  </div>
+
+  <!-- Langkah E: Validasi -->
+  <div class="card">
+    <h4>✅ Langkah E: Validasi Silang — Apakah Hasilnya Konsisten?</h4>
+    <p style="color:var(--text-secondary);margin:0.4rem 0 0.8rem;">
+      Bandingkan semua 7 batang di grafik. Jika berdekatan → model bisa dipercaya!
+    </p>
+    <div class="cols c2">
+      <div class="card" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);">
+        <h4 style="color:var(--accent);">✅ Konsisten (yang diharapkan)</h4>
+        <p>7 estimasi VaR saling berdekatan</p>
+        <p style="margin-top:0.4rem;">→ Artinya: dari sudut pandang manapun, hasilnya <strong>mirip</strong>
+        → bank bisa percaya diri dengan cadangan modal yang ditetapkan</p>
+      </div>
+      <div class="card" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);">
+        <h4 style="color:var(--danger);">❌ Tidak Konsisten (peringatan)</h4>
+        <p>Ada metode yang jauh berbeda dari lainnya</p>
+        <p style="margin-top:0.4rem;">→ Artinya: ada yang salah — mungkin data bias, asumsi keliru, atau perlu data tambahan.
+        Harus ditelusuri ulang!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ringkasan visual alur Model 3 -->
+  <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));">
+    <h4>🔄 Ringkasan Alur Model 3 (5 Langkah Mudah Diingat)</h4>
+    <div class="table-scroll" style="margin-top:0.8rem;">
+      <table class="data-table">
+        <tbody>
+          <tr style="background:rgba(59,130,246,0.06);">
+            <td style="width:2rem;text-align:center;font-size:1.3rem;font-weight:700;">A</td>
+            <td><strong>Kumpulkan</strong> 3 sumber data: internal (fraud bank), expert (pendapat ahli), eksternal (bank lain)</td>
+            <td style="text-align:right;font-size:1.2rem;">📊 👥 🏢</td>
+          </tr>
+          <tr style="background:rgba(124,58,237,0.06);">
+            <td style="text-align:center;font-size:1.3rem;font-weight:700;">B</td>
+            <td><strong>Scaling</strong> data eksternal — sesuaikan skala agar apple-to-apple dengan bank kita</td>
+            <td style="text-align:right;font-size:1.2rem;">📏</td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.06);">
+            <td style="text-align:center;font-size:1.3rem;font-weight:700;">C</td>
+            <td><strong>Gabungkan</strong> semua data dengan Integrasi Bayesian (rata-rata tertimbang otomatis)</td>
+            <td style="text-align:right;font-size:1.2rem;">🔀</td>
+          </tr>
+          <tr style="background:rgba(245,158,11,0.06);">
+            <td style="text-align:center;font-size:1.3rem;font-weight:700;">D</td>
+            <td><strong>Hitung 7 variasi VaR</strong> — dari sudut pandang berbeda + BIA sebagai pembanding regulasi</td>
+            <td style="text-align:right;font-size:1.2rem;">📊</td>
+          </tr>
+          <tr style="background:rgba(16,185,129,0.08);">
+            <td style="text-align:center;font-size:1.3rem;font-weight:700;">E</td>
+            <td><strong>Validasi silang</strong> — bandingkan 7 hasil: jika saling berdekatan = ✅ MODEL VALID</td>
+            <td style="text-align:right;font-size:1.2rem;">✅</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 class="step">3️⃣ Proses Langkah demi Langkah (Kode)</h3>
 
   <div class="anim-process" id="ap-integrated">
     <!-- STEP 1: Kumpulkan 3 Sumber Data -->
@@ -2278,10 +2512,10 @@
           <div class="dp-header">📐 Rumus Diterapkan</div>
           <div class="dp-body">
             <table>
-              <tr><th>Variabel</th><th>Rumus</th><th>Hasil</th></tr>
-              <tr class="arow"><td class="hl-yellow">c (scaling)</td><td>Σ ext / Σ int</td><td>faktor penyesuaian</td></tr>
-              <tr class="arow"><td class="hl-yellow">S_combined</td><td>S₁ ∪ S₂ ∪ S₃/c</td><td>data gabungan</td></tr>
-              <tr class="arow"><td class="hl-yellow">BIA</td><td>15% × Gross Income</td><td>pembanding top-down</td></tr>
+              <tr><th>Variabel</th><th>Rumus</th><th>Arti Sederhana</th></tr>
+              <tr class="arow"><td class="hl-yellow">c (scaling)</td><td>Σ ext / Σ int</td><td>Faktor penyesuaian skala</td></tr>
+              <tr class="arow"><td class="hl-yellow">S_combined</td><td>S₁ ∪ S₂ ∪ S₃/c</td><td>Semua data dicampur jadi satu</td></tr>
+              <tr class="arow"><td class="hl-yellow">BIA</td><td>15% × Gross Income</td><td>Standar regulasi (pembanding)</td></tr>
             </table>
           </div>
         </div>
