@@ -60,6 +60,24 @@ def _ser(obj):
 def main():
     print("📦 Loading data …")
 
+    # --- PaySim RAW metadata ---
+    from src.data import find_raw_csv
+    raw_csv = find_raw_csv()
+    df_raw_sample = pd.read_csv(raw_csv, nrows=50)
+    raw_cols = list(df_raw_sample.columns)
+    raw_dtypes = {c: str(df_raw_sample[c].dtype) for c in raw_cols}
+
+    # Count total rows in raw CSV (from header line count)
+    df_raw_full = pd.read_csv(raw_csv)
+    raw_total_rows = len(df_raw_full)
+    raw_type_dist = df_raw_full["type"].value_counts().to_dict()
+    raw_fraud_count = int(df_raw_full["isFraud"].sum())
+    raw_flagged_count = int(df_raw_full["isFlaggedFraud"].sum())
+    raw_n_unique = {c: int(df_raw_full[c].nunique()) for c in raw_cols}
+    raw_nulls = {c: int(df_raw_full[c].isnull().sum()) for c in raw_cols}
+    raw_preview = df_raw_full.head(30).to_dict(orient="records")
+    del df_raw_full  # free memory
+
     # --- PaySim metadata ---
     import pyarrow.parquet as pq
     pf = pq.ParquetFile(PROCESSED_PATH)
@@ -147,6 +165,18 @@ def main():
 
     # --- Build final JSON ---
     data = {
+        "raw": {
+            "total_rows": raw_total_rows,
+            "total_cols": len(raw_cols),
+            "columns": raw_cols,
+            "dtypes": raw_dtypes,
+            "n_unique": raw_n_unique,
+            "nulls": raw_nulls,
+            "type_dist": raw_type_dist,
+            "fraud_count": raw_fraud_count,
+            "flagged_count": raw_flagged_count,
+            "preview": raw_preview,
+        },
         "paysim": {
             "total_tx": total_tx,
             "total_fraud": total_fraud,

@@ -799,9 +799,9 @@
           <div class="dp-body">
             <table>
               <tr><th>Sumber</th><th>Jenis</th><th>Jumlah</th></tr>
-              <tr class="arow"><td>① Internal</td><td>PaySim (fraud)</td><td class="hl-blue">8.213 event</td></tr>
+              <tr class="arow"><td>① Internal</td><td>PaySim (fraud)</td><td class="hl-blue">8.197 event</td></tr>
               <tr class="arow"><td>② Expert</td><td>8 ahli × 56 kat</td><td class="hl-blue">448 penilaian</td></tr>
-              <tr class="arow"><td>③ Eksternal</td><td>Konsorsium DIPO</td><td class="hl-blue">200 kerugian</td></tr>
+              <tr class="arow"><td>③ Eksternal</td><td>Konsorsium DIPO</td><td class="hl-blue">1.999 kerugian</td></tr>
             </table>
           </div>
         </div>
@@ -856,8 +856,8 @@
             <div class="cl"><span class="sk">for</span> cat <span class="sk">in</span> categories:</div>
             <div class="cl">    rating[cat] = <span class="sf">median</span>(votes[cat])</div>
             <div class="cl"></div>
-            <div class="cl"><span class="sc"># Monte Carlo: 100.000 skenario</span></div>
-            <div class="cl"><span class="sk">for</span> s <span class="sk">in</span> <span class="sf">range</span>(<span class="sn">100_000</span>):</div>
+            <div class="cl"><span class="sc"># Monte Carlo: 20.000 skenario</span></div>
+            <div class="cl"><span class="sk">for</span> s <span class="sk">in</span> <span class="sf">range</span>(<span class="sn">20_000</span>):</div>
             <div class="cl">    n = <span class="sf">poisson</span>(λ)</div>
             <div class="cl">    L[s] = <span class="sf">sum</span>(<span class="sf">lognorm</span>(μ, σ, n))</div>
           </div>
@@ -868,7 +868,7 @@
             <table>
               <tr><th>Proses</th><th>Status</th></tr>
               <tr class="arow"><td>Rating 56 kategori</td><td class="hl-green">✅ 56/56 selesai</td></tr>
-              <tr class="arow"><td>Monte Carlo simulasi</td><td class="hl-green">✅ 100K skenario</td></tr>
+              <tr class="arow"><td>Monte Carlo simulasi</td><td class="hl-green">✅ 20K skenario</td></tr>
               <tr class="arow"><td>Integrasi 3 sumber</td><td class="hl-green">✅ Digabung</td></tr>
               <tr class="arow"><td>Hitung 7 metode VaR</td><td class="hl-green">✅ 7/7 selesai</td></tr>
             </table>
@@ -951,12 +951,14 @@
   <div class="metrics c4" id="data-metrics"></div>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('data', 'paysim')">① PaySim — Internal</button>
+    <button class="tab-btn active" onclick="showTab('data', 'raw')">🔍 Data Mentah & Penjelasan Field</button>
+    <button class="tab-btn" onclick="showTab('data', 'paysim')">① PaySim — Internal</button>
     <button class="tab-btn" onclick="showTab('data', 'expert')">② Penilaian Ahli</button>
     <button class="tab-btn" onclick="showTab('data', 'external')">③ Kerugian Eksternal</button>
   </div>
 
-  <div id="data-tab-paysim" class="tab-content active"></div>
+  <div id="data-tab-raw" class="tab-content active"></div>
+  <div id="data-tab-paysim" class="tab-content"></div>
   <div id="data-tab-expert" class="tab-content"></div>
   <div id="data-tab-external" class="tab-content"></div>
 </div>
@@ -1279,7 +1281,7 @@
               <tr class="arow"><td>2</td><td>CASH_OUT</td><td class="hl-blue">339.682</td><td>1</td></tr>
               <tr class="arow"><td>3</td><td>TRANSFER</td><td class="hl-blue">4.205.533</td><td>1</td></tr>
               <tr class="arow"><td>4</td><td>CASH_OUT</td><td class="hl-blue">1.325.012</td><td>1</td></tr>
-              <tr class="arow"><td>…</td><td>…</td><td>…</td><td class="hl-blue">8.213 total</td></tr>
+              <tr class="arow"><td>…</td><td>…</td><td>…</td><td class="hl-blue">8.197 total</td></tr>
             </table>
           </div>
         </div>
@@ -1323,12 +1325,12 @@
 
     <!-- STEP 3: Monte Carlo -->
     <div class="proc-step" data-color="orange">
-      <div class="ps-header"><span class="ps-badge b-process">Proses</span> Simulasi Monte Carlo (100.000×)</div>
+      <div class="ps-header"><span class="ps-badge b-process">Proses</span> Simulasi Monte Carlo (20.000×)</div>
       <div class="ps-body">
         <div class="ps-code">
           <div class="code-header"><div class="dots"><span></span><span></span><span></span></div> actuarial.py — simulasi</div>
           <div class="code-body">
-            <div class="cl"><span class="sv">n_sim</span> = <span class="sn">100_000</span></div>
+            <div class="cl"><span class="sv">n_sim</span> = <span class="sn">20_000</span></div>
             <div class="cl"><span class="sv">total_losses</span> = []</div>
             <div class="cl"></div>
             <div class="cl"><span class="sk">for</span> s <span class="sk">in</span> <span class="sf">range</span>(n_sim):</div>
@@ -1346,7 +1348,7 @@
               <tr class="arow"><td>#2</td><td>31</td><td class="hl-yellow">89.200.000</td></tr>
               <tr class="arow"><td>#3</td><td>28</td><td class="hl-green">34.100.000</td></tr>
               <tr class="arow"><td>#4</td><td>19</td><td class="hl-red">245.000.000</td></tr>
-              <tr class="arow"><td>…</td><td>…</td><td><em>100.000 skenario</em></td></tr>
+              <tr class="arow"><td>…</td><td>…</td><td><em>20.000 skenario</em></td></tr>
             </table>
           </div>
         </div>
@@ -1486,9 +1488,9 @@
           <div class="dp-body">
             <table>
               <tr><th>Sumber</th><th>Tipe</th><th>Jumlah</th></tr>
-              <tr class="arow"><td class="hl-blue">① Internal</td><td>PaySim fraud records</td><td>8.213 kejadian</td></tr>
-              <tr class="arow"><td class="hl-yellow">② Expert</td><td>Self-assessment ahli</td><td>7 kategori</td></tr>
-              <tr class="arow"><td class="hl-green">③ Eksternal</td><td>Konsorsium bank lain</td><td>Scaled data</td></tr>
+              <tr class="arow"><td class="hl-blue">① Internal</td><td>PaySim fraud records</td><td>8.197 kejadian</td></tr>
+              <tr class="arow"><td class="hl-yellow">② Expert</td><td>Self-assessment ahli</td><td>448 penilaian (56 kat)</td></tr>
+              <tr class="arow"><td class="hl-green">③ Eksternal</td><td>Konsorsium bank lain</td><td>1.999 kerugian</td></tr>
             </table>
           </div>
         </div>
@@ -1750,6 +1752,211 @@ function renderAll(D) {
     metricHTML('Transaksi fraud', fmt(D.paysim.total_fraud)) +
     metricHTML('Jumlah field PaySim', D.paysim.num_cols) +
     metricHTML('Sumber data', '3 jenis');
+
+  // ---- Tab Raw: Data Mentah & Penjelasan Field ----
+  const R = D.raw;
+  const rawFieldInfo = [
+    ['step',           'int',   'Satuan waktu simulasi (1 step = 1 jam). Total 744 step ≈ 31 hari'],
+    ['type',           'str',   'Jenis transaksi: PAYMENT, TRANSFER, CASH_OUT, CASH_IN, DEBIT'],
+    ['amount',         'float', 'Jumlah uang yang ditransaksikan'],
+    ['nameOrig',       'str',   'ID nasabah pengirim (contoh: C1231006815)'],
+    ['oldbalanceOrg',  'float', 'Saldo awal pengirim sebelum transaksi'],
+    ['newbalanceOrig', 'float', 'Saldo pengirim setelah transaksi'],
+    ['nameDest',       'str',   'ID nasabah penerima (C = customer, M = merchant)'],
+    ['oldbalanceDest', 'float', 'Saldo awal penerima sebelum transaksi'],
+    ['newbalanceDest', 'float', 'Saldo penerima setelah transaksi'],
+    ['isFraud',        'int',   'Label target: 1 = fraud, 0 = normal'],
+    ['isFlaggedFraud', 'int',   'Flag otomatis sistem jika transfer > 200.000 (hampir selalu 0)'],
+  ];
+
+  const droppedFields = [
+    ['nameOrig',       'ID unik per transaksi — tidak informatif untuk pola fraud, terlalu banyak nilai unik'],
+    ['nameDest',       'ID unik penerima — terlalu banyak kategori unik, tidak bisa di-encode'],
+    ['isFlaggedFraud', 'Flag buatan sistem (bukan fitur alami) — hanya menandai transfer > 200K, hampir selalu 0'],
+  ];
+
+  const keptFields = [
+    ['step',           'Diturunkan',     'Dipakai untuk membuat <code>hourOfDay</code> dan <code>day</code>'],
+    ['type',           'Di-encode',      'Di-one-hot-encode → 5 kolom: type_CASH_IN, type_CASH_OUT, type_DEBIT, type_PAYMENT, type_TRANSFER'],
+    ['amount',         'Fitur langsung', 'Jumlah transaksi — langsung dipakai sebagai fitur'],
+    ['oldbalanceOrg',  'Fitur langsung', 'Saldo awal pengirim'],
+    ['newbalanceOrig', 'Fitur langsung', 'Saldo akhir pengirim'],
+    ['oldbalanceDest', 'Fitur langsung', 'Saldo awal penerima'],
+    ['newbalanceDest', 'Fitur langsung', 'Saldo akhir penerima'],
+    ['isFraud',        'Target (y)',     'Label yang diprediksi oleh model klasifikasi'],
+  ];
+
+  const newFeatures = [
+    ['errorBalanceOrig',    'newbalanceOrig + amount − oldbalanceOrg',          'Ketidakcocokan saldo pengirim — jika ≠ 0, ada indikasi fraud'],
+    ['errorBalanceDest',    'oldbalanceDest + amount − newbalanceDest',         'Ketidakcocokan saldo penerima'],
+    ['origZeroBalance',     '(oldbalanceOrg == 0) &amp; (newbalanceOrig == 0)', 'Pengirim saldonya nol sebelum &amp; sesudah — pola fraud umum'],
+    ['destZeroBalance',     '(oldbalanceDest == 0) &amp; (newbalanceDest == 0)','Penerima saldonya nol sebelum &amp; sesudah'],
+    ['amountToBalanceRatio','amount / (oldbalanceOrg + 1)',                     'Rasio transaksi vs saldo — fraud sering punya rasio sangat tinggi'],
+    ['hourOfDay',           'step % 24',                                        'Jam dalam sehari (0–23) — menangkap pola waktu fraud'],
+    ['day',                 'step // 24',                                       'Hari ke berapa (0–30) — pola harian'],
+  ];
+
+  let rawHTML = `
+    <h3 class="section-title" style="margin-top:0.5rem;">🔍 Data Mentah (Raw) — Sebelum Diproses</h3>
+    <p style="color:var(--text-secondary);margin-bottom:1.2rem;">
+      Langkah pertama: <strong>melihat keseluruhan data mentah</strong> apa adanya dari file CSV asli,
+      sebelum pembersihan atau feature engineering apapun.
+    </p>
+
+    <div class="metrics c4">
+      ${metricHTML('Total baris (raw)', fmt(R.total_rows))}
+      ${metricHTML('Total kolom (raw)', R.total_cols)}
+      ${metricHTML('Transaksi fraud', fmt(R.fraud_count))}
+      ${metricHTML('Flagged otomatis', fmt(R.flagged_count))}
+    </div>
+
+    <div class="card">
+      <h4>📋 Seluruh ${R.total_cols} Kolom Data Mentah</h4>
+      <p style="color:var(--text-secondary);margin-bottom:0.8rem;">Berikut <strong>semua field</strong> yang ada di file CSV asli PaySim:</p>
+      <table class="data-table">
+        <thead><tr><th>No</th><th>Kolom</th><th>Tipe</th><th>Penjelasan</th></tr></thead>
+        <tbody>
+          ${rawFieldInfo.map((r, i) => `<tr><td>${i+1}</td><td><code>${r[0]}</code></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h4>👀 Pratinjau Data Mentah (30 baris pertama, SEMUA kolom)</h4>
+      <div class="table-scroll">
+        <table class="data-table"><thead><tr>`;
+
+  R.columns.forEach(c => { rawHTML += `<th>${c}</th>`; });
+  rawHTML += '</tr></thead><tbody>';
+  R.preview.forEach(row => {
+    rawHTML += '<tr>';
+    R.columns.forEach(c => {
+      let v = row[c];
+      if (typeof v === 'number' && !Number.isInteger(v)) v = fmt(v);
+      rawHTML += `<td>${v}</td>`;
+    });
+    rawHTML += '</tr>';
+  });
+  rawHTML += `</tbody></table></div>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.6rem;">
+        Menampilkan 30 dari ${fmt(R.total_rows)} baris. Data <strong>belum dibersihkan</strong> dan <strong>belum ada feature engineering</strong>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h4>🔢 Ringkasan per Kolom</h4>
+      <table class="data-table">
+        <thead><tr><th>Kolom</th><th>Tipe Data</th><th>Jumlah Unik</th><th>Jumlah Null</th></tr></thead>
+        <tbody>
+          ${R.columns.map(c => `<tr><td><code>${c}</code></td><td>${R.dtypes[c]}</td><td class="num">${fmt(R.n_unique[c])}</td><td class="num">${R.nulls[c]}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h4>💳 Distribusi Tipe Transaksi</h4>
+      <table class="data-table">
+        <thead><tr><th>Tipe Transaksi</th><th>Jumlah</th><th>Persentase</th></tr></thead>
+        <tbody>
+          ${Object.entries(R.type_dist).sort((a,b) => b[1]-a[1]).map(([t,n]) =>
+            `<tr><td>${t}</td><td class="num">${fmt(n)}</td><td class="num">${(n/R.total_rows*100).toFixed(2)}%</td></tr>`
+          ).join('')}
+        </tbody>
+      </table>
+      <div id="raw-type-chart" style="height:320px;margin-top:1rem;"></div>
+    </div>
+
+    <hr>
+    <h3 class="section-title">⚙️ Field yang Dibuang vs Digunakan</h3>
+    <p style="color:var(--text-secondary);margin-bottom:1.2rem;">
+      Tidak semua kolom asli masuk ke model. Berikut pembagiannya:
+    </p>
+
+    <div class="cols c2">
+      <div class="card" style="border-left:4px solid var(--danger);">
+        <h4>❌ Kolom yang DIBUANG dari Fitur Model</h4>
+        <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.8rem;">
+          Kolom-kolom ini <strong>tetap ada</strong> di dataframe untuk referensi, tapi <strong>tidak dimasukkan</strong> ke input model.
+        </p>
+        <table class="data-table">
+          <thead><tr><th>Kolom</th><th>Alasan Dibuang</th></tr></thead>
+          <tbody>
+            ${droppedFields.map(r => `<tr><td><code>${r[0]}</code></td><td>${r[1]}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-left:4px solid var(--accent);">
+        <h4>✅ Kolom yang DIGUNAKAN</h4>
+        <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.8rem;">
+          Kolom-kolom ini dipertahankan dan menjadi input model, baik langsung maupun setelah transformasi.
+        </p>
+        <table class="data-table">
+          <thead><tr><th>Kolom</th><th>Peran</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            ${keptFields.map(r => `<tr><td><code>${r[0]}</code></td><td><span class="badge green">${r[1]}</span></td><td>${r[2]}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--primary-light);">
+      <h4>🆕 Fitur Baru Hasil Feature Engineering</h4>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.8rem;">
+        Dari kolom asli, dibuat <strong>fitur turunan</strong> yang lebih informatif untuk deteksi fraud:
+      </p>
+      <table class="data-table">
+        <thead><tr><th>Fitur Baru</th><th>Formula / Logika</th><th>Alasan</th></tr></thead>
+        <tbody>
+          ${newFeatures.map(r => `<tr><td><code>${r[0]}</code></td><td><code style="font-size:0.8rem;">${r[1]}</code></td><td>${r[2]}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h4>🔄 Ringkasan Alur Data</h4>
+      <table class="data-table">
+        <thead><tr><th>Tahap</th><th>Proses</th><th>Kolom</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge" style="background:#64748b;">1</span> Data Mentah</td><td>CSV PaySim apa adanya</td><td><strong>${R.total_cols} kolom</strong> asli</td></tr>
+          <tr><td><span class="badge" style="background:#64748b;">2</span> Pembersihan</td><td>Hapus duplikat, validasi tipe, isi NA</td><td>Tetap ${R.total_cols} kolom</td></tr>
+          <tr><td><span class="badge" style="background:#3b82f6;">3</span> Feature Engineering</td><td>Buat fitur turunan + one-hot encode <code>type</code></td><td>Tambah ${D.paysim.num_cols - R.total_cols} kolom baru</td></tr>
+          <tr><td><span class="badge green">4</span> Data Processed</td><td>Simpan ke Parquet, siap model</td><td><strong>${D.paysim.num_cols} kolom</strong> total</td></tr>
+          <tr><td><span class="badge" style="background:#7c3aed;">5</span> Input Model</td><td>Buang 3 kolom (ID + flag)</td><td><strong>${D.paysim.num_cols - 3} fitur</strong> + 1 target</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="success-box">
+      <strong>📊 Ringkasan:</strong> Dari <strong>${R.total_cols} kolom mentah</strong> →
+      <strong>3 dibuang</strong> dari fitur,
+      <strong>${D.paysim.num_cols - R.total_cols} fitur baru</strong> ditambahkan →
+      total <strong>${D.paysim.num_cols} kolom</strong> di data processed.
+    </div>`;
+
+  document.getElementById('data-tab-raw').innerHTML = rawHTML;
+
+  // Type distribution bar chart
+  const typeEntries = Object.entries(R.type_dist).sort((a,b) => b[1]-a[1]);
+  Plotly.newPlot('raw-type-chart', [{
+    type: 'bar',
+    x: typeEntries.map(e => e[0]),
+    y: typeEntries.map(e => e[1]),
+    text: typeEntries.map(e => (e[1]/R.total_rows*100).toFixed(1) + '%'),
+    textposition: 'outside',
+    textfont: { size: 11, color: '#334155' },
+    marker: {
+      color: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+      opacity: 0.85,
+    },
+    hovertemplate: '<b>%{x}</b><br>Jumlah: %{y:,}<br>%{text}<extra></extra>',
+  }], {
+    font: { family: 'Inter, sans-serif', color: '#0f172a', size: 13 },
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    xaxis: { title: 'Tipe Transaksi' },
+    yaxis: { title: 'Jumlah', tickformat: ',.0f', gridcolor: 'rgba(15,23,42,0.05)' },
+    height: 320, margin: { l: 80, r: 20, t: 20, b: 50 },
+  }, { responsive: true, displayModeBar: false });
 
   // Tab PaySim
   let paysimHTML = `
