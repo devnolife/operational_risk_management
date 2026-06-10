@@ -421,6 +421,85 @@ if page == "🏠 Beranda":
         unsafe_allow_html=True,
     )
 
+    # ---- Latar Belakang ----
+    st.markdown("### 📌 Latar Belakang")
+    st.markdown(
+        "Industri perbankan menghadapi berbagai risiko: **risiko kredit** "
+        "(debitur gagal bayar), **risiko pasar** (perubahan harga), dan "
+        "**risiko operasional** (kegagalan proses, manusia, sistem, atau "
+        "kejadian eksternal). Secara historis, risiko operasional sering "
+        "diabaikan karena sulit diukur — padahal kasus-kasus besar "
+        "membuktikan dampaknya luar biasa:"
+    )
+    st.markdown(
+        "| Kasus | Tahun | Kerugian | Jenis Risiko Operasional |\n"
+        "|---|---|---|---|\n"
+        "| Barings Bank (Nick Leeson) | 1995 | $1,3 miliar | Fraud internal — transaksi tidak sah |\n"
+        "| Société Générale (Kerviel) | 2008 | €4,9 miliar | Fraud internal — posisi tidak sah |\n"
+        "| Enron | 2001 | $74 miliar | Fraud akuntansi, kegagalan kontrol |\n"
+        "| Wells Fargo (akun palsu) | 2016 | $3+ miliar denda | Fraud internal — pembukaan akun fiktif |"
+    )
+    st.info(
+        "💡 Kasus-kasus ini menunjukkan bahwa **satu kejadian risiko operasional** "
+        "bisa menghancurkan seluruh bank. Oleh karena itu, **Basel II** mewajibkan "
+        "setiap bank untuk **mengukur dan menyediakan cadangan modal** khusus "
+        "untuk risiko operasional."
+    )
+
+    st.markdown("#### 📜 Kerangka Regulasi Basel II")
+    st.markdown(
+        "**Basel II** (2004) adalah standar regulasi perbankan internasional "
+        "dari *Basel Committee on Banking Supervision (BCBS)*. Untuk pertama "
+        "kalinya, Basel II secara eksplisit mewajibkan bank menyediakan "
+        "cadangan modal untuk risiko operasional, melalui 3 pilar:"
+    )
+    p1, p2, p3 = st.columns(3)
+    with p1:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>📐 Pilar 1 — Modal Minimum</h4>'
+            '<p>Bank harus menghitung modal minimum untuk 3 jenis risiko: '
+            'kredit, pasar, dan <strong>operasional</strong>. '
+            '<em>(Fokus proyek ini)</em></p></div>',
+            unsafe_allow_html=True,
+        )
+    with p2:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>🔍 Pilar 2 — Supervisory Review</h4>'
+            '<p>Pengawas (OJK/BI) mengevaluasi apakah model internal bank '
+            'sudah memadai.</p></div>',
+            unsafe_allow_html=True,
+        )
+    with p3:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>📢 Pilar 3 — Disiplin Pasar</h4>'
+            '<p>Bank wajib mempublikasikan profil risiko agar pasar bisa '
+            'menilai kesehatan bank.</p></div>',
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("#### 🎯 Rumusan Masalah")
+    st.markdown(
+        "Berdasarkan konteks di atas, proyek ini menjawab tiga pertanyaan:\n\n"
+        "1. **Bagaimana mengidentifikasi dan memeringkat** kategori risiko "
+        "operasional yang paling berbahaya? *(→ dijawab dengan **Scorecard** — Model 1)*\n"
+        "2. **Berapa cadangan modal** yang harus disiapkan bank untuk menutup "
+        "kerugian tak terduga akibat risiko operasional? *(→ dijawab dengan "
+        "**VaR Aktuaria** — Model 2)*\n"
+        "3. **Bagaimana memvalidasi** estimasi cadangan modal dengan menggabungkan "
+        "berbagai sumber data dan membandingkannya dengan pendekatan regulasi? "
+        "*(→ dijawab dengan **VaR Integrasi Bayesian & BIA** — Model 3)*"
+    )
+    st.markdown(
+        "> 📚 **Referensi utama:** Giudici, P. (2009). *Applied Data Mining "
+        "for Business and Industry*, 2nd Edition. John Wiley & Sons. "
+        "**Chapter 12: Operational Risk**, hlm. 225–241. "
+        "(ISBN: 978-0-470-05886-2)"
+    )
+
+    st.markdown("---")
     # ---- Apa itu Risiko Operasional? (dari buku) ----
     st.markdown("### 📖 Apa itu Risiko Operasional?")
     st.markdown(
