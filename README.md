@@ -64,6 +64,21 @@ Dashboard **fokus 3 halaman** di sidebar — **1 anggota = 1 halaman**:
 `3 — VaR Integrasi & BIA` (Anggota 3). Analisis PaySim (`src/`) tetap tersedia
 sebagai pelengkap lewat CLI (`python -m src.data`), tidak menambah halaman dashboard.
 
+Tiap halaman model memuat **alat bantu presentasi** untuk anggota kelompok:
+1. **🔄 Diagram alur model** — flowchart input → proses → output (juga ada alur
+   keseluruhan proyek di Beranda yang memetakan sumber data → model → hasil).
+2. **🧮 Perhitungan Manual (Langkah 6)** — hitungan langkah demi langkah dengan
+   angka nyata yang bisa diulang dengan kalkulator (median & Gini per suara ahli,
+   fit lognormal dari 5 data, aturan posisi persentil VaR, konstanta scaling *c*,
+   komposisi data gabungan, BIA), lengkap dengan **cek silang** bahwa hasil manual
+   sama persis dengan keluaran program.
+
+Halaman pendukung presentasi:
+- **▶️ Jalankan Program** — eksekusi modul `orm/` langsung dari dashboard
+  (output konsol asli) + tabel urutan demo presentasi per anggota.
+- **📕 Buku Referensi** — PDF Bab 12 Giudici (2009) tersemat + tombol unduh
+  + peta isi buku → modul kode → halaman dashboard.
+
 ## Pembagian Tugas
 Buku Giudici Bab 12 memakai **tiga model pengukuran risiko operasional**, jadi
 **1 anggota = 1 model/modul**. Modul fondasi (`orm/categories.py`) dan dashboard

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import inspect
 
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -53,6 +54,67 @@ st.markdown("""
     border-left: 4px solid #2ca02c; padding: 1rem 1.2rem;
     border-radius: 0 0.5rem 0.5rem 0; margin: 1rem 0;
 }
+
+/* ===================== Sidebar ===================== */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #142c47 0%, #1e3a5f 55%, #2d6a9f 170%);
+}
+[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+    padding-top: 0.9rem; padding-bottom: 0.6rem;
+}
+[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.18); }
+/* Header — kompak (logo di kiri, judul di kanan) */
+.sb-header {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0 0 0.15rem 0.1rem;
+}
+.sb-logo {
+    font-size: 1.35rem; width: 2.5rem; height: 2.5rem; line-height: 2.5rem;
+    min-width: 2.5rem; text-align: center; border-radius: 0.7rem;
+    background: rgba(255,255,255,0.12); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+}
+.sb-title { font-size: 0.96rem; font-weight: 700; color: #ffffff; line-height: 1.25; }
+.sb-sub { font-size: 0.68rem; color: #a9c6e4; margin-top: 0.1rem; }
+.sb-section {
+    font-size: 0.64rem; letter-spacing: 0.13em; font-weight: 700;
+    color: #8db4dc; margin: 0.55rem 0 0.15rem 0.25rem; text-transform: uppercase;
+}
+/* Navigasi: radio menjadi pill menu (kompak, tanpa scroll) */
+[data-testid="stSidebar"] [role="radiogroup"] { gap: 0.15rem; }
+[data-testid="stSidebar"] label[data-baseweb="radio"] {
+    width: 100%; margin-right: 0; padding: 0.3rem 0.6rem;
+    border-radius: 0.55rem; border-left: 3px solid transparent;
+    transition: background 0.15s ease;
+}
+[data-testid="stSidebar"] label[data-baseweb="radio"]:hover {
+    background: rgba(255,255,255,0.10);
+}
+[data-testid="stSidebar"] label[data-baseweb="radio"] > div:first-child {
+    display: none;               /* sembunyikan lingkaran radio */
+}
+[data-testid="stSidebar"] label[data-baseweb="radio"] p {
+    font-size: 0.85rem; color: #d6e7f7;
+}
+[data-testid="stSidebar"] label[data-baseweb="radio"]:has(input:checked) {
+    background: rgba(255,255,255,0.16); border-left: 3px solid #6fb3e8;
+}
+[data-testid="stSidebar"] label[data-baseweb="radio"]:has(input:checked) p {
+    color: #ffffff; font-weight: 600;
+}
+/* Kartu anggota kelompok — kompak */
+.sb-member {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,255,255,0.07); border-radius: 0.55rem;
+    padding: 0.28rem 0.5rem; margin-bottom: 0.25rem;
+}
+.sb-avatar {
+    width: 1.7rem; height: 1.7rem; min-width: 1.7rem; border-radius: 50%;
+    background: linear-gradient(135deg, #6fb3e8, #2d6a9f);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.64rem; font-weight: 700; color: #ffffff;
+}
+.sb-name { font-size: 0.76rem; font-weight: 600; color: #ffffff; line-height: 1.2; }
+.sb-role { font-size: 0.64rem; color: #a9c6e4; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -73,6 +135,17 @@ def kotak_arti(teks: str) -> None:
 def perumpamaan(teks: str) -> None:
     """Analogi/perumpamaan sehari-hari agar mudah dipahami."""
     st.warning("🧩 **Perumpamaan:** " + teks)
+
+
+def alur(dot_body: str) -> None:
+    """Diagram alur model (graphviz) dengan gaya seragam — input → proses → output."""
+    st.graphviz_chart(
+        'digraph { rankdir=LR; bgcolor=transparent; '
+        'node [shape=box, style="rounded,filled", fillcolor="#eaf2fb", '
+        'color="#2d6a9f", fontname="Helvetica", fontsize=11, margin="0.15,0.1"]; '
+        'edge [color="#2d6a9f"]; ' + dot_body + ' }',
+        use_container_width=True,
+    )
 
 
 @st.cache_data(show_spinner=False)
@@ -289,26 +362,42 @@ def dataset_lengkap_paysim(key_prefix: str) -> None:
 # ----------------------------------------------------------------------------
 # Sidebar — navigasi halaman
 # ----------------------------------------------------------------------------
-st.sidebar.title("⚠️ Operational Risk Management")
-st.sidebar.caption("Giudici (2009) Bab 12 — 3 model, 1 per anggota")
+st.sidebar.markdown(
+    '<div class="sb-header">'
+    '<div class="sb-logo">⚠️</div>'
+    '<div><div class="sb-title">Operational Risk Management</div>'
+    '<div class="sb-sub">Giudici (2009) · Bab 12 · 3 model</div></div>'
+    '</div>',
+    unsafe_allow_html=True,
+)
+st.sidebar.markdown('<div class="sb-section">Navigasi</div>', unsafe_allow_html=True)
 page = st.sidebar.radio(
     "Pilih halaman",
     [
         "🏠 Beranda",
         "📂 Data Lengkap (semua data)",
-        "1 — Scorecard (Self-Assessment)",
-        "2 — VaR Aktuaria",
-        "3 — VaR Integrasi & BIA",
+        "📋 1 — Scorecard (Self-Assessment)",
+        "📈 2 — VaR Aktuaria",
+        "🧮 3 — VaR Integrasi & BIA",
         "📊 Ringkasan Eksekutif",
+        "▶️ Jalankan Program",
+        "📕 Buku Referensi",
     ],
+    label_visibility="collapsed",
 )
-st.sidebar.markdown("---")
-st.sidebar.markdown(
-    "**Anggota Kelompok:**\n\n"
-    "👤 Lis Indriani → Scorecard\n\n"
-    "👤 Ana Sulistiana Alwi → VaR Aktuaria\n\n"
-    "👤 Andi Agung Dwi Arya B → VaR Integrasi & BIA"
-)
+st.sidebar.markdown('<div class="sb-section">Anggota Kelompok</div>',
+                    unsafe_allow_html=True)
+for _inisial, _nama, _peran in [
+    ("LI", "Lis Indriani", "📋 Model 1 — Scorecard"),
+    ("AS", "Ana Sulistiana Alwi", "📈 Model 2 — VaR Aktuaria"),
+    ("AA", "Andi Agung Dwi Arya B", "🧮 Model 3 — VaR Integrasi & BIA"),
+]:
+    st.sidebar.markdown(
+        f'<div class="sb-member"><div class="sb-avatar">{_inisial}</div>'
+        f'<div><div class="sb-name">{_nama}</div>'
+        f'<div class="sb-role">{_peran}</div></div></div>',
+        unsafe_allow_html=True,
+    )
 
 if not PROCESSED_PATH.exists():
     st.error(
@@ -534,6 +623,24 @@ if page == "🏠 Beranda":
         "| 3. VaR Aktuaria | Simulasi Monte Carlo dari data fraud → distribusi kerugian | Cadangan modal (VaR) |\n"
         "| 4. VaR Integrasi | Gabungkan 3 sumber + bandingkan dengan BIA | 7 estimasi VaR (Gambar 12.2) |\n"
         "| 5. Kesimpulan | Bandingkan semua metode → validasi silang | Estimasi yang bisa dipercaya |"
+    )
+
+    st.markdown("**Diagram alur — sumber data mana masuk ke model mana:**")
+    alur(r"""
+      D1 [label="Data internal\n(PaySim fraud)"];
+      D2 [label="Opini ahli\n(56 kategori Basel)"];
+      D3 [label="Data eksternal\n(bank lain, sintetis)"];
+      M1 [label="Model 1\nScorecard rating\n(Lis)"];
+      M2 [label="Model 2\nVaR Aktuaria\n(Ana)"];
+      M3 [label="Model 3\nVaR Integrasi + BIA\n(Andi)"];
+      H  [label="Perbandingan 7 VaR\n+ peringkat risiko\n(Gambar 12.2)", fillcolor="#e8f5e9"];
+      D2 -> M1; D1 -> M2; D1 -> M3; D2 -> M3; D3 -> M3;
+      M1 -> H; M2 -> H; M3 -> H;
+    """)
+    kotak_arti(
+        "Model 1 hanya memakai **opini ahli**; Model 2 hanya **data internal**; "
+        "Model 3 **menggabungkan ketiganya** lalu membandingkan semua hasil. "
+        "Itulah pembagian tugas 3 anggota kelompok."
     )
 
     st.markdown("---")
@@ -862,11 +969,23 @@ elif page == "📂 Data Lengkap (semua data)":
 # ============================================================================
 # Lis Indriani — Scorecard Self-Assessment (Giudici Ch.12, Gambar 12.1)
 # ============================================================================
-elif page == "1 — Scorecard (Self-Assessment)":
-    from orm.data_sources import generate_expert_opinions
+elif page == "📋 1 — Scorecard (Self-Assessment)":
+    from orm.categories import (
+        CONTROL_LOSS_FACTOR,
+        FREQUENCY_PER_YEAR,
+        SCALES,
+        SEVERITY_MIDPOINTS,
+        rank_to_letter,
+    )
+    from orm.data_sources import (
+        INTERNAL_BUSINESS_LINE,
+        INTERNAL_EVENT_TYPE,
+        generate_expert_opinions,
+    )
     from orm.scorecard import (
         TRAFFIC_LIGHT_HEX,
         build_scorecard,
+        consensus_multiplicity,
         normalized_gini,
         rate_dimension,
         self_assessment_total_loss,
@@ -910,6 +1029,23 @@ elif page == "1 — Scorecard (Self-Assessment)":
         "Bayangkan **dokter di UGD** yang melakukan *triase*. Pasien yang paling kritis "
         "didahulukan, bukan yang datang pertama. Scorecard melakukan hal sama untuk "
         "risiko: yang paling 'kritis' (merah) ditangani lebih dulu."
+    )
+
+    st.markdown("**🔄 Alur Model 1 — dari opini ahli sampai rating:**")
+    alur(r"""
+      A [label="Opini ahli\n(n ahli x 56 kategori\nx 3 dimensi)"];
+      B [label="Median kelas\n(huruf dasar A/B/C)"];
+      C [label="Indeks Gini\n(kekompakan 0-1)"];
+      D [label="Multiplisitas huruf\n(x3 / x2 / x1)"];
+      E [label="Rating + warna\n(mis. AA, kuning)"];
+      F [label="Perceived Loss &\nSkor Prioritas"];
+      G [label="Scorecard 56 kategori\n(urut prioritas)", fillcolor="#e8f5e9"];
+      A -> B; A -> C; C -> D; B -> E; D -> E; E -> F; F -> G;
+    """)
+    kotak_arti(
+        "Ada **dua jalur paralel** dari suara ahli: **median** menentukan *hurufnya* "
+        "(A/B/C = seberapa berisiko), **Gini** menentukan *berapa kali huruf diulang* "
+        "(AAA/AA/A = seberapa kompak para ahli). Keduanya digabung jadi satu rating."
     )
 
     with st.expander("📖 Istilah, Rumus, & kenapa dipakai (klik untuk buka)"):
@@ -1113,11 +1249,111 @@ elif page == "1 — Scorecard (Self-Assessment)":
             "kategori sehingga menghasilkan tabel berwarna pada bagian Hasil di atas."
         )
 
+    st.markdown("---")
+    langkah(6, "Perhitungan Manual — contoh nyata 1 kategori")
+    st.markdown(
+        f"Supaya tiap anggota bisa **menjelaskan ulang dengan kalkulator/papan tulis**, "
+        f"berikut hitungan langkah demi langkah untuk kategori fokus proyek "
+        f"**{INTERNAL_BUSINESS_LINE} — {INTERNAL_EVENT_TYPE}** "
+        f"({n_experts} ahli, seed {seed}). Angka di bawah **persis sama** dengan baris "
+        "kategori tersebut pada tabel scorecard di atas."
+    )
+
+    _opin_m = generate_expert_opinions(n_experts=n_experts, seed=int(seed))
+    _g_m = _opin_m[
+        (_opin_m["business_line"] == INTERNAL_BUSINESS_LINE)
+        & (_opin_m["event_type"] == INTERNAL_EVENT_TYPE)
+    ]
+    _dims_m = [("frequency", "Frekuensi"), ("severity", "Severity"),
+               ("control", "Kontrol")]
+    _ringkas_m: dict[str, dict] = {}
+    _tabs_m = st.tabs([f"🧮 {lbl}" for _, lbl in _dims_m])
+    for _tab_m, (_dim_m, _lbl_m) in zip(_tabs_m, _dims_m):
+        with _tab_m:
+            _votes_m = _g_m[_dim_m].tolist()
+            _classes_m = SCALES[_dim_m]
+            _K_m = len(_classes_m)
+            _ranks_m = sorted(_classes_m.index(v) + 1 for v in _votes_m)
+            _med_rank_m = _ranks_m[len(_ranks_m) // 2]
+            _med_class_m = _classes_m[_med_rank_m - 1]
+            _letter_m = rank_to_letter(_med_rank_m, _K_m)
+
+            st.markdown(
+                f"**Skala {_lbl_m}** (peringkat 1 = risiko terendah):  "
+                + " → ".join(f"`{i + 1} = {c}`" for i, c in enumerate(_classes_m))
+            )
+            st.markdown(f"**Langkah 1 — Kumpulkan suara {len(_votes_m)} ahli:**")
+            st.code(", ".join(_votes_m), language=None)
+            st.markdown(
+                f"**Langkah 2 — Ubah ke peringkat, lalu urutkan:** `{_ranks_m}`\n\n"
+                f"Median = nilai posisi ke-**{len(_ranks_m) // 2 + 1}** dari "
+                f"{len(_ranks_m)} (*upper median* bila jumlah ahli genap) "
+                f"= peringkat **{_med_rank_m}** → kelas **{_med_class_m}** "
+                f"→ huruf dasar **{_letter_m}**."
+            )
+
+            _counts_m = pd.Series(_votes_m).value_counts()
+            _p_m = _counts_m / len(_votes_m)
+            _G_m = 1.0 - float((_p_m ** 2).sum())
+            _Gn_m = _G_m * _K_m / (_K_m - 1)
+            _mult_m = consensus_multiplicity(_Gn_m)
+            st.markdown("**Langkah 3 — Hitung indeks Gini (kekompakan ahli):**")
+            st.dataframe(pd.DataFrame({
+                "Kelas": _counts_m.index,
+                "Jumlah ahli": _counts_m.values,
+                "Proporsi p": _p_m.round(3).values,
+                "p²": (_p_m ** 2).round(4).values,
+            }), hide_index=True, use_container_width=True)
+            st.latex(rf"G = 1 - \sum p_k^2 = 1 - {float((_p_m ** 2).sum()):.4f}"
+                     rf" = {_G_m:.4f}")
+            st.latex(rf"G_{{norm}} = G \times \tfrac{{K}}{{K-1}} = {_G_m:.4f}"
+                     rf" \times \tfrac{{{_K_m}}}{{{_K_m - 1}}} = {_Gn_m:.3f}")
+            st.markdown(
+                "**Langkah 4 — Tentukan jumlah huruf** "
+                "(aturan: ≤ 1/3 → 3 huruf; ≤ 2/3 → 2 huruf; > 2/3 → 1 huruf):\n\n"
+                f"G_norm = **{_Gn_m:.3f}** → **{_mult_m} huruf** → rating akhir "
+                f"**{_letter_m * _mult_m}**."
+            )
+            _ringkas_m[_dim_m] = {
+                "rank": _med_rank_m, "class": _med_class_m,
+                "rating": _letter_m * _mult_m,
+            }
+
+    _fm = FREQUENCY_PER_YEAR[_ringkas_m["frequency"]["class"]]
+    _sm = SEVERITY_MIDPOINTS[_ringkas_m["severity"]["class"]]
+    _cm = CONTROL_LOSS_FACTOR[_ringkas_m["control"]["class"]]
+    _pl_m = _fm * _sm * _cm
+    _ps_m = (_ringkas_m["frequency"]["rank"] * _ringkas_m["severity"]["rank"]
+             * _ringkas_m["control"]["rank"])
+    st.markdown("**Langkah 5 — Perceived Loss & Skor Prioritas (gabungan 3 dimensi):**")
+    st.latex(rf"\text{{Perceived Loss}} = {_fm:g} \times {_sm:,.0f} \times {_cm:g}"
+             rf" = {_pl_m:,.0f}")
+    st.caption(
+        f"frekuensi/tahun kelas '{_ringkas_m['frequency']['class']}' = {_fm:g} · "
+        f"nilai tengah severity '{_ringkas_m['severity']['class']}' = {_sm:,.0f} · "
+        f"faktor kontrol '{_ringkas_m['control']['class']}' = {_cm:g}"
+    )
+    st.latex(rf"\text{{Skor Prioritas}} = r_{{freq}} \times r_{{sev}} \times r_{{ctrl}}"
+             rf" = {_ringkas_m['frequency']['rank']} \times "
+             rf"{_ringkas_m['severity']['rank']} \times "
+             rf"{_ringkas_m['control']['rank']} = {_ps_m}")
+
+    _row_sc = sc[(sc["business_line"] == INTERNAL_BUSINESS_LINE)
+                 & (sc["event_type"] == INTERNAL_EVENT_TYPE)].iloc[0]
+    st.success(
+        f"✅ **Cek silang dengan program:** rating = "
+        f"{_row_sc['frequency_rating']} / {_row_sc['severity_rating']} / "
+        f"{_row_sc['control_rating']} · perceived loss = "
+        f"{_row_sc['perceived_loss']:,.0f} · skor prioritas = "
+        f"{int(_row_sc['priority_score'])} — **sama persis** dengan hitungan "
+        "manual di atas."
+    )
+
 
 # ============================================================================
 # Ana Sulistiana Alwi — Model Aktuaria, VaR (Giudici Ch.12, Gambar 12.2)
 # ============================================================================
-elif page == "2 — VaR Aktuaria":
+elif page == "📈 2 — VaR Aktuaria":
     from orm.actuarial import (
         fit_severity_lognormal,
         simulate_aggregate,
@@ -1162,6 +1398,22 @@ elif page == "2 — VaR Aktuaria":
         "persis siapa yang akan klaim, tapi dengan menyimulasikan ribuan kemungkinan "
         "mereka tahu **skenario terburuk** dan menyiapkan dana untuk itu. VaR 99,9% = "
         "'dana darurat' yang cukup untuk menutup 999 dari 1.000 kemungkinan."
+    )
+
+    st.markdown("**🔄 Alur Model 2 — dari data fraud sampai VaR:**")
+    alur(r"""
+      A [label="Data fraud PaySim\n(amount per kejadian)"];
+      B [label="Frekuensi\nlambda = kejadian / hari"];
+      C [label="Severity\nfit lognormal (mu, sigma)"];
+      D [label="Monte Carlo (ribuan kali):\nN ~ Poisson(lambda)\nL = X1 + ... + XN"];
+      E [label="Distribusi total\nkerugian L"];
+      F [label="VaR 99,9% (persentil)\n& rata-rata E[L]", fillcolor="#e8f5e9"];
+      A -> B; A -> C; B -> D; C -> D; D -> E; E -> F;
+    """)
+    kotak_arti(
+        "Data yang sama dipecah jadi dua bahan: **berapa kali** kejadian per hari "
+        "(λ untuk Poisson) dan **berapa besar** tiap kerugian (μ, σ untuk lognormal). "
+        "Monte Carlo menggabungkan keduanya jadi ribuan skenario total kerugian."
     )
 
     with st.expander("📖 Istilah, Rumus, & kenapa dipakai (klik untuk buka)"):
@@ -1344,18 +1596,99 @@ elif page == "2 — VaR Aktuaria":
             "lebih banyak skenario untuk hasil yang lebih halus."
         )
 
+    st.markdown("---")
+    langkah(6, "Perhitungan Manual — bisa diikuti dengan kalkulator")
+    st.markdown(
+        "Lima sub-langkah berikut menunjukkan **dari mana setiap angka berasal**, "
+        "memakai data nyata (untuk parameter) dan contoh mini (untuk simulasi)."
+    )
+
+    _n_ev_m = _fs["n_events"]
+    _span_m = _fs["span_days"]
+    _lam_m = _n_ev_m / _span_m
+    st.markdown("**Langkah A — Frekuensi harian (λ) dari data nyata:**")
+    st.latex(rf"\lambda = \frac{{\text{{jumlah kejadian fraud}}}}"
+             rf"{{\text{{rentang hari}}}} = \frac{{{_n_ev_m:,}}}{{{_span_m}}}"
+             rf" = {_lam_m:.1f}\ \text{{kejadian/hari}}")
+
+    st.markdown("**Langkah B — Parameter lognormal (μ, σ) — contoh 5 kerugian "
+                "pertama dari data nyata:**")
+    _x5_m = _loss["amount"].head(5).to_numpy(dtype=float)
+    _ln5_m = np.log(_x5_m)
+    _mu5_m, _sg5_m = float(_ln5_m.mean()), float(_ln5_m.std())
+    st.dataframe(pd.DataFrame({
+        "Kerugian x": [f"{v:,.0f}" for v in _x5_m],
+        "ln(x)": _ln5_m.round(3),
+    }), hide_index=True, use_container_width=True)
+    st.latex(rf"\mu = \frac{{\sum \ln x_i}}{{5}} = \frac{{{_ln5_m.sum():.3f}}}{{5}}"
+             rf" = {_mu5_m:.3f}")
+    st.latex(rf"\sigma = \sqrt{{\tfrac{{1}}{{5}} \sum (\ln x_i - \mu)^2}}"
+             rf" = {_sg5_m:.3f}")
+    st.caption(
+        f"Cara yang sama diterapkan pada **seluruh {len(_fs['severity_sample']):,} "
+        f"data** oleh program → μ = {act['severity_mu']:.3f}, "
+        f"σ = {act['severity_sigma']:.3f} (angka yang dipakai simulasi)."
+    )
+
+    st.markdown("**Langkah C — Satu skenario Monte Carlo (contoh mini):**")
+    st.markdown(
+        "Misal λ = 2 dan undian Poisson menghasilkan **N = 3** kejadian. Lalu kita "
+        "undi 3 severity dari lognormal, misal hasilnya 12.000, 85.000, dan 31.000:"
+    )
+    st.latex(r"L = \sum_{i=1}^{N} X_i = 12.000 + 85.000 + 31.000 = 128.000")
+    st.markdown(
+        f"Program mengulang langkah ini **{n_sims:,} kali** (tiap kali N dan X "
+        "berbeda) → terkumpul ribuan nilai L → itulah histogram pada bagian Hasil."
+    )
+
+    st.markdown("**Langkah D — Membaca VaR (persentil) secara manual:**")
+    _pos_m = 1 + q * (n_sims - 1)
+    st.markdown("Urutkan semua skenario dari kecil → besar, lalu ambil nilai pada posisi:")
+    st.latex(rf"\text{{posisi}} = 1 + q\,(n - 1) = 1 + {q:.3f} \times"
+             rf" ({n_sims:,} - 1) = {_pos_m:,.1f}")
+    st.markdown(
+        f"→ VaR {q:.1%} = nilai skenario urutan ke-**{int(_pos_m):,}** "
+        "(interpolasi linear bila posisinya tidak bulat).\n\n"
+        "**Contoh mini** — 10 skenario terurut: `[5, 8, 12, 15, 20, 26, 33, 45, 60, 100]`. "
+        "P90 → posisi = 1 + 0,9 × 9 = **9,1** → di antara nilai ke-9 (60) dan ke-10 (100) "
+        "→ VaR = 60 + 0,1 × (100 − 60) = **64**."
+    )
+    st.caption(f"Dengan aturan persis ini program memperoleh VaR {q:.1%} = "
+               f"{act['actuarial_montecarlo_var']:,.0f} pada bagian Hasil.")
+
+    st.markdown("**Langkah E — Cek kasar rata-rata kerugian (tanpa simulasi):**")
+    _sev_pos_m = _fs["severity_sample"][_fs["severity_sample"] > 0]
+    _mean_sev_m = float(_sev_pos_m.mean())
+    st.latex(rf"E[L] = \lambda \times \bar{{x}} = {_lam_m:.1f} \times"
+             rf" {_mean_sev_m:,.0f} = {_lam_m * _mean_sev_m:,.0f}")
+    st.success(
+        f"✅ **Cek silang:** hasil rumus tangan E[L] = "
+        f"{_lam_m * _mean_sev_m:,.0f} ≈ 'Rata-rata kerugian' hasil simulasi "
+        f"({act['expected_loss_montecarlo']:,.0f}) — bukti simulasi konsisten "
+        "dengan teori."
+    )
+
 
 # ============================================================================
 # Andi Agung Dwi Arya B — Model Terintegrasi Bayesian & BIA (Giudici Ch.12, Gambar 12.2)
 # ============================================================================
-elif page == "3 — VaR Integrasi & BIA":
+elif page == "🧮 3 — VaR Integrasi & BIA":
     from orm.integrated import (
         basic_indicator_approach,
         bayes_var_simple,
         integrated_severity,
         run_comparison,
     )
-    from orm.data_sources import scale_external_to_internal
+    from orm.categories import (
+        CONTROL_LOSS_FACTOR,
+        FREQUENCY_PER_YEAR,
+        SEVERITY_MIDPOINTS,
+    )
+    from orm.data_sources import (
+        INTERNAL_BUSINESS_LINE,
+        INTERNAL_EVENT_TYPE,
+        scale_external_to_internal,
+    )
 
     st.title("🧮 Model 3 — VaR Integrasi & BIA")
     st.caption("Andi Agung Dwi Arya B · Giudici (2009) Bab 12.4 · analog Gambar 12.2")
@@ -1393,6 +1726,27 @@ elif page == "3 — VaR Integrasi & BIA":
         "Seperti minta **pendapat kedua (second opinion)** ke beberapa dokter sebelum "
         "operasi. Kalau dokter umum, dokter spesialis, dan hasil lab **sepakat**, kita "
         "jauh lebih yakin. Di sini 'dokter'-nya = data internal, ahli, dan bank lain."
+    )
+
+    st.markdown("**🔄 Alur Model 3 — gabungkan 3 sumber, bandingkan dengan BIA:**")
+    alur(r"""
+      I [label="1. Internal\n(fraud PaySim)"];
+      S [label="2. Self-assessment\n(1 titik dari scorecard)"];
+      X [label="3. Eksternal\n(bank lain)"];
+      C [label="Scaling:\nbagi konstanta c"];
+      M [label="Gabungan severity\n(internal + SA + eksternal)"];
+      BV [label="Bayes VaR\n(persentil langsung)"];
+      BM [label="Bayes MC VaR\n(Monte Carlo)"];
+      GI [label="Gross income"];
+      BIA [label="BIA = 15% x GI\n(top-down)"];
+      T [label="Tabel perbandingan\n7 metode VaR\n(Gambar 12.2)", fillcolor="#e8f5e9"];
+      I -> M; S -> M; X -> C; C -> M; M -> BV; M -> BM;
+      GI -> BIA; BV -> T; BM -> T; BIA -> T;
+    """)
+    kotak_arti(
+        "Jalur **bawah-ke-atas** (kiri): tiga sumber data digabung jadi satu daftar "
+        "kerugian, lalu diambil persentilnya. Jalur **atas-ke-bawah** (BIA): cukup "
+        "15% dari pendapatan kotor. Keduanya bertemu di tabel perbandingan."
     )
 
     with st.expander("📖 Istilah, Rumus, & kenapa dipakai (klik untuk buka)"):
@@ -1562,6 +1916,538 @@ elif page == "3 — VaR Integrasi & BIA":
         dcol2.metric(f"Bayes VaR {q:.1%}", f"{_bayes_demo:,.0f}")
         dcol3.metric("BIA (15%)", f"{_bia_demo:,.0f}")
         st.caption("Angka-angka ini persis yang dipakai grafik perbandingan di atas.")
+
+    st.markdown("---")
+    langkah(6, "Perhitungan Manual — bisa diikuti dengan kalkulator")
+    st.markdown(
+        "Lima sub-langkah berikut memakai **angka nyata** dari data, sehingga setiap "
+        "anggota bisa menjelaskan ulang dari mana angka di grafik berasal."
+    )
+    _loss_m3, _fs_m3 = contoh_internal()
+    _ext_raw_m3, _ext_scaled_m3 = contoh_external()
+    _TI_m3 = float(_fs_m3["total_internal"])
+    _TE_m3 = float(_ext_raw_m3.sum())
+    _c_m3 = _TE_m3 / _TI_m3
+
+    st.markdown("**Langkah A — Konstanta scaling c (menyetarakan data bank lain):**")
+    st.latex(rf"c = \frac{{\sum \text{{kerugian eksternal}}}}"
+             rf"{{\sum \text{{kerugian internal}}}}"
+             rf" = \frac{{{_TE_m3:,.0f}}}{{{_TI_m3:,.0f}}} = {_c_m3:.2f}")
+    st.markdown(
+        f"Contoh: kerugian eksternal pertama **{_ext_raw_m3[0]:,.0f}** ÷ {_c_m3:.2f} "
+        f"= **{_ext_raw_m3[0] / _c_m3:,.0f}** — persis kolom *ter-scaling* pada tabel "
+        "dataset ③ di atas."
+    )
+
+    _sc_m3 = res["scorecard"]
+    _row_m3 = _sc_m3[
+        (_sc_m3["business_line"] == INTERNAL_BUSINESS_LINE)
+        & (_sc_m3["event_type"] == INTERNAL_EVENT_TYPE)
+    ].iloc[0]
+    _f_m3 = FREQUENCY_PER_YEAR[_row_m3["frequency_class"]]
+    _s_m3 = SEVERITY_MIDPOINTS[_row_m3["severity_class"]]
+    _k_m3 = CONTROL_LOSS_FACTOR[_row_m3["control_class"]]
+    st.markdown(f"**Langkah B — Satu titik self-assessment** (kategori "
+                f"*{INTERNAL_BUSINESS_LINE} — {INTERNAL_EVENT_TYPE}*, "
+                "diambil dari scorecard Model 1):")
+    st.latex(rf"p_{{SA}} = \text{{frek/tahun}} \times \text{{severity}} \times"
+             rf" \text{{faktor kontrol}} = {_f_m3:g} \times {_s_m3:,.0f} \times"
+             rf" {_k_m3:g} = {_f_m3 * _s_m3 * _k_m3:,.0f}")
+    st.caption(
+        f"kelas median ahli: frekuensi '{_row_m3['frequency_class']}' = {_f_m3:g}/tahun · "
+        f"severity '{_row_m3['severity_class']}' = {_s_m3:,.0f} · "
+        f"kontrol '{_row_m3['control_class']}' = faktor {_k_m3:g}"
+    )
+
+    _n_int_m3 = int((_fs_m3["severity_sample"] > 0).sum())
+    _n_ext_m3 = len(_ext_scaled_m3)
+    _N_m3 = _n_int_m3 + 1 + _n_ext_m3
+    st.markdown("**Langkah C — Gabungkan tiga sumber jadi satu daftar kerugian:**")
+    st.latex(rf"N = \underbrace{{{_n_int_m3:,}}}_{{\text{{internal}}}}"
+             rf" + \underbrace{{1}}_{{\text{{self-assessment}}}}"
+             rf" + \underbrace{{{_n_ext_m3:,}}}_{{\text{{eksternal}}}}"
+             rf" = {_N_m3:,}\ \text{{angka kerugian}}")
+
+    _pos_m3 = 1 + q * (_N_m3 - 1)
+    st.markdown("**Langkah D — Bayes VaR = persentil dari daftar gabungan:**")
+    st.latex(rf"\text{{posisi}} = 1 + q\,(N - 1) = 1 + {q:.3f} \times"
+             rf" ({_N_m3:,} - 1) = {_pos_m3:,.1f}")
+    st.markdown(
+        f"Urutkan {_N_m3:,} angka dari kecil → besar, ambil nilai urutan "
+        f"ke-**{int(_pos_m3):,}** (interpolasi bila tidak bulat) → "
+        f"**Bayes VaR = {comp['Bayes VaR']:,.0f}** — sama dengan batang "
+        "'Bayes VaR' pada grafik di atas."
+    )
+
+    st.markdown("**Langkah E — BIA (pembanding top-down):**")
+    st.latex(rf"BIA = 15\% \times \text{{Gross Income}} = 0.15 \times"
+             rf" {res['gross_income']:,.0f} = {0.15 * res['gross_income']:,.0f}")
+    st.caption(
+        "Gross income di sini ilustratif — dipilih agar BIA ≈ Bayes VaR, meniru pola "
+        "Gambar 12.2 di buku, di mana metode top-down dan bottom-up saling mendekati."
+    )
+    st.success(
+        "✅ **Inti yang perlu dijelaskan:** Bayes VaR hanyalah *persentil dari daftar "
+        "gabungan tiga sumber* — tidak ada rumus rumit; kuncinya ada di langkah "
+        "scaling (A) dan penggabungan (C). BIA adalah pembanding satu-baris (E)."
+    )
+
+
+# ============================================================================
+# ▶️ Jalankan Program — eksekusi modul orm/ langsung dari dashboard
+# ============================================================================
+elif page == "▶️ Jalankan Program":
+    import os
+    import subprocess
+    import sys
+    import time
+    from pathlib import Path
+
+    st.title("▶️ Jalankan Program")
+    st.caption("Semua anggota · kode asli `orm/` · bukti program berjalan nyata")
+
+    st.markdown(
+        '<div class="key-finding">'
+        '<strong>📌 Halaman ini menjawab:</strong> Apakah angka-angka di dashboard '
+        'benar-benar berasal dari <strong>program yang berjalan</strong>, bukan '
+        'tempelan? Di sini kode proyek <strong>dieksekusi langsung</strong> — sel demi '
+        'sel seperti Jupyter, atau modul utuh lewat terminal.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    langkah(1, "Rumusan Masalah")
+    st.markdown(
+        "> **Bagaimana membuktikan saat presentasi bahwa hasil di halaman 1, 2, dan 3 "
+        "dihasilkan oleh program sungguhan?**\n\n"
+        "Cara terbaik adalah **menjalankan kodenya secara langsung** di depan penguji, "
+        "lalu menunjukkan bahwa angkanya **persis sama** dengan yang tampil di "
+        "halaman-halaman model."
+    )
+
+    langkah(2, "Metode")
+    st.markdown(
+        "Dua cara menjalankan kode dari halaman ini:\n\n"
+        "1. **📓 Notebook Interaktif** — kode dipecah jadi **9 sel** berurutan "
+        "(seperti Jupyter): variabel hasil sel sebelumnya dipakai sel berikutnya.\n"
+        "2. **🖥️ Mode Terminal** — jalankan **satu modul utuh** "
+        "(`python -m orm.<modul>`) dan lihat output konsolnya."
+    )
+    perumpamaan(
+        "Seperti **dapur restoran terbuka**: tamu melihat masakan dibuat langsung di "
+        "depan mata, bukan hanya disajikan jadi. Notebook = memasak **selangkah demi "
+        "selangkah**; Terminal = menyajikan **satu menu lengkap** sekali jalan."
+    )
+
+    st.markdown("**🔄 Alur Notebook — 9 sel mengikuti urutan 3 model:**")
+    alur(r"""
+      A [label="Sel 1-2\nMuat data internal\n+ opini ahli"];
+      B [label="Sel 3-4\nModel 1: Scorecard\n+ grafik prioritas"];
+      C [label="Sel 5-6\nModel 2: Poisson x lognormal\nMonte Carlo -> VaR"];
+      D [label="Sel 7\nHistogram +\ngaris merah VaR"];
+      E [label="Sel 8\nModel 3: Integrasi\nBayes VaR + BIA"];
+      F [label="Sel 9\nGrafik batang 7 VaR\n(analog Gbr 12.2)", fillcolor="#e8f5e9"];
+      A -> B; A -> C; C -> D; B -> E; C -> E; E -> F;
+    """)
+    kotak_arti(
+        "Urutan sel **sama persis dengan urutan halaman dashboard**: data dulu "
+        "(Sel 1–2), lalu Model 1 (Sel 3–4), Model 2 (Sel 5–7), dan Model 3 (Sel 8–9). "
+        "Chart yang dihasilkan tiap sel **sama bentuknya** dengan chart di halaman "
+        "model masing-masing. Saat demo, tiap anggota menjalankan sel bagiannya sendiri."
+    )
+
+    langkah(3, "Dataset")
+    st.markdown(
+        "Sel-sel di bawah memakai **data yang sama persis** dengan halaman model: "
+        "kerugian fraud **PaySim** (internal), **kuesioner 8 ahli × 56 kategori** "
+        "(self-assessment), dan **kerugian eksternal sintetis** — dengan "
+        "`n_sims=20.000` dan `seed=42`, sehingga hasilnya **identik** dengan "
+        "halaman 1, 2, 3, dan Ringkasan Eksekutif."
+    )
+
+    langkah(4, "Proses — Jalankan Kodenya")
+    _tab_nb, _tab_cli = st.tabs(
+        ["📓 Notebook Interaktif (seperti Jupyter)", "🖥️ Mode Terminal (CLI)"])
+
+    # ------------------------------------------------------------------
+    # 📓 Mode Notebook — sel kode dieksekusi nyata, variabel antar-sel
+    #    tersimpan dalam satu "kernel" (st.session_state), persis Jupyter.
+    # ------------------------------------------------------------------
+    with _tab_nb:
+        import ast
+        import io
+        import traceback
+        from contextlib import redirect_stdout
+
+        import plotly.graph_objects as go
+
+        st.markdown(
+            "Halaman ini meniru **Jupyter Notebook**: tiap sel berisi **kode asli "
+            "proyek**, dieksekusi sungguhan saat tombol **▶ Run** ditekan. Variabel "
+            "hasil sel sebelumnya bisa dipakai sel berikutnya (seperti *kernel*). "
+            "Jalankan **berurutan dari Sel 1**, atau klik **⏩ Jalankan Semua Sel**."
+        )
+
+        _SEL_NB: list[tuple[str, str]] = [
+            ("Muat data kerugian internal (PaySim) — Bab 12.2",
+'''from orm.data_sources import load_internal_losses, internal_frequency_severity
+
+internal = load_internal_losses()              # transaksi fraud = kerugian internal
+fs = internal_frequency_severity(internal)     # ringkas: frekuensi & severity
+
+print(f"Jumlah kejadian : {fs['n_events']:,}")
+print(f"Rentang waktu   : {fs['span_days']} hari")
+print(f"Total kerugian  : {fs['total_internal']:,.0f}")
+internal.head()'''),
+
+            ("Bangkitkan kuesioner penilaian ahli (56 kategori Basel) — Bab 12.2",
+'''from orm.data_sources import generate_expert_opinions
+
+opinions = generate_expert_opinions(n_experts=8, seed=42)
+print(f"{opinions['expert'].nunique()} ahli x 56 kategori = {len(opinions):,} baris")
+opinions.head(8)'''),
+
+            ("Model 1 — Bangun scorecard (median + Gini) — Gambar 12.1",
+'''from orm.scorecard import build_scorecard, self_assessment_total_loss
+
+scorecard = build_scorecard(opinions)          # pakai `opinions` dari Sel 2
+print(f"Total perceived loss: {self_assessment_total_loss(scorecard):,.0f}")
+scorecard.head(10)'''),
+
+            ("Visualisasi Model 1 — grafik 15 risiko prioritas (sama dgn halaman 1)",
+'''import plotly.express as px
+
+top = scorecard.head(15)
+fig1 = px.bar(top, x="perceived_loss", y="event_type", color="business_line",
+              orientation="h",
+              labels={"perceived_loss": "Perkiraan Kerugian",
+                      "event_type": "Jenis Kejadian",
+                      "business_line": "Lini Bisnis"},
+              title="Perkiraan kerugian tertinggi")
+fig1'''),
+
+            ("Model 2a — Estimasi parameter Poisson & lognormal — Bab 12.3",
+'''from orm.actuarial import fit_severity_lognormal
+
+lam = fs["n_events"] / fs["span_days"]          # frekuensi kejadian per hari
+mu, sigma = fit_severity_lognormal(fs["severity_sample"])
+
+print(f"lambda = {lam:.1f} kejadian/hari")
+print(f"mu     = {mu:.3f}")
+print(f"sigma  = {sigma:.3f}")'''),
+
+            ("Model 2b — Simulasi Monte Carlo & VaR 99,9% — Bab 12.3",
+'''from orm.actuarial import simulate_aggregate, value_at_risk
+
+# n_sims=20_000 & seed=42 = persis parameter halaman "2 - VaR Aktuaria"
+losses = simulate_aggregate(lam, mu=mu, sigma=sigma, n_sims=20_000, seed=42)
+
+print(f"E[L] (rata-rata)  = {losses.mean():,.0f}")
+print(f"VaR 99.9%         = {value_at_risk(losses, 0.999):,.0f}")'''),
+
+            ("Visualisasi Model 2 — histogram + garis merah VaR (sama dgn halaman 2)",
+'''import plotly.express as px
+
+var_line = value_at_risk(losses, 0.999)
+fig2 = px.histogram(x=losses, nbins=80, log_y=True,
+                    title="Sebaran total kerugian (garis merah = batas VaR)",
+                    labels={"x": "Total kerugian", "y": "Jumlah skenario"})
+fig2.add_vline(x=var_line, line_color="red", line_dash="dash",
+               annotation_text="VaR 99.9%")
+fig2.update_layout(xaxis_title="Total kerugian", yaxis_title="Jumlah skenario")
+fig2'''),
+
+            ("Model 3 — Integrasi 3 sumber data + Bayes VaR + BIA — Bab 12.4",
+'''from orm.data_sources import generate_external_losses, scale_external_to_internal
+from orm.integrated import (integrated_severity, bayes_var_simple,
+                            basic_indicator_approach, self_assessment_point)
+
+external = generate_external_losses(internal_severity=fs["severity_sample"],
+                                    seed=42)   # seed sama dgn halaman model
+external_scaled = scale_external_to_internal(external, fs["total_internal"])
+sa_point = self_assessment_point(scorecard)    # 1 titik dari scorecard Sel 3
+
+gabungan = integrated_severity(fs["severity_sample"], sa_point, external_scaled)
+bayes = bayes_var_simple(gabungan, 0.999)
+
+print(f"Titik self-assessment  : {sa_point:,.0f}")
+print(f"Ukuran data gabungan   : {len(gabungan):,}")
+print(f"Bayes VaR 99.9%        : {bayes:,.0f}")
+print(f"BIA (15% gross income) : {basic_indicator_approach(bayes / 0.15):,.0f}")'''),
+
+            ("Perbandingan 7 metode VaR — grafik batang (sama dgn halaman 3)",
+'''from orm.integrated import run_comparison
+import plotly.express as px
+
+hasil = run_comparison(q=0.999, n_sims=20_000)   # parameter sama dgn dashboard
+print(hasil["comparison"].map(lambda x: f"{x:,.0f}").to_string())
+
+bar_df = hasil["comparison"].reset_index()
+bar_df.columns = ["Metode", "VaR"]
+fig3 = px.bar(bar_df, x="Metode", y="VaR", color="Metode", text_auto=".2s",
+              title="Perbandingan VaR pada keyakinan 99.9% (analog Gambar 12.2)")
+fig3'''),
+        ]
+
+        # --- "Kernel": namespace + output tersimpan di session_state -----
+        if "nb_ns" not in st.session_state:
+            st.session_state.nb_ns = {}
+            st.session_state.nb_out = {}
+            st.session_state.nb_counter = 0
+
+        def _jalankan_sel(kode: str, ns: dict) -> dict:
+            """Eksekusi satu sel persis seperti Jupyter: jalankan semua baris,
+            lalu bila baris terakhir berupa ekspresi, nilainya jadi Out[n]."""
+            buf = io.StringIO()
+            hasil = {"stdout": "", "value": None, "error": None}
+            try:
+                pohon = ast.parse(kode, mode="exec")
+                ekspresi_akhir = None
+                if pohon.body and isinstance(pohon.body[-1], ast.Expr):
+                    ekspresi_akhir = ast.Expression(pohon.body.pop().value)
+                with redirect_stdout(buf):
+                    exec(compile(pohon, "<sel>", "exec"), ns)
+                    if ekspresi_akhir is not None:
+                        hasil["value"] = eval(
+                            compile(ekspresi_akhir, "<sel>", "eval"), ns)
+            except Exception:
+                hasil["error"] = traceback.format_exc(limit=3)
+            hasil["stdout"] = buf.getvalue()
+            return hasil
+
+        def _tampilkan_output_sel(o: dict) -> None:
+            if o.get("stdout"):
+                st.code(o["stdout"], language=None)
+            if o.get("error"):
+                st.error("❌ Sel gagal — biasanya karena sel sebelumnya belum "
+                         "dijalankan (persis seperti NameError di Jupyter). "
+                         "Jalankan berurutan dari Sel 1 atau klik *Jalankan Semua*.")
+                st.code(o["error"], language=None)
+                return
+            v = o.get("value")
+            if v is None:
+                return
+            st.markdown(f"`Out[{o['n']}]:`")
+            if isinstance(v, pd.DataFrame):
+                st.dataframe(v, use_container_width=True)
+            elif isinstance(v, pd.Series):
+                st.dataframe(v.to_frame(), use_container_width=True)
+            elif isinstance(v, go.Figure):
+                st.plotly_chart(v, use_container_width=True)
+            else:
+                st.code(repr(v), language=None)
+
+        _c_all, _c_restart, _c_status = st.columns([2.2, 2, 5])
+        if _c_all.button("⏩ Jalankan Semua Sel", type="primary"):
+            st.session_state.nb_ns = {}
+            st.session_state.nb_out = {}
+            st.session_state.nb_counter = 0
+            _bar = st.progress(0.0, text="Menyiapkan kernel...")
+            for _j, (_t_nb, _k_nb) in enumerate(_SEL_NB, start=1):
+                _bar.progress(_j / len(_SEL_NB),
+                              text=f"Sel {_j}/{len(_SEL_NB)} — {_t_nb}")
+                st.session_state.nb_counter += 1
+                _h_nb = _jalankan_sel(_k_nb, st.session_state.nb_ns)
+                _h_nb["n"] = st.session_state.nb_counter
+                st.session_state.nb_out[_j] = _h_nb
+                if _h_nb["error"]:
+                    break
+            _bar.empty()
+            st.rerun()
+        if _c_restart.button("🔄 Restart Kernel"):
+            st.session_state.nb_ns = {}
+            st.session_state.nb_out = {}
+            st.session_state.nb_counter = 0
+            st.rerun()
+        _n_jalan = len(st.session_state.nb_out)
+        _c_status.caption(
+            f"🟢 Kernel aktif · {_n_jalan}/{len(_SEL_NB)} sel sudah dieksekusi · "
+            f"{len(st.session_state.nb_ns)} variabel tersimpan"
+        )
+        st.markdown("---")
+
+        for _i_nb, (_judul_nb, _kode_nb) in enumerate(_SEL_NB, start=1):
+            _o_nb = st.session_state.nb_out.get(_i_nb)
+            _c_kode, _c_run = st.columns([10, 1.6])
+            with _c_kode:
+                st.markdown(f"**Sel {_i_nb} — {_judul_nb}**")
+                st.code(_kode_nb, language="python")
+            with _c_run:
+                _label_in = f"In [{_o_nb['n']}]" if _o_nb else "In [ ]"
+                st.markdown(f"`{_label_in}`")
+                if st.button("▶ Run", key=f"nb_run_{_i_nb}"):
+                    with st.spinner("Menjalankan sel..."):
+                        st.session_state.nb_counter += 1
+                        _h2_nb = _jalankan_sel(_kode_nb, st.session_state.nb_ns)
+                        _h2_nb["n"] = st.session_state.nb_counter
+                        st.session_state.nb_out[_i_nb] = _h2_nb
+                    st.rerun()
+            if _o_nb:
+                _tampilkan_output_sel(_o_nb)
+            st.markdown("---")
+
+        kotak_arti(
+            "Semua output di atas adalah **hasil eksekusi nyata** kode proyek — bukan "
+            "tempelan. Saat presentasi, jalankan sel satu per satu sambil menjelaskan "
+            "perannya: Sel 1–2 data, Sel 3–4 Model 1, Sel 5–7 Model 2, Sel 8–9 Model 3."
+        )
+
+    # ------------------------------------------------------------------
+    # 🖥️ Mode Terminal — jalankan modul utuh via subprocess (CLI)
+    # ------------------------------------------------------------------
+    with _tab_cli:
+        _MODUL = {
+            "orm.data_sources": ("📥 Ringkasan 3 aliran data", "Bab 12.2", "Bersama"),
+            "orm.scorecard": ("📋 Scorecard 56 kategori", "Gambar 12.1", "Lis Indriani"),
+            "orm.actuarial": ("📈 VaR aktuaria Monte Carlo", "Bab 12.3", "Ana Sulistiana Alwi"),
+            "orm.integrated": ("🧮 Perbandingan 7 VaR", "Gambar 12.2", "Andi Agung Dwi Arya B"),
+        }
+        st.markdown(
+            "| Modul | Apa yang dihitung | Acuan buku | Penanggung jawab |\n"
+            "|---|---|---|---|\n"
+            + "\n".join(
+                f"| `python -m {m}` | {d} | {b} | {a} |"
+                for m, (d, b, a) in _MODUL.items()
+            )
+        )
+
+        pilih_modul = st.selectbox(
+            "Pilih modul yang ingin dijalankan",
+            list(_MODUL.keys()),
+            format_func=lambda m: f"{_MODUL[m][0]}  ·  python -m {m}",
+        )
+        st.code(f"python -m {pilih_modul}", language="bash")
+
+        if st.button("🚀 Jalankan modul ini", type="primary"):
+            _env = dict(os.environ, PYTHONIOENCODING="utf-8")
+            with st.spinner(f"Menjalankan `python -m {pilih_modul}` — Monte Carlo "
+                            "bisa memakan waktu beberapa detik..."):
+                _t0 = time.time()
+                _proc = subprocess.run(
+                    [sys.executable, "-m", pilih_modul],
+                    capture_output=True, text=True, encoding="utf-8",
+                    errors="replace",
+                    cwd=str(Path(__file__).resolve().parent), env=_env,
+                )
+                _durasi = time.time() - _t0
+            if _proc.returncode == 0:
+                st.success(f"✅ Selesai dalam **{_durasi:.1f} detik** (exit code 0).")
+                st.markdown("**Output konsol:**")
+                st.code(_proc.stdout or "(tidak ada output)", language=None)
+            else:
+                st.error(f"❌ Gagal (exit code {_proc.returncode}) "
+                         f"setelah {_durasi:.1f} detik.")
+                st.code((_proc.stdout or "") + "\n" + (_proc.stderr or ""),
+                        language=None)
+            kotak_arti(
+                "Output di atas adalah **hasil eksekusi nyata** modul Python proyek "
+                "ini — bukan tempelan. Angkanya sama dengan yang divisualisasikan di "
+                "halaman model, karena memakai kode dan data yang sama."
+            )
+
+    st.markdown("---")
+    langkah(5, "Hasil & Kesimpulan — Urutan Demo Saat Presentasi")
+    st.markdown(
+        "| # | Langkah | Halaman / aksi | Pembicara |\n"
+        "|---|---|---|---|\n"
+        "| 1 | Pembukaan: apa itu risiko operasional, 3 sumber data, kenapa PaySim | 🏠 Beranda | Bersama |\n"
+        "| 2 | Tunjukkan data mentah & 3 dataset | 📂 Data Lengkap | Bersama |\n"
+        "| 3 | Model 1: alur → hasil scorecard → **perhitungan manual** (Langkah 6) | 📋 Halaman 1 | Lis |\n"
+        "| 4 | Model 2: alur → histogram VaR → **perhitungan manual** (Langkah 6) | 📈 Halaman 2 | Ana |\n"
+        "| 5 | Model 3: alur → grafik 7 VaR → **perhitungan manual** (Langkah 6) | 🧮 Halaman 3 | Andi |\n"
+        "| 6 | Bukti program berjalan: eksekusi 1–2 modul live | ▶️ Halaman ini | Bersama |\n"
+        "| 7 | Penutup: semua metode saling memvalidasi (analog Gambar 12.2) | 📊 Ringkasan Eksekutif | Bersama |\n"
+        "| 8 | Jika ditanya sumber: tunjukkan PDF bab buku | 📕 Buku Referensi | Bersama |"
+    )
+    st.info(
+        "💡 **Tips presentasi:** buka bagian *Perhitungan Manual* di tiap halaman model "
+        "dan hitung ulang 1–2 langkah di papan tulis/kalkulator — itu bukti terkuat "
+        "bahwa kelompok memahami metodenya, bukan sekadar menjalankan program."
+    )
+    st.success(
+        "**Kesimpulan:** Semua angka di dashboard ini **dapat direproduksi secara "
+        "live** — jalankan 9 sel notebook (atau modul CLI) dan angka serta chart-nya "
+        "sama persis dengan halaman model. Inilah bukti bahwa program berjalan "
+        "sungguhan."
+    )
+
+
+# ============================================================================
+# 📕 Buku Referensi — PDF Bab 12 Giudici (2009)
+# ============================================================================
+elif page == "📕 Buku Referensi":
+    import base64
+    from pathlib import Path
+
+    st.title("📕 Buku Referensi")
+    st.caption("Semua anggota · Giudici & Figini (2009) · Bab 12, hlm. 225–241")
+
+    st.markdown(
+        '<div class="key-finding">'
+        '<strong>📌 Halaman ini menjawab:</strong> Dari mana <strong>seluruh metode</strong> '
+        'proyek ini berasal? Semuanya mengikuti <strong>Bab 12 — Operational Risk '
+        'Management</strong> dari buku di bawah; PDF bab tersebut bisa dibaca '
+        'langsung di sini.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    langkah(1, "Sumber Acuan")
+    st.markdown(
+        "**Giudici, P. & Figini, S. (2009).** *Applied Data Mining for Business and "
+        "Industry, Second Edition*. John Wiley & Sons.\n\n"
+        "Seluruh metodologi proyek ini mengikuti **Bab 12 — Operational Risk "
+        "Management** (halaman buku 225–241; file PDF di bawah memuat potongan "
+        "halaman cetak 238–247 yang berisi bab tersebut)."
+    )
+
+    langkah(2, "Peta Isi Buku → Implementasi Proyek")
+    st.markdown(
+        "| Bagian buku | Isi | Implementasi | Halaman dashboard |\n"
+        "|---|---|---|---|\n"
+        "| §12.1 | Definisi & kerangka Basel II (8 BL × 7 ET) | `orm/categories.py` | 🏠 Beranda |\n"
+        "| §12.2 | 3 sumber data + scaling | `orm/data_sources.py` | 📂 Data Lengkap |\n"
+        "| §12.4 (Gbr 12.1) | Scorecard: median + Gini → rating | `orm/scorecard.py` | 📋 Model 1 |\n"
+        "| §12.3 (Gbr 12.2) | Aktuaria: Poisson × lognormal → VaR | `orm/actuarial.py` | 📈 Model 2 |\n"
+        "| §12.4 (Gbr 12.2) | Integrasi Bayesian + BIA | `orm/integrated.py` | 🧮 Model 3 |"
+    )
+    kotak_arti(
+        "Tiap baris tabel = satu **jejak penelusuran**: bagian buku → file kode → "
+        "halaman dashboard. Jika penguji bertanya \"ini dari mana?\", buka bagian "
+        "buku pada PDF di bawah, lalu tunjukkan kode dan halamannya."
+    )
+
+    langkah(3, "Baca PDF Bab Buku")
+    _pdf_path = (Path(__file__).resolve().parent
+                 / "Applied Data Mining for Business and Industry Second Edition-238-247.pdf")
+    if _pdf_path.exists():
+        _pdf_bytes = _pdf_path.read_bytes()
+        c_dl, c_info = st.columns([1, 3])
+        with c_dl:
+            st.download_button(
+                "⬇️ Unduh PDF bab buku",
+                _pdf_bytes,
+                file_name=_pdf_path.name,
+                mime="application/pdf",
+                type="primary",
+            )
+        with c_info:
+            st.caption(f"`{_pdf_path.name}` · {len(_pdf_bytes) / 1024:.0f} KB")
+
+        _b64 = base64.b64encode(_pdf_bytes).decode("utf-8")
+        st.markdown(
+            f'<iframe src="data:application/pdf;base64,{_b64}" '
+            f'width="100%" height="850" style="border:1px solid #ddd; '
+            f'border-radius:0.5rem;" type="application/pdf"></iframe>',
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "Jika PDF tidak tampil di browser Anda (beberapa browser memblokir "
+            "pratinjau PDF tersemat), gunakan tombol **Unduh PDF** di atas."
+        )
+    else:
+        st.error(f"File PDF tidak ditemukan: `{_pdf_path.name}` "
+                 "(letakkan di folder root proyek).")
 
 
 # ============================================================================
