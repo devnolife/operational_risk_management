@@ -421,6 +421,85 @@ if page == "🏠 Beranda":
         unsafe_allow_html=True,
     )
 
+    # ---- Latar Belakang ----
+    st.markdown("### 📌 Latar Belakang")
+    st.markdown(
+        "Industri perbankan menghadapi berbagai risiko: **risiko kredit** "
+        "(debitur gagal bayar), **risiko pasar** (perubahan harga), dan "
+        "**risiko operasional** (kegagalan proses, manusia, sistem, atau "
+        "kejadian eksternal). Secara historis, risiko operasional sering "
+        "diabaikan karena sulit diukur — padahal kasus-kasus besar "
+        "membuktikan dampaknya luar biasa:"
+    )
+    st.markdown(
+        "| Kasus | Tahun | Kerugian | Jenis Risiko Operasional |\n"
+        "|---|---|---|---|\n"
+        "| Barings Bank (Nick Leeson) | 1995 | $1,3 miliar | Fraud internal — transaksi tidak sah |\n"
+        "| Société Générale (Kerviel) | 2008 | €4,9 miliar | Fraud internal — posisi tidak sah |\n"
+        "| Enron | 2001 | $74 miliar | Fraud akuntansi, kegagalan kontrol |\n"
+        "| Wells Fargo (akun palsu) | 2016 | $3+ miliar denda | Fraud internal — pembukaan akun fiktif |"
+    )
+    st.info(
+        "💡 Kasus-kasus ini menunjukkan bahwa **satu kejadian risiko operasional** "
+        "bisa menghancurkan seluruh bank. Oleh karena itu, **Basel II** mewajibkan "
+        "setiap bank untuk **mengukur dan menyediakan cadangan modal** khusus "
+        "untuk risiko operasional."
+    )
+
+    st.markdown("#### 📜 Kerangka Regulasi Basel II")
+    st.markdown(
+        "**Basel II** (2004) adalah standar regulasi perbankan internasional "
+        "dari *Basel Committee on Banking Supervision (BCBS)*. Untuk pertama "
+        "kalinya, Basel II secara eksplisit mewajibkan bank menyediakan "
+        "cadangan modal untuk risiko operasional, melalui 3 pilar:"
+    )
+    p1, p2, p3 = st.columns(3)
+    with p1:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>📐 Pilar 1 — Modal Minimum</h4>'
+            '<p>Bank harus menghitung modal minimum untuk 3 jenis risiko: '
+            'kredit, pasar, dan <strong>operasional</strong>. '
+            '<em>(Fokus proyek ini)</em></p></div>',
+            unsafe_allow_html=True,
+        )
+    with p2:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>🔍 Pilar 2 — Supervisory Review</h4>'
+            '<p>Pengawas (OJK/BI) mengevaluasi apakah model internal bank '
+            'sudah memadai.</p></div>',
+            unsafe_allow_html=True,
+        )
+    with p3:
+        st.markdown(
+            '<div class="flow-card">'
+            '<h4>📢 Pilar 3 — Disiplin Pasar</h4>'
+            '<p>Bank wajib mempublikasikan profil risiko agar pasar bisa '
+            'menilai kesehatan bank.</p></div>',
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("#### 🎯 Rumusan Masalah")
+    st.markdown(
+        "Berdasarkan konteks di atas, proyek ini menjawab tiga pertanyaan:\n\n"
+        "1. **Bagaimana mengidentifikasi dan memeringkat** kategori risiko "
+        "operasional yang paling berbahaya? *(→ dijawab dengan **Scorecard** — Model 1)*\n"
+        "2. **Berapa cadangan modal** yang harus disiapkan bank untuk menutup "
+        "kerugian tak terduga akibat risiko operasional? *(→ dijawab dengan "
+        "**VaR Aktuaria** — Model 2)*\n"
+        "3. **Bagaimana memvalidasi** estimasi cadangan modal dengan menggabungkan "
+        "berbagai sumber data dan membandingkannya dengan pendekatan regulasi? "
+        "*(→ dijawab dengan **VaR Integrasi Bayesian & BIA** — Model 3)*"
+    )
+    st.markdown(
+        "> 📚 **Referensi utama:** Giudici, P. (2009). *Applied Data Mining "
+        "for Business and Industry*, 2nd Edition. John Wiley & Sons. "
+        "**Chapter 12: Operational Risk**, hlm. 225–241. "
+        "(ISBN: 978-0-470-05886-2)"
+    )
+
+    st.markdown("---")
     # ---- Apa itu Risiko Operasional? (dari buku) ----
     st.markdown("### 📖 Apa itu Risiko Operasional?")
     st.markdown(
@@ -1250,104 +1329,105 @@ elif page == "📋 1 — Scorecard (Self-Assessment)":
         )
 
     st.markdown("---")
-    langkah(6, "Perhitungan Manual — contoh nyata 1 kategori")
-    st.markdown(
-        f"Supaya tiap anggota bisa **menjelaskan ulang dengan kalkulator/papan tulis**, "
-        f"berikut hitungan langkah demi langkah untuk kategori fokus proyek "
-        f"**{INTERNAL_BUSINESS_LINE} — {INTERNAL_EVENT_TYPE}** "
-        f"({n_experts} ahli, seed {seed}). Angka di bawah **persis sama** dengan baris "
-        "kategori tersebut pada tabel scorecard di atas."
-    )
+    langkah(6, "Perhitungan Manual")
+    with st.expander("🧮 Buka perhitungan manual langkah demi langkah", expanded=False):
+        st.markdown(
+            f"Supaya tiap anggota bisa **menjelaskan ulang dengan kalkulator/papan tulis**, "
+            f"berikut hitungan langkah demi langkah untuk kategori fokus proyek "
+            f"**{INTERNAL_BUSINESS_LINE} — {INTERNAL_EVENT_TYPE}** "
+            f"({n_experts} ahli, seed {seed}). Angka di bawah **persis sama** dengan baris "
+            "kategori tersebut pada tabel scorecard di atas."
+        )
 
-    _opin_m = generate_expert_opinions(n_experts=n_experts, seed=int(seed))
-    _g_m = _opin_m[
-        (_opin_m["business_line"] == INTERNAL_BUSINESS_LINE)
-        & (_opin_m["event_type"] == INTERNAL_EVENT_TYPE)
-    ]
-    _dims_m = [("frequency", "Frekuensi"), ("severity", "Severity"),
-               ("control", "Kontrol")]
-    _ringkas_m: dict[str, dict] = {}
-    _tabs_m = st.tabs([f"🧮 {lbl}" for _, lbl in _dims_m])
-    for _tab_m, (_dim_m, _lbl_m) in zip(_tabs_m, _dims_m):
-        with _tab_m:
-            _votes_m = _g_m[_dim_m].tolist()
-            _classes_m = SCALES[_dim_m]
-            _K_m = len(_classes_m)
-            _ranks_m = sorted(_classes_m.index(v) + 1 for v in _votes_m)
-            _med_rank_m = _ranks_m[len(_ranks_m) // 2]
-            _med_class_m = _classes_m[_med_rank_m - 1]
-            _letter_m = rank_to_letter(_med_rank_m, _K_m)
+        _opin_m = generate_expert_opinions(n_experts=n_experts, seed=int(seed))
+        _g_m = _opin_m[
+            (_opin_m["business_line"] == INTERNAL_BUSINESS_LINE)
+            & (_opin_m["event_type"] == INTERNAL_EVENT_TYPE)
+        ]
+        _dims_m = [("frequency", "Frekuensi"), ("severity", "Severity"),
+                   ("control", "Kontrol")]
+        _ringkas_m: dict[str, dict] = {}
+        _tabs_m = st.tabs([f"🧮 {lbl}" for _, lbl in _dims_m])
+        for _tab_m, (_dim_m, _lbl_m) in zip(_tabs_m, _dims_m):
+            with _tab_m:
+                _votes_m = _g_m[_dim_m].tolist()
+                _classes_m = SCALES[_dim_m]
+                _K_m = len(_classes_m)
+                _ranks_m = sorted(_classes_m.index(v) + 1 for v in _votes_m)
+                _med_rank_m = _ranks_m[len(_ranks_m) // 2]
+                _med_class_m = _classes_m[_med_rank_m - 1]
+                _letter_m = rank_to_letter(_med_rank_m, _K_m)
 
-            st.markdown(
-                f"**Skala {_lbl_m}** (peringkat 1 = risiko terendah):  "
-                + " → ".join(f"`{i + 1} = {c}`" for i, c in enumerate(_classes_m))
-            )
-            st.markdown(f"**Langkah 1 — Kumpulkan suara {len(_votes_m)} ahli:**")
-            st.code(", ".join(_votes_m), language=None)
-            st.markdown(
-                f"**Langkah 2 — Ubah ke peringkat, lalu urutkan:** `{_ranks_m}`\n\n"
-                f"Median = nilai posisi ke-**{len(_ranks_m) // 2 + 1}** dari "
-                f"{len(_ranks_m)} (*upper median* bila jumlah ahli genap) "
-                f"= peringkat **{_med_rank_m}** → kelas **{_med_class_m}** "
-                f"→ huruf dasar **{_letter_m}**."
-            )
+                st.markdown(
+                    f"**Skala {_lbl_m}** (peringkat 1 = risiko terendah):  "
+                    + " → ".join(f"`{i + 1} = {c}`" for i, c in enumerate(_classes_m))
+                )
+                st.markdown(f"**Langkah 1 — Kumpulkan suara {len(_votes_m)} ahli:**")
+                st.code(", ".join(_votes_m), language=None)
+                st.markdown(
+                    f"**Langkah 2 — Ubah ke peringkat, lalu urutkan:** `{_ranks_m}`\n\n"
+                    f"Median = nilai posisi ke-**{len(_ranks_m) // 2 + 1}** dari "
+                    f"{len(_ranks_m)} (*upper median* bila jumlah ahli genap) "
+                    f"= peringkat **{_med_rank_m}** → kelas **{_med_class_m}** "
+                    f"→ huruf dasar **{_letter_m}**."
+                )
 
-            _counts_m = pd.Series(_votes_m).value_counts()
-            _p_m = _counts_m / len(_votes_m)
-            _G_m = 1.0 - float((_p_m ** 2).sum())
-            _Gn_m = _G_m * _K_m / (_K_m - 1)
-            _mult_m = consensus_multiplicity(_Gn_m)
-            st.markdown("**Langkah 3 — Hitung indeks Gini (kekompakan ahli):**")
-            st.dataframe(pd.DataFrame({
-                "Kelas": _counts_m.index,
-                "Jumlah ahli": _counts_m.values,
-                "Proporsi p": _p_m.round(3).values,
-                "p²": (_p_m ** 2).round(4).values,
-            }), hide_index=True, use_container_width=True)
-            st.latex(rf"G = 1 - \sum p_k^2 = 1 - {float((_p_m ** 2).sum()):.4f}"
-                     rf" = {_G_m:.4f}")
-            st.latex(rf"G_{{norm}} = G \times \tfrac{{K}}{{K-1}} = {_G_m:.4f}"
-                     rf" \times \tfrac{{{_K_m}}}{{{_K_m - 1}}} = {_Gn_m:.3f}")
-            st.markdown(
-                "**Langkah 4 — Tentukan jumlah huruf** "
-                "(aturan: ≤ 1/3 → 3 huruf; ≤ 2/3 → 2 huruf; > 2/3 → 1 huruf):\n\n"
-                f"G_norm = **{_Gn_m:.3f}** → **{_mult_m} huruf** → rating akhir "
-                f"**{_letter_m * _mult_m}**."
-            )
-            _ringkas_m[_dim_m] = {
-                "rank": _med_rank_m, "class": _med_class_m,
-                "rating": _letter_m * _mult_m,
-            }
+                _counts_m = pd.Series(_votes_m).value_counts()
+                _p_m = _counts_m / len(_votes_m)
+                _G_m = 1.0 - float((_p_m ** 2).sum())
+                _Gn_m = _G_m * _K_m / (_K_m - 1)
+                _mult_m = consensus_multiplicity(_Gn_m)
+                st.markdown("**Langkah 3 — Hitung indeks Gini (kekompakan ahli):**")
+                st.dataframe(pd.DataFrame({
+                    "Kelas": _counts_m.index,
+                    "Jumlah ahli": _counts_m.values,
+                    "Proporsi p": _p_m.round(3).values,
+                    "p²": (_p_m ** 2).round(4).values,
+                }), hide_index=True, use_container_width=True)
+                st.latex(rf"G = 1 - \sum p_k^2 = 1 - {float((_p_m ** 2).sum()):.4f}"
+                         rf" = {_G_m:.4f}")
+                st.latex(rf"G_{{norm}} = G \times \tfrac{{K}}{{K-1}} = {_G_m:.4f}"
+                         rf" \times \tfrac{{{_K_m}}}{{{_K_m - 1}}} = {_Gn_m:.3f}")
+                st.markdown(
+                    "**Langkah 4 — Tentukan jumlah huruf** "
+                    "(aturan: ≤ 1/3 → 3 huruf; ≤ 2/3 → 2 huruf; > 2/3 → 1 huruf):\n\n"
+                    f"G_norm = **{_Gn_m:.3f}** → **{_mult_m} huruf** → rating akhir "
+                    f"**{_letter_m * _mult_m}**."
+                )
+                _ringkas_m[_dim_m] = {
+                    "rank": _med_rank_m, "class": _med_class_m,
+                    "rating": _letter_m * _mult_m,
+                }
 
-    _fm = FREQUENCY_PER_YEAR[_ringkas_m["frequency"]["class"]]
-    _sm = SEVERITY_MIDPOINTS[_ringkas_m["severity"]["class"]]
-    _cm = CONTROL_LOSS_FACTOR[_ringkas_m["control"]["class"]]
-    _pl_m = _fm * _sm * _cm
-    _ps_m = (_ringkas_m["frequency"]["rank"] * _ringkas_m["severity"]["rank"]
-             * _ringkas_m["control"]["rank"])
-    st.markdown("**Langkah 5 — Perceived Loss & Skor Prioritas (gabungan 3 dimensi):**")
-    st.latex(rf"\text{{Perceived Loss}} = {_fm:g} \times {_sm:,.0f} \times {_cm:g}"
-             rf" = {_pl_m:,.0f}")
-    st.caption(
-        f"frekuensi/tahun kelas '{_ringkas_m['frequency']['class']}' = {_fm:g} · "
-        f"nilai tengah severity '{_ringkas_m['severity']['class']}' = {_sm:,.0f} · "
-        f"faktor kontrol '{_ringkas_m['control']['class']}' = {_cm:g}"
-    )
-    st.latex(rf"\text{{Skor Prioritas}} = r_{{freq}} \times r_{{sev}} \times r_{{ctrl}}"
-             rf" = {_ringkas_m['frequency']['rank']} \times "
-             rf"{_ringkas_m['severity']['rank']} \times "
-             rf"{_ringkas_m['control']['rank']} = {_ps_m}")
+        _fm = FREQUENCY_PER_YEAR[_ringkas_m["frequency"]["class"]]
+        _sm = SEVERITY_MIDPOINTS[_ringkas_m["severity"]["class"]]
+        _cm = CONTROL_LOSS_FACTOR[_ringkas_m["control"]["class"]]
+        _pl_m = _fm * _sm * _cm
+        _ps_m = (_ringkas_m["frequency"]["rank"] * _ringkas_m["severity"]["rank"]
+                 * _ringkas_m["control"]["rank"])
+        st.markdown("**Langkah 5 — Perceived Loss & Skor Prioritas (gabungan 3 dimensi):**")
+        st.latex(rf"\text{{Perceived Loss}} = {_fm:g} \times {_sm:,.0f} \times {_cm:g}"
+                 rf" = {_pl_m:,.0f}")
+        st.caption(
+            f"frekuensi/tahun kelas '{_ringkas_m['frequency']['class']}' = {_fm:g} · "
+            f"nilai tengah severity '{_ringkas_m['severity']['class']}' = {_sm:,.0f} · "
+            f"faktor kontrol '{_ringkas_m['control']['class']}' = {_cm:g}"
+        )
+        st.latex(rf"\text{{Skor Prioritas}} = r_{{freq}} \times r_{{sev}} \times r_{{ctrl}}"
+                 rf" = {_ringkas_m['frequency']['rank']} \times "
+                 rf"{_ringkas_m['severity']['rank']} \times "
+                 rf"{_ringkas_m['control']['rank']} = {_ps_m}")
 
-    _row_sc = sc[(sc["business_line"] == INTERNAL_BUSINESS_LINE)
-                 & (sc["event_type"] == INTERNAL_EVENT_TYPE)].iloc[0]
-    st.success(
-        f"✅ **Cek silang dengan program:** rating = "
-        f"{_row_sc['frequency_rating']} / {_row_sc['severity_rating']} / "
-        f"{_row_sc['control_rating']} · perceived loss = "
-        f"{_row_sc['perceived_loss']:,.0f} · skor prioritas = "
-        f"{int(_row_sc['priority_score'])} — **sama persis** dengan hitungan "
-        "manual di atas."
-    )
+        _row_sc = sc[(sc["business_line"] == INTERNAL_BUSINESS_LINE)
+                     & (sc["event_type"] == INTERNAL_EVENT_TYPE)].iloc[0]
+        st.success(
+            f"✅ **Cek silang dengan program:** rating = "
+            f"{_row_sc['frequency_rating']} / {_row_sc['severity_rating']} / "
+            f"{_row_sc['control_rating']} · perceived loss = "
+            f"{_row_sc['perceived_loss']:,.0f} · skor prioritas = "
+            f"{int(_row_sc['priority_score'])} — **sama persis** dengan hitungan "
+            "manual di atas."
+        )
 
 
 # ============================================================================
@@ -1597,76 +1677,77 @@ elif page == "📈 2 — VaR Aktuaria":
         )
 
     st.markdown("---")
-    langkah(6, "Perhitungan Manual — bisa diikuti dengan kalkulator")
-    st.markdown(
-        "Lima sub-langkah berikut menunjukkan **dari mana setiap angka berasal**, "
-        "memakai data nyata (untuk parameter) dan contoh mini (untuk simulasi)."
-    )
+    langkah(6, "Perhitungan Manual")
+    with st.expander("🧮 Buka perhitungan manual langkah demi langkah", expanded=False):
+        st.markdown(
+            "Lima sub-langkah berikut menunjukkan **dari mana setiap angka berasal**, "
+            "memakai data nyata (untuk parameter) dan contoh mini (untuk simulasi)."
+        )
 
-    _n_ev_m = _fs["n_events"]
-    _span_m = _fs["span_days"]
-    _lam_m = _n_ev_m / _span_m
-    st.markdown("**Langkah A — Frekuensi harian (λ) dari data nyata:**")
-    st.latex(rf"\lambda = \frac{{\text{{jumlah kejadian fraud}}}}"
-             rf"{{\text{{rentang hari}}}} = \frac{{{_n_ev_m:,}}}{{{_span_m}}}"
-             rf" = {_lam_m:.1f}\ \text{{kejadian/hari}}")
+        _n_ev_m = _fs["n_events"]
+        _span_m = _fs["span_days"]
+        _lam_m = _n_ev_m / _span_m
+        st.markdown("**Langkah A — Frekuensi harian (λ) dari data nyata:**")
+        st.latex(rf"\lambda = \frac{{\text{{jumlah kejadian fraud}}}}"
+                 rf"{{\text{{rentang hari}}}} = \frac{{{_n_ev_m:,}}}{{{_span_m}}}"
+                 rf" = {_lam_m:.1f}\ \text{{kejadian/hari}}")
 
-    st.markdown("**Langkah B — Parameter lognormal (μ, σ) — contoh 5 kerugian "
-                "pertama dari data nyata:**")
-    _x5_m = _loss["amount"].head(5).to_numpy(dtype=float)
-    _ln5_m = np.log(_x5_m)
-    _mu5_m, _sg5_m = float(_ln5_m.mean()), float(_ln5_m.std())
-    st.dataframe(pd.DataFrame({
-        "Kerugian x": [f"{v:,.0f}" for v in _x5_m],
-        "ln(x)": _ln5_m.round(3),
-    }), hide_index=True, use_container_width=True)
-    st.latex(rf"\mu = \frac{{\sum \ln x_i}}{{5}} = \frac{{{_ln5_m.sum():.3f}}}{{5}}"
-             rf" = {_mu5_m:.3f}")
-    st.latex(rf"\sigma = \sqrt{{\tfrac{{1}}{{5}} \sum (\ln x_i - \mu)^2}}"
-             rf" = {_sg5_m:.3f}")
-    st.caption(
-        f"Cara yang sama diterapkan pada **seluruh {len(_fs['severity_sample']):,} "
-        f"data** oleh program → μ = {act['severity_mu']:.3f}, "
-        f"σ = {act['severity_sigma']:.3f} (angka yang dipakai simulasi)."
-    )
+        st.markdown("**Langkah B — Parameter lognormal (μ, σ) — contoh 5 kerugian "
+                    "pertama dari data nyata:**")
+        _x5_m = _loss["amount"].head(5).to_numpy(dtype=float)
+        _ln5_m = np.log(_x5_m)
+        _mu5_m, _sg5_m = float(_ln5_m.mean()), float(_ln5_m.std())
+        st.dataframe(pd.DataFrame({
+            "Kerugian x": [f"{v:,.0f}" for v in _x5_m],
+            "ln(x)": _ln5_m.round(3),
+        }), hide_index=True, use_container_width=True)
+        st.latex(rf"\mu = \frac{{\sum \ln x_i}}{{5}} = \frac{{{_ln5_m.sum():.3f}}}{{5}}"
+                 rf" = {_mu5_m:.3f}")
+        st.latex(rf"\sigma = \sqrt{{\tfrac{{1}}{{5}} \sum (\ln x_i - \mu)^2}}"
+                 rf" = {_sg5_m:.3f}")
+        st.caption(
+            f"Cara yang sama diterapkan pada **seluruh {len(_fs['severity_sample']):,} "
+            f"data** oleh program → μ = {act['severity_mu']:.3f}, "
+            f"σ = {act['severity_sigma']:.3f} (angka yang dipakai simulasi)."
+        )
 
-    st.markdown("**Langkah C — Satu skenario Monte Carlo (contoh mini):**")
-    st.markdown(
-        "Misal λ = 2 dan undian Poisson menghasilkan **N = 3** kejadian. Lalu kita "
-        "undi 3 severity dari lognormal, misal hasilnya 12.000, 85.000, dan 31.000:"
-    )
-    st.latex(r"L = \sum_{i=1}^{N} X_i = 12.000 + 85.000 + 31.000 = 128.000")
-    st.markdown(
-        f"Program mengulang langkah ini **{n_sims:,} kali** (tiap kali N dan X "
-        "berbeda) → terkumpul ribuan nilai L → itulah histogram pada bagian Hasil."
-    )
+        st.markdown("**Langkah C — Satu skenario Monte Carlo (contoh mini):**")
+        st.markdown(
+            "Misal λ = 2 dan undian Poisson menghasilkan **N = 3** kejadian. Lalu kita "
+            "undi 3 severity dari lognormal, misal hasilnya 12.000, 85.000, dan 31.000:"
+        )
+        st.latex(r"L = \sum_{i=1}^{N} X_i = 12.000 + 85.000 + 31.000 = 128.000")
+        st.markdown(
+            f"Program mengulang langkah ini **{n_sims:,} kali** (tiap kali N dan X "
+            "berbeda) → terkumpul ribuan nilai L → itulah histogram pada bagian Hasil."
+        )
 
-    st.markdown("**Langkah D — Membaca VaR (persentil) secara manual:**")
-    _pos_m = 1 + q * (n_sims - 1)
-    st.markdown("Urutkan semua skenario dari kecil → besar, lalu ambil nilai pada posisi:")
-    st.latex(rf"\text{{posisi}} = 1 + q\,(n - 1) = 1 + {q:.3f} \times"
-             rf" ({n_sims:,} - 1) = {_pos_m:,.1f}")
-    st.markdown(
-        f"→ VaR {q:.1%} = nilai skenario urutan ke-**{int(_pos_m):,}** "
-        "(interpolasi linear bila posisinya tidak bulat).\n\n"
-        "**Contoh mini** — 10 skenario terurut: `[5, 8, 12, 15, 20, 26, 33, 45, 60, 100]`. "
-        "P90 → posisi = 1 + 0,9 × 9 = **9,1** → di antara nilai ke-9 (60) dan ke-10 (100) "
-        "→ VaR = 60 + 0,1 × (100 − 60) = **64**."
-    )
-    st.caption(f"Dengan aturan persis ini program memperoleh VaR {q:.1%} = "
-               f"{act['actuarial_montecarlo_var']:,.0f} pada bagian Hasil.")
+        st.markdown("**Langkah D — Membaca VaR (persentil) secara manual:**")
+        _pos_m = 1 + q * (n_sims - 1)
+        st.markdown("Urutkan semua skenario dari kecil → besar, lalu ambil nilai pada posisi:")
+        st.latex(rf"\text{{posisi}} = 1 + q\,(n - 1) = 1 + {q:.3f} \times"
+                 rf" ({n_sims:,} - 1) = {_pos_m:,.1f}")
+        st.markdown(
+            f"→ VaR {q:.1%} = nilai skenario urutan ke-**{int(_pos_m):,}** "
+            "(interpolasi linear bila posisinya tidak bulat).\n\n"
+            "**Contoh mini** — 10 skenario terurut: `[5, 8, 12, 15, 20, 26, 33, 45, 60, 100]`. "
+            "P90 → posisi = 1 + 0,9 × 9 = **9,1** → di antara nilai ke-9 (60) dan ke-10 (100) "
+            "→ VaR = 60 + 0,1 × (100 − 60) = **64**."
+        )
+        st.caption(f"Dengan aturan persis ini program memperoleh VaR {q:.1%} = "
+                   f"{act['actuarial_montecarlo_var']:,.0f} pada bagian Hasil.")
 
-    st.markdown("**Langkah E — Cek kasar rata-rata kerugian (tanpa simulasi):**")
-    _sev_pos_m = _fs["severity_sample"][_fs["severity_sample"] > 0]
-    _mean_sev_m = float(_sev_pos_m.mean())
-    st.latex(rf"E[L] = \lambda \times \bar{{x}} = {_lam_m:.1f} \times"
-             rf" {_mean_sev_m:,.0f} = {_lam_m * _mean_sev_m:,.0f}")
-    st.success(
-        f"✅ **Cek silang:** hasil rumus tangan E[L] = "
-        f"{_lam_m * _mean_sev_m:,.0f} ≈ 'Rata-rata kerugian' hasil simulasi "
-        f"({act['expected_loss_montecarlo']:,.0f}) — bukti simulasi konsisten "
-        "dengan teori."
-    )
+        st.markdown("**Langkah E — Cek kasar rata-rata kerugian (tanpa simulasi):**")
+        _sev_pos_m = _fs["severity_sample"][_fs["severity_sample"] > 0]
+        _mean_sev_m = float(_sev_pos_m.mean())
+        st.latex(rf"E[L] = \lambda \times \bar{{x}} = {_lam_m:.1f} \times"
+                 rf" {_mean_sev_m:,.0f} = {_lam_m * _mean_sev_m:,.0f}")
+        st.success(
+            f"✅ **Cek silang:** hasil rumus tangan E[L] = "
+            f"{_lam_m * _mean_sev_m:,.0f} ≈ 'Rata-rata kerugian' hasil simulasi "
+            f"({act['expected_loss_montecarlo']:,.0f}) — bukti simulasi konsisten "
+            "dengan teori."
+        )
 
 
 # ============================================================================
@@ -1918,79 +1999,80 @@ elif page == "🧮 3 — VaR Integrasi & BIA":
         st.caption("Angka-angka ini persis yang dipakai grafik perbandingan di atas.")
 
     st.markdown("---")
-    langkah(6, "Perhitungan Manual — bisa diikuti dengan kalkulator")
-    st.markdown(
-        "Lima sub-langkah berikut memakai **angka nyata** dari data, sehingga setiap "
-        "anggota bisa menjelaskan ulang dari mana angka di grafik berasal."
-    )
-    _loss_m3, _fs_m3 = contoh_internal()
-    _ext_raw_m3, _ext_scaled_m3 = contoh_external()
-    _TI_m3 = float(_fs_m3["total_internal"])
-    _TE_m3 = float(_ext_raw_m3.sum())
-    _c_m3 = _TE_m3 / _TI_m3
+    langkah(6, "Perhitungan Manual")
+    with st.expander("🧮 Buka perhitungan manual langkah demi langkah", expanded=False):
+        st.markdown(
+            "Lima sub-langkah berikut memakai **angka nyata** dari data, sehingga setiap "
+            "anggota bisa menjelaskan ulang dari mana angka di grafik berasal."
+        )
+        _loss_m3, _fs_m3 = contoh_internal()
+        _ext_raw_m3, _ext_scaled_m3 = contoh_external()
+        _TI_m3 = float(_fs_m3["total_internal"])
+        _TE_m3 = float(_ext_raw_m3.sum())
+        _c_m3 = _TE_m3 / _TI_m3
 
-    st.markdown("**Langkah A — Konstanta scaling c (menyetarakan data bank lain):**")
-    st.latex(rf"c = \frac{{\sum \text{{kerugian eksternal}}}}"
-             rf"{{\sum \text{{kerugian internal}}}}"
-             rf" = \frac{{{_TE_m3:,.0f}}}{{{_TI_m3:,.0f}}} = {_c_m3:.2f}")
-    st.markdown(
-        f"Contoh: kerugian eksternal pertama **{_ext_raw_m3[0]:,.0f}** ÷ {_c_m3:.2f} "
-        f"= **{_ext_raw_m3[0] / _c_m3:,.0f}** — persis kolom *ter-scaling* pada tabel "
-        "dataset ③ di atas."
-    )
+        st.markdown("**Langkah A — Konstanta scaling c (menyetarakan data bank lain):**")
+        st.latex(rf"c = \frac{{\sum \text{{kerugian eksternal}}}}"
+                 rf"{{\sum \text{{kerugian internal}}}}"
+                 rf" = \frac{{{_TE_m3:,.0f}}}{{{_TI_m3:,.0f}}} = {_c_m3:.2f}")
+        st.markdown(
+            f"Contoh: kerugian eksternal pertama **{_ext_raw_m3[0]:,.0f}** ÷ {_c_m3:.2f} "
+            f"= **{_ext_raw_m3[0] / _c_m3:,.0f}** — persis kolom *ter-scaling* pada tabel "
+            "dataset ③ di atas."
+        )
 
-    _sc_m3 = res["scorecard"]
-    _row_m3 = _sc_m3[
-        (_sc_m3["business_line"] == INTERNAL_BUSINESS_LINE)
-        & (_sc_m3["event_type"] == INTERNAL_EVENT_TYPE)
-    ].iloc[0]
-    _f_m3 = FREQUENCY_PER_YEAR[_row_m3["frequency_class"]]
-    _s_m3 = SEVERITY_MIDPOINTS[_row_m3["severity_class"]]
-    _k_m3 = CONTROL_LOSS_FACTOR[_row_m3["control_class"]]
-    st.markdown(f"**Langkah B — Satu titik self-assessment** (kategori "
-                f"*{INTERNAL_BUSINESS_LINE} — {INTERNAL_EVENT_TYPE}*, "
-                "diambil dari scorecard Model 1):")
-    st.latex(rf"p_{{SA}} = \text{{frek/tahun}} \times \text{{severity}} \times"
-             rf" \text{{faktor kontrol}} = {_f_m3:g} \times {_s_m3:,.0f} \times"
-             rf" {_k_m3:g} = {_f_m3 * _s_m3 * _k_m3:,.0f}")
-    st.caption(
-        f"kelas median ahli: frekuensi '{_row_m3['frequency_class']}' = {_f_m3:g}/tahun · "
-        f"severity '{_row_m3['severity_class']}' = {_s_m3:,.0f} · "
-        f"kontrol '{_row_m3['control_class']}' = faktor {_k_m3:g}"
-    )
+        _sc_m3 = res["scorecard"]
+        _row_m3 = _sc_m3[
+            (_sc_m3["business_line"] == INTERNAL_BUSINESS_LINE)
+            & (_sc_m3["event_type"] == INTERNAL_EVENT_TYPE)
+        ].iloc[0]
+        _f_m3 = FREQUENCY_PER_YEAR[_row_m3["frequency_class"]]
+        _s_m3 = SEVERITY_MIDPOINTS[_row_m3["severity_class"]]
+        _k_m3 = CONTROL_LOSS_FACTOR[_row_m3["control_class"]]
+        st.markdown(f"**Langkah B — Satu titik self-assessment** (kategori "
+                    f"*{INTERNAL_BUSINESS_LINE} — {INTERNAL_EVENT_TYPE}*, "
+                    "diambil dari scorecard Model 1):")
+        st.latex(rf"p_{{SA}} = \text{{frek/tahun}} \times \text{{severity}} \times"
+                 rf" \text{{faktor kontrol}} = {_f_m3:g} \times {_s_m3:,.0f} \times"
+                 rf" {_k_m3:g} = {_f_m3 * _s_m3 * _k_m3:,.0f}")
+        st.caption(
+            f"kelas median ahli: frekuensi '{_row_m3['frequency_class']}' = {_f_m3:g}/tahun · "
+            f"severity '{_row_m3['severity_class']}' = {_s_m3:,.0f} · "
+            f"kontrol '{_row_m3['control_class']}' = faktor {_k_m3:g}"
+        )
 
-    _n_int_m3 = int((_fs_m3["severity_sample"] > 0).sum())
-    _n_ext_m3 = len(_ext_scaled_m3)
-    _N_m3 = _n_int_m3 + 1 + _n_ext_m3
-    st.markdown("**Langkah C — Gabungkan tiga sumber jadi satu daftar kerugian:**")
-    st.latex(rf"N = \underbrace{{{_n_int_m3:,}}}_{{\text{{internal}}}}"
-             rf" + \underbrace{{1}}_{{\text{{self-assessment}}}}"
-             rf" + \underbrace{{{_n_ext_m3:,}}}_{{\text{{eksternal}}}}"
-             rf" = {_N_m3:,}\ \text{{angka kerugian}}")
+        _n_int_m3 = int((_fs_m3["severity_sample"] > 0).sum())
+        _n_ext_m3 = len(_ext_scaled_m3)
+        _N_m3 = _n_int_m3 + 1 + _n_ext_m3
+        st.markdown("**Langkah C — Gabungkan tiga sumber jadi satu daftar kerugian:**")
+        st.latex(rf"N = \underbrace{{{_n_int_m3:,}}}_{{\text{{internal}}}}"
+                 rf" + \underbrace{{1}}_{{\text{{self-assessment}}}}"
+                 rf" + \underbrace{{{_n_ext_m3:,}}}_{{\text{{eksternal}}}}"
+                 rf" = {_N_m3:,}\ \text{{angka kerugian}}")
 
-    _pos_m3 = 1 + q * (_N_m3 - 1)
-    st.markdown("**Langkah D — Bayes VaR = persentil dari daftar gabungan:**")
-    st.latex(rf"\text{{posisi}} = 1 + q\,(N - 1) = 1 + {q:.3f} \times"
-             rf" ({_N_m3:,} - 1) = {_pos_m3:,.1f}")
-    st.markdown(
-        f"Urutkan {_N_m3:,} angka dari kecil → besar, ambil nilai urutan "
-        f"ke-**{int(_pos_m3):,}** (interpolasi bila tidak bulat) → "
-        f"**Bayes VaR = {comp['Bayes VaR']:,.0f}** — sama dengan batang "
-        "'Bayes VaR' pada grafik di atas."
-    )
+        _pos_m3 = 1 + q * (_N_m3 - 1)
+        st.markdown("**Langkah D — Bayes VaR = persentil dari daftar gabungan:**")
+        st.latex(rf"\text{{posisi}} = 1 + q\,(N - 1) = 1 + {q:.3f} \times"
+                 rf" ({_N_m3:,} - 1) = {_pos_m3:,.1f}")
+        st.markdown(
+            f"Urutkan {_N_m3:,} angka dari kecil → besar, ambil nilai urutan "
+            f"ke-**{int(_pos_m3):,}** (interpolasi bila tidak bulat) → "
+            f"**Bayes VaR = {comp['Bayes VaR']:,.0f}** — sama dengan batang "
+            "'Bayes VaR' pada grafik di atas."
+        )
 
-    st.markdown("**Langkah E — BIA (pembanding top-down):**")
-    st.latex(rf"BIA = 15\% \times \text{{Gross Income}} = 0.15 \times"
-             rf" {res['gross_income']:,.0f} = {0.15 * res['gross_income']:,.0f}")
-    st.caption(
-        "Gross income di sini ilustratif — dipilih agar BIA ≈ Bayes VaR, meniru pola "
-        "Gambar 12.2 di buku, di mana metode top-down dan bottom-up saling mendekati."
-    )
-    st.success(
-        "✅ **Inti yang perlu dijelaskan:** Bayes VaR hanyalah *persentil dari daftar "
-        "gabungan tiga sumber* — tidak ada rumus rumit; kuncinya ada di langkah "
-        "scaling (A) dan penggabungan (C). BIA adalah pembanding satu-baris (E)."
-    )
+        st.markdown("**Langkah E — BIA (pembanding top-down):**")
+        st.latex(rf"BIA = 15\% \times \text{{Gross Income}} = 0.15 \times"
+                 rf" {res['gross_income']:,.0f} = {0.15 * res['gross_income']:,.0f}")
+        st.caption(
+            "Gross income di sini ilustratif — dipilih agar BIA ≈ Bayes VaR, meniru pola "
+            "Gambar 12.2 di buku, di mana metode top-down dan bottom-up saling mendekati."
+        )
+        st.success(
+            "✅ **Inti yang perlu dijelaskan:** Bayes VaR hanyalah *persentil dari daftar "
+            "gabungan tiga sumber* — tidak ada rumus rumit; kuncinya ada di langkah "
+            "scaling (A) dan penggabungan (C). BIA adalah pembanding satu-baris (E)."
+        )
 
 
 # ============================================================================
