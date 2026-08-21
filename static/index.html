@@ -647,8 +647,11 @@
   <button class="nav-btn" onclick="showPage('background')">📖 Latar Belakang & Metode</button>
   <button class="nav-btn" onclick="showPage('data')">📂 Data Lengkap</button>
   <button class="nav-btn" onclick="showPage('scorecard')">1 — Scorecard</button>
+  <button class="nav-btn" onclick="showPage('metode-1')">📗 Metode 1 — Penjelasan Mudah</button>
   <button class="nav-btn" onclick="showPage('actuarial')">2 — VaR Aktuaria</button>
+  <button class="nav-btn" onclick="showPage('metode-2')">📙 Metode 2 — Penjelasan Mudah</button>
   <button class="nav-btn" onclick="showPage('integrated')">3 — VaR Integrasi & BIA</button>
+  <button class="nav-btn" onclick="showPage('metode-3')">📘 Metode 3 — Penjelasan Mudah</button>
   <button class="nav-btn" onclick="showPage('summary')">📊 Ringkasan Eksekutif</button>
 
   <div class="sidebar-footer">
@@ -2622,6 +2625,545 @@
   <div class="success-box" id="int-conclusion"></div>
 </div>
 
+<!-- ==================== METODE 1 — PENJELASAN MUDAH (/metode-1) ==================== -->
+<div id="page-metode-1" class="page">
+  <div class="hero">
+    <h1>📗 Metode 1 — Penjelasan Mudah Tiap Bagian</h1>
+    <p>Scorecard Self-Assessment · Giudici (2009) Bab 12.4 · Gambar 12.1 · tiap bagan dijelaskan dengan bahasa sehari-hari</p>
+  </div>
+
+  <div class="key-finding">
+    <strong>📌 Cara membaca halaman ini:</strong> Metode 1 dipecah menjadi <strong>7 bagian</strong>.
+    Tiap bagian punya kotak <strong>"🔍 Apa maksud bagan ini?"</strong> yang menjelaskan diagram/rumus di atasnya secara sederhana,
+    sehingga bisa <strong>langsung dibaca</strong> tanpa latar belakang statistik.
+  </div>
+
+  <!-- ===== SECTION 1 ===== -->
+  <h3 class="step">①  Gambaran Besar — Apa Tujuan Scorecard?</h3>
+  <div class="card">
+    <p>Scorecard menjawab: <strong>"Seberapa berisiko tiap jenis kejadian menurut para ahli?"</strong>
+      Caranya: kumpulkan <strong>pendapat banyak ahli</strong>, lalu ubah pendapat itu menjadi <strong>rating huruf</strong> (seperti rating kredit: A, AA, AAA).
+      Ini pendekatan <strong>kualitatif</strong> dan <strong>forward-looking</strong> (melihat ke depan), berbeda dari Metode 2 yang memakai data angka masa lalu.</p>
+
+    <div style="text-align:center;margin:1.2rem 0;padding:1.2rem;background:rgba(59,130,246,0.05);border-radius:12px;border:1px solid rgba(59,130,246,0.15);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.6rem;font-size:0.95rem;">
+        <span class="badge yellow">👥 Opini ahli</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge" style="background:var(--primary-light);color:#fff;">📊 Median (lokasi)</span>
+        <span>+</span>
+        <span class="badge" style="background:#7c3aed;color:#fff;">🤝 Gini (konsensus)</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge green">🏅 Rating A/AA/AAA</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge" style="background:var(--danger);color:#fff;">🚦 Lampu lalu lintas</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Baca dari kiri ke kanan. Mulai dari <strong>kumpulan pendapat ahli</strong> (👥). Pendapat itu diringkas dua hal:
+      <strong>di mana posisinya</strong> (median = huruf dasar) dan <strong>seberapa sepakat para ahli</strong> (Gini = banyaknya huruf).
+      Hasilnya satu <strong>rating</strong> (🏅), lalu diberi <strong>warna lampu lalu lintas</strong> (🚦) supaya mudah dibaca sekilas.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2 ===== -->
+  <h3 class="step">②  Bagan Input — Pendapat Ahli untuk 56 Kategori</h3>
+  <div class="card">
+    <p style="color:var(--text-secondary);margin-bottom:0.8rem;">Setiap ahli menilai setiap kategori risiko dengan skala sederhana: <strong>rendah / sedang / tinggi</strong>.</p>
+    <div class="cols c3">
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">🟢 Low (rendah)</h4>
+        <p>Ahli menilai risiko kecil — jarang terjadi / dampak ringan.</p>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--warn);">
+        <h4 style="color:var(--warn);">🟡 Medium (sedang)</h4>
+        <p>Risiko menengah — perlu perhatian.</p>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--danger);">
+        <h4 style="color:var(--danger);">🔴 High (tinggi)</h4>
+        <p>Risiko besar — sering / dampak berat.</p>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:0.9rem;">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Kerangka Basel membagi risiko jadi <strong>56 kategori</strong> (8 lini bisnis × 7 jenis kejadian).
+      <strong>8 ahli</strong> menilai tiap kategori pada 3 dimensi (frekuensi, severity, kontrol) dengan skala rendah/sedang/tinggi.
+      Skala kata-kata ini nanti diubah jadi angka agar bisa dihitung. Intinya: <strong>input model ini adalah pendapat, bukan data transaksi.</strong>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3 ===== -->
+  <h3 class="step">③  Bagan Median — Menentukan Huruf Dasar (A/B/C)</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(59,130,246,0.06);border-radius:12px;border:1px solid rgba(59,130,246,0.18);">
+      <div style="font-size:1.05rem;"><code><strong>Kelas MEDIAN dari semua pendapat → huruf dasar</strong></code></div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);margin-top:0.4rem;">A = risiko terendah · B = sedang · C = tinggi</div>
+    </div>
+    <div class="info-box">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      <strong>Median</strong> = nilai tengah setelah pendapat diurutkan. Dipakai (bukan rata-rata) karena <strong>tahan terhadap pendapat ekstrem</strong> —
+      satu ahli yang sangat pesimis tidak akan menggeser hasil terlalu jauh.
+      Posisi median menentukan <strong>huruf dasar</strong>: makin rendah risikonya → makin dekat ke <strong>A</strong>.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4 ===== -->
+  <h3 class="step">④  Bagan Gini — Seberapa Sepakat Para Ahli?</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(124,58,237,0.06);border-radius:12px;border:1px solid rgba(124,58,237,0.18);">
+      <div style="font-size:1.05rem;"><code><strong>Indeks Gini (kesepakatan) → jumlah huruf</strong></code></div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);margin-top:0.4rem;">Semua sepakat → A jadi AAA · Banyak beda pendapat → tetap A</div>
+    </div>
+    <div class="info-box" style="border-left:4px solid #7c3aed;">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      <strong>Gini</strong> mengukur <em>seberapa kompak</em> pendapat para ahli. Kalau <strong>semua sepakat</strong> (Gini = 0),
+      keyakinan tinggi → huruf <strong>dilipattigakan</strong> (A → AAA). Kalau <strong>pendapat tersebar</strong> (banyak beda),
+      keyakinan rendah → huruf tetap satu (A). Jadi: <strong>median = posisi risiko, Gini = tingkat keyakinan.</strong>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5 ===== -->
+  <h3 class="step">⑤  Bagan Lampu Lalu Lintas — Membaca Rating Sekilas</h3>
+  <div class="card">
+    <div class="cols c3" style="margin:0.5rem 0;">
+      <div class="card" style="background:rgba(44,160,44,0.1);border:1px solid rgba(44,160,44,0.3);text-align:center;">
+        <div style="font-size:2rem;">🟢</div><h4 style="color:var(--accent);">A — Hijau</h4><p>Risiko rendah — aman</p>
+      </div>
+      <div class="card" style="background:rgba(241,196,15,0.12);border:1px solid rgba(241,196,15,0.4);text-align:center;">
+        <div style="font-size:2rem;">🟡</div><h4 style="color:var(--warn);">B — Kuning</h4><p>Risiko sedang — waspada</p>
+      </div>
+      <div class="card" style="background:rgba(214,39,40,0.1);border:1px solid rgba(214,39,40,0.3);text-align:center;">
+        <div style="font-size:2rem;">🔴</div><h4 style="color:var(--danger);">C+ — Merah</h4><p>Risiko tinggi — prioritas</p>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Rating huruf diberi warna seperti <strong>lampu lalu lintas</strong> supaya manajer bisa membaca prioritas dalam sekejap:
+      <strong>hijau aman, kuning hati-hati, merah harus segera ditangani</strong>. Inilah keluaran akhir scorecard (Gambar 12.1 di buku).
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6 — KENAPA TIDAK ADA AKURASI ===== -->
+  <h3 class="step">⑥  "Kok Tidak Ada Akurasi?"</h3>
+  <div class="card">
+    <div class="info-box green">
+      <strong>🔍 Penjelasan:</strong> Scorecard adalah model <strong>kualitatif</strong> — hasilnya <em>rating</em> berdasarkan pendapat ahli,
+      bukan prediksi label "benar/salah". Karena <strong>tidak ada jawaban benar yang objektif</strong> untuk dibandingkan,
+      akurasi (precision/recall/F1) <strong>tidak berlaku</strong>. Yang dijaga di sini adalah <strong>konsistensi pendapat</strong> (lewat indeks Gini)
+      dan <strong>validasi silang</strong> dengan Model 2 &amp; 3 yang memakai data angka.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7 ===== -->
+  <h3 class="step">⑦  Ringkasan Alur — 4 Langkah</h3>
+  <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));">
+    <div class="table-scroll">
+      <table class="data-table"><tbody>
+        <tr style="background:rgba(245,158,11,0.06);"><td style="width:2rem;text-align:center;font-size:1.3rem;font-weight:700;">A</td><td><strong>Kumpulkan</strong> pendapat 8 ahli untuk 56 kategori risiko</td><td style="text-align:right;font-size:1.2rem;">👥</td></tr>
+        <tr style="background:rgba(59,130,246,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">B</td><td><strong>Median</strong> → tentukan huruf dasar (A/B/C)</td><td style="text-align:right;font-size:1.2rem;">📊</td></tr>
+        <tr style="background:rgba(124,58,237,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">C</td><td><strong>Gini</strong> → tentukan jumlah huruf (A → AAA bila sepakat)</td><td style="text-align:right;font-size:1.2rem;">🤝</td></tr>
+        <tr style="background:rgba(16,185,129,0.08);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">D</td><td><strong>Warnai</strong> dengan lampu lalu lintas → rating siap dibaca</td><td style="text-align:right;font-size:1.2rem;">🚦</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="success-box">
+    <strong>🎯 Intinya:</strong> Scorecard mengubah <strong>pendapat para ahli</strong> menjadi <strong>rating huruf berwarna</strong> —
+    median menentukan posisinya, Gini menentukan keyakinannya — agar risiko tiap kategori bisa dibaca cepat seperti lampu lalu lintas.
+  </div>
+
+  <div class="info-box green" style="margin-top:1rem;">
+    👉 Lihat <strong>angka &amp; tabel rating asli</strong> di halaman
+    <a href="#" onclick="showPage('scorecard');return false;"><strong>"1 — Scorecard"</strong></a>.
+  </div>
+</div>
+
+<!-- ==================== METODE 2 — PENJELASAN MUDAH (/metode-2) ==================== -->
+<div id="page-metode-2" class="page">
+  <div class="hero">
+    <h1>📙 Metode 2 — Penjelasan Mudah Tiap Bagian</h1>
+    <p>VaR Aktuaria · Giudici (2009) Bab 12.3 · Gambar 12.2 · tiap bagan &amp; rumus dijelaskan dengan bahasa sehari-hari</p>
+  </div>
+
+  <div class="key-finding">
+    <strong>📌 Cara membaca halaman ini:</strong> Metode 2 dipecah menjadi <strong>7 bagian</strong>, masing-masing dengan kotak
+    <strong>"🔍 Apa maksud bagan ini?"</strong> agar bisa <strong>langsung dibaca</strong> tanpa latar belakang statistik.
+  </div>
+
+  <!-- ===== SECTION 1 ===== -->
+  <h3 class="step">①  Gambaran Besar — Apa Tujuan VaR Aktuaria?</h3>
+  <div class="card">
+    <p>Metode 2 menjawab: <strong>"Berdasarkan data kerugian nyata, berapa total kerugian terburuk dalam satu periode?"</strong>
+      Caranya: pisahkan masalah jadi dua — <strong>seberapa sering</strong> kejadian terjadi (frekuensi) dan <strong>seberapa besar</strong> tiap kerugian (severity) —
+      lalu gabungkan lewat <strong>simulasi</strong>. Ini pendekatan <strong>kuantitatif &amp; backward-looking</strong> (memakai data masa lalu).</p>
+
+    <div style="text-align:center;margin:1.2rem 0;padding:1.2rem;background:rgba(59,130,246,0.05);border-radius:12px;border:1px solid rgba(59,130,246,0.15);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.6rem;font-size:0.95rem;">
+        <span class="badge" style="background:var(--primary-light);color:#fff;">🔢 Frekuensi (Poisson)</span>
+        <span>×</span>
+        <span class="badge yellow">💵 Severity (Lognormal)</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge" style="background:#7c3aed;color:#fff;">🎲 Monte Carlo</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge green">📈 Distribusi total</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge" style="background:var(--danger);color:#fff;">💰 VaR 99,9%</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Baca kiri ke kanan: hitung <strong>berapa kali</strong> kejadian muncul (🔢) dan <strong>berapa besar</strong> tiap kerugian (💵),
+      gabungkan ribuan kali lewat undian acak (🎲 Monte Carlo) → terbentuk <strong>gambaran semua kemungkinan total kerugian</strong> (📈),
+      lalu ambil <strong>angka terburuk 99,9%</strong> (💰) sebagai usulan cadangan.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2 ===== -->
+  <h3 class="step">②  Rumus Inti — Total Kerugian L = ΣX</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(16,185,129,0.06);border-radius:12px;border:1px solid rgba(16,185,129,0.18);">
+      <div style="font-size:1.2rem;"><code><strong>L = X₁ + X₂ + … + X_N</strong></code></div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);margin-top:0.4rem;">N = jumlah kejadian (acak) · X = besar tiap kerugian (acak)</div>
+    </div>
+    <div class="info-box green">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      Total kerugian satu periode = <strong>menjumlahkan semua kerugian yang terjadi</strong>. Yang membuatnya menarik:
+      <strong>baik jumlah kejadian (N) maupun besar tiap kerugian (X) sama-sama acak</strong> — tidak bisa dipastikan.
+      Maka kita perlu mensimulasikan banyak kemungkinan, bukan sekadar mengalikan rata-rata.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3 ===== -->
+  <h3 class="step">③  Bagan Frekuensi — Distribusi Poisson (Seberapa Sering)</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(59,130,246,0.06);border-radius:12px;border:1px solid rgba(59,130,246,0.18);">
+      <div style="font-size:1.1rem;"><code><strong>N ~ Poisson(λ)</strong></code></div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);margin-top:0.4rem;">λ = rata-rata jumlah kejadian per periode</div>
+    </div>
+    <div class="info-box">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      <strong>Poisson</strong> adalah distribusi khusus untuk menghitung <strong>"berapa kali sesuatu terjadi dalam satu periode"</strong> —
+      cocok untuk kejadian yang jarang &amp; acak (seperti fraud). <strong>λ</strong> dibaca "lambda" = rata-rata kejadian.
+      Misal λ = 22 berarti rata-rata 22 fraud/hari, tapi hari tertentu bisa 15, bisa 30 — Poisson yang mengatur sebarannya.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4 ===== -->
+  <h3 class="step">④  Bagan Severity — Distribusi Lognormal (Seberapa Besar)</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(245,158,11,0.07);border-radius:12px;border:1px solid rgba(245,158,11,0.2);">
+      <div style="font-size:1.1rem;"><code><strong>X ~ Lognormal(μ, σ)</strong></code></div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);margin-top:0.4rem;">kebanyakan kerugian kecil, tapi sesekali ada yang sangat besar</div>
+    </div>
+    <div class="info-box yellow">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      <strong>Lognormal</strong> dipakai karena bentuk kerugian nyata <strong>"ekor panjang"</strong>: mayoritas kerugian kecil,
+      tapi <strong>kadang muncul kerugian raksasa</strong>. Distribusi normal biasa tidak bisa menangkap lonjakan besar ini,
+      sementara lognormal bisa — sehingga estimasi cadangan tidak meremehkan kejadian ekstrem.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5 ===== -->
+  <h3 class="step">⑤  Bagan Monte Carlo → VaR 99,9%</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(124,58,237,0.06);border-radius:12px;border:1px solid rgba(124,58,237,0.18);">
+      <div style="font-size:1.05rem;"><code><strong>Ulangi 20.000× : undi N lalu jumlahkan N severity → kumpulkan semua L</strong></code></div>
+      <div style="font-size:1.05rem;margin-top:0.4rem;"><code><strong>VaR = persentil ke-99,9% dari semua L</strong></code></div>
+    </div>
+    <div class="info-box" style="border-left:4px solid #7c3aed;">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      <strong>Monte Carlo</strong> = "main dadu ribuan kali". Komputer mensimulasikan <strong>20.000 versi periode</strong>:
+      tiap versi mengundi berapa kejadian (Poisson) lalu mengundi besar tiap kerugian (Lognormal) dan menjumlahkannya.
+      Hasilnya 20.000 angka total kerugian. <strong>Persentil 99,9%</strong> = angka yang hanya dilampaui 0,1% skenario terburuk →
+      itulah <strong>VaR</strong>, usulan modal cadangan.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6 — KENAPA TIDAK ADA AKURASI ===== -->
+  <h3 class="step">⑥  "Kok Tidak Ada Akurasi?"</h3>
+  <div class="card">
+    <div class="info-box green">
+      <strong>🔍 Penjelasan:</strong> VaR Aktuaria <strong>mengestimasi sebuah angka uang</strong> (kerugian terburuk),
+      bukan menebak label "fraud/bukan". Tidak ada "VaR sebenarnya" untuk dibandingkan, jadi <strong>akurasi tidak relevan</strong>.
+      Kualitasnya dinilai dari <strong>kecocokan distribusi</strong> dengan data (mis. parameter lognormal yang pas) dan
+      <strong>validasi silang</strong>: hasilnya harus berdekatan dengan metode lain (lihat Gambar 12.2 di Metode 3).
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7 ===== -->
+  <h3 class="step">⑦  Ringkasan Alur — 4 Langkah</h3>
+  <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));">
+    <div class="table-scroll">
+      <table class="data-table"><tbody>
+        <tr style="background:rgba(59,130,246,0.06);"><td style="width:2rem;text-align:center;font-size:1.3rem;font-weight:700;">A</td><td><strong>Frekuensi</strong>: hitung rata-rata kejadian (λ) → Poisson</td><td style="text-align:right;font-size:1.2rem;">🔢</td></tr>
+        <tr style="background:rgba(245,158,11,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">B</td><td><strong>Severity</strong>: paskan bentuk kerugian → Lognormal (μ, σ)</td><td style="text-align:right;font-size:1.2rem;">💵</td></tr>
+        <tr style="background:rgba(124,58,237,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">C</td><td><strong>Monte Carlo</strong>: simulasikan 20.000 periode → distribusi total</td><td style="text-align:right;font-size:1.2rem;">🎲</td></tr>
+        <tr style="background:rgba(16,185,129,0.08);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">D</td><td><strong>Ambil VaR</strong>: persentil 99,9% = usulan modal cadangan</td><td style="text-align:right;font-size:1.2rem;">💰</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="success-box">
+    <strong>🎯 Intinya:</strong> Metode 2 memisahkan risiko jadi <strong>seberapa sering</strong> (Poisson) dan <strong>seberapa besar</strong> (Lognormal),
+    menggabungkannya lewat <strong>simulasi Monte Carlo</strong>, lalu mengambil <strong>angka terburuk 99,9% (VaR)</strong> sebagai usulan cadangan modal.
+  </div>
+
+  <div class="info-box green" style="margin-top:1rem;">
+    👉 Lihat <strong>histogram &amp; angka VaR asli</strong> di halaman
+    <a href="#" onclick="showPage('actuarial');return false;"><strong>"2 — VaR Aktuaria"</strong></a>.
+  </div>
+</div>
+
+<!-- ==================== METODE 3 — PENJELASAN MUDAH (/metode-3) ==================== -->
+<div id="page-metode-3" class="page">
+  <div class="hero">
+    <h1>📘 Metode 3 — Penjelasan Mudah Tiap Bagian</h1>
+    <p>VaR Integrasi Bayesian &amp; BIA · Giudici (2009) Bab 12.4 · setiap bagan &amp; rumus dijelaskan dengan bahasa sehari-hari</p>
+  </div>
+
+  <div class="key-finding">
+    <strong>📌 Cara membaca halaman ini:</strong> Halaman ini memecah Metode 3 menjadi <strong>7 bagian (Section)</strong>.
+    Tiap bagian punya kotak <strong>"🔍 Apa maksud bagan ini?"</strong> yang menjelaskan gambar/diagram di atasnya
+    dengan bahasa sederhana, sehingga bisa <strong>langsung dibaca</strong> tanpa latar belakang statistik.
+  </div>
+
+  <!-- ===== SECTION 1 ===== -->
+  <h3 class="step">①  Gambaran Besar — Apa Tujuan Metode 3?</h3>
+  <div class="card">
+    <p>Metode 3 menjawab satu pertanyaan praktis:
+      <strong>"Berapa uang yang harus dicadangkan bank untuk menutup kerugian risiko operasional?"</strong>
+      Bedanya dengan Metode 1 &amp; 2: Metode 3 <strong>menggabungkan SEMUA sumber data</strong> menjadi satu, lalu mengeceknya dengan standar regulasi.</p>
+
+    <!-- BAGAN: alur tiga sumber -->
+    <div style="text-align:center;margin:1.2rem 0;padding:1.2rem;background:rgba(59,130,246,0.05);border-radius:12px;border:1px solid rgba(59,130,246,0.15);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.6rem;font-size:0.95rem;">
+        <span class="badge" style="background:var(--primary-light);color:#fff;">📊 Internal</span>
+        <span>+</span>
+        <span class="badge yellow">👥 Expert</span>
+        <span>+</span>
+        <span class="badge" style="background:#7c3aed;color:#fff;">🏢 Eksternal</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge green">🔀 Digabung</span>
+        <span style="font-size:1.3rem;">→</span>
+        <span class="badge" style="background:var(--accent);color:#fff;">💰 Bayes VaR</span>
+        <span style="font-size:1.3rem;">vs</span>
+        <span class="badge" style="background:var(--danger);color:#fff;">🏛️ BIA</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Baca dari kiri ke kanan seperti membaca kalimat. Tiga kotak pertama (📊👥🏢) adalah <strong>tiga sumber data</strong> yang dipakai.
+      Tanda <strong>+</strong> berarti "digabungkan". Setelah digabung (🔀), kita menghasilkan angka cadangan <strong>Bayes VaR</strong> (💰).
+      Angka itu lalu <strong>dibandingkan (vs)</strong> dengan <strong>BIA</strong> (🏛️) — standar sederhana dari regulator.
+      Kalau dua angka terakhir mirip, berarti hitungan kita masuk akal. ✅
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2 ===== -->
+  <h3 class="step">②  Bagan 3 Sumber Data — Dari Mana Angkanya?</h3>
+  <div class="card">
+    <p style="color:var(--text-secondary);margin-bottom:0.8rem;">Setiap sumber punya kelebihan &amp; kekurangan — itulah alasan ketiganya digabung, bukan dipakai sendiri-sendiri.</p>
+    <div class="cols c3">
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--primary-light);">
+        <h4 style="color:var(--primary-light);">📊 Internal</h4>
+        <p><strong>Apa:</strong> Riwayat fraud bank sendiri (PaySim, 8.197 kejadian).</p>
+        <p><strong>Sifat:</strong> Paling relevan, tapi hanya melihat <em>masa lalu</em>.</p>
+        <div class="badge" style="background:var(--primary-light);color:#fff;margin-top:0.3rem;">Backward-looking</div>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid var(--warn);">
+        <h4 style="color:var(--warn);">👥 Expert</h4>
+        <p><strong>Apa:</strong> 8 ahli menilai 56 kategori risiko (448 penilaian).</p>
+        <p><strong>Sifat:</strong> Bisa melihat <em>masa depan</em>, tapi subjektif.</p>
+        <div class="badge yellow" style="margin-top:0.3rem;">Forward-looking</div>
+      </div>
+      <div class="card" style="background:var(--bg);border-top:3px solid #7c3aed;">
+        <h4 style="color:#7c3aed;">🏢 Eksternal</h4>
+        <p><strong>Apa:</strong> Kerugian bank lain (konsorsium, 1.999 kejadian).</p>
+        <p><strong>Sifat:</strong> Perspektif industri, tapi <em>beda skala</em>.</p>
+        <div class="badge" style="background:#7c3aed;color:#fff;margin-top:0.3rem;">Industri-wide</div>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:0.9rem;">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Ketiga kartu di atas adalah "tiga saksi" yang menceritakan tingkat risiko bank dari sudut berbeda:
+      kartu biru (📊) bicara soal <em>pengalaman kita sendiri</em>, kartu kuning (👥) soal <em>perkiraan para ahli</em>,
+      dan kartu ungu (🏢) soal <em>kejadian di bank lain</em>. Warna garis atas tiap kartu sama dengan warna yang dipakai
+      di seluruh halaman, supaya Anda mudah melacak "data ini datang dari sumber mana".
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3 ===== -->
+  <h3 class="step">③  Bagan Scaling — Kenapa Data Bank Lain Harus "Dikecilkan"?</h3>
+  <div class="card">
+    <p style="color:var(--text-secondary);margin-bottom:0.8rem;">Bank besar punya kerugian lebih besar bukan karena lebih ceroboh, tapi karena bisnisnya lebih besar. Jadi data mereka harus disetarakan dulu.</p>
+
+    <!-- BAGAN scaling -->
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(124,58,237,0.06);border-radius:12px;border:1px solid rgba(124,58,237,0.18);">
+      <div style="font-size:1.05rem;margin-bottom:0.4rem;">
+        <code><strong>c = Σ kerugian eksternal ÷ Σ kerugian internal</strong></code>
+      </div>
+      <div style="font-size:1.05rem;">
+        <code><strong>data eksternal disetarakan = data eksternal ÷ c</strong></code>
+      </div>
+    </div>
+
+    <div class="info-box" style="border-left:4px solid #7c3aed;">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      <code>c</code> adalah <strong>faktor pengecil</strong>. Baris pertama menghitung "berapa kali lipat bank lain lebih besar dari kita".
+      Misalnya kalau total kerugian bank lain 5× total kerugian kita, maka <code>c = 5</code>.
+      Baris kedua membagi setiap angka bank lain dengan <code>c</code> — jadi semua kerugian mereka "dikecilkan 5×" agar
+      <strong>setara ukuran bank kita</strong> (apple-to-apple). Tanpa langkah ini, data bank besar akan mendominasi dan membuat estimasi terlalu tinggi.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4 ===== -->
+  <h3 class="step">④  Bagan Integrasi Bayesian — Bagaimana Tiga Sumber Digabung?</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.2rem;background:rgba(16,185,129,0.06);border-radius:12px;border:1px solid rgba(16,185,129,0.15);">
+      <div style="font-size:1.1rem;">
+        <code><strong>S_gabungan = S_internal &nbsp;∪&nbsp; S_expert &nbsp;∪&nbsp; (S_eksternal ÷ c)</strong></code>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.4rem;">
+        Semua kerugian dari 3 sumber dituang ke dalam satu "kolam" data besar
+      </div>
+    </div>
+    <div class="info-box green">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      Lambang <strong>∪</strong> (gabungan) artinya "satukan semua angka jadi satu daftar panjang".
+      Bayangkan tiga ember berisi angka kerugian dituang ke dalam satu bak besar.
+      Disebut <strong>Bayesian</strong> karena prinsipnya: mulai dari keyakinan awal (data internal = <em>prior</em>),
+      lalu <em>diperbarui</em> dengan bukti baru (data expert &amp; eksternal = <em>evidence</em>) → menghasilkan keyakinan akhir yang lebih lengkap (<em>posterior</em>).
+      Otomatis, <strong>sumber dengan data terbanyak mendapat bobot terbesar</strong> — tidak perlu menentukan bobot secara manual.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5 ===== -->
+  <h3 class="step">⑤  Rumus Bayes VaR — Cara Mengambil Angka Cadangan</h3>
+  <div class="card">
+    <div style="text-align:center;margin:1rem 0;padding:1.1rem;background:rgba(245,158,11,0.07);border-radius:12px;border:1px solid rgba(245,158,11,0.2);">
+      <div style="font-size:1.1rem;">
+        <code><strong>Bayes VaR = persentil ke-q dari S_gabungan</strong></code>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.4rem;">
+        q = tingkat keyakinan (standar buku: 99,9%)
+      </div>
+    </div>
+    <div class="info-box yellow">
+      <strong>🔍 Apa maksud rumus ini?</strong><br>
+      "Persentil ke-99,9%" artinya: urutkan semua angka di bak gabungan dari kecil ke besar,
+      lalu ambil angka yang <strong>hanya dilampaui 0,1% kejadian terburuk</strong>. Itulah perkiraan kerugian ekstrem
+      yang harus disiapkan dananya. <strong>Tidak ada rumus rumit</strong> — Bayes VaR hanyalah "ambil angka tinggi dari daftar gabungan".
+      <br><br>
+      💡 <strong>Catatan tentang angka keyakinan:</strong> kalau Anda pernah melihat tulisan seperti "Bayes VaR 96,5%",
+      itu bukan nilai tetap — itu hanya mengikuti pengaturan keyakinan <code>q</code>. Standar yang dipakai buku &amp; Basel adalah <strong>99,9%</strong>.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6 ===== -->
+  <h3 class="step">⑥  Bagan Perbandingan 7 Metode (Gambar 12.2) — Inti Validasi</h3>
+  <div class="card">
+    <p style="color:var(--text-secondary);margin-bottom:0.8rem;">Inilah gambar paling penting di Metode 3: tujuh estimasi VaR ditampilkan berdampingan sebagai batang horizontal.</p>
+
+    <!-- mock bagan batang -->
+    <div style="margin:1rem 0;padding:1rem;background:var(--bg);border-radius:12px;border:1px solid rgba(0,0,0,0.06);">
+      <div style="display:flex;flex-direction:column;gap:0.55rem;font-size:0.85rem;">
+        <div style="display:flex;align-items:center;gap:0.5rem;"><span style="width:140px;text-align:right;">Internal Historical</span><div style="height:18px;width:55%;background:#3b82f6;border-radius:4px;"></div></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;"><span style="width:140px;text-align:right;">Bayes VaR</span><div style="height:18px;width:62%;background:#f59e0b;border-radius:4px;"></div></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;"><span style="width:140px;text-align:right;">Bayes Monte Carlo</span><div style="height:18px;width:60%;background:#dc2626;border-radius:4px;"></div></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;"><span style="width:140px;text-align:right;">BIA (15%)</span><div style="height:18px;width:63%;background:#06b6d4;border-radius:4px;"></div></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;"><span style="width:140px;text-align:right;">Self-assessment</span><div style="height:18px;width:90%;background:#8b5cf6;border-radius:4px;"></div></div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:0.6rem;text-align:center;">↑ Ilustrasi — angka sebenarnya ada di halaman "3 — VaR Integrasi &amp; BIA"</div>
+    </div>
+
+    <div class="info-box">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Tiap <strong>batang = satu metode</strong>; <strong>panjang batang = besar cadangan</strong> yang disarankan metode itu.
+      Cara membacanya gampang: <strong>perhatikan apakah batang-batang berkumpul rapat atau berpencar</strong>.
+      <ul style="margin:0.6rem 0 0 1.2rem;">
+        <li><strong>Berdekatan</strong> (Internal, Bayes, Bayes MC, BIA) → semua metode sepakat → hasil <strong>bisa dipercaya</strong>. ✅</li>
+        <li><strong>Jauh sendiri</strong> (Self-assessment di contoh ini paling panjang) → wajar, karena pendapat ahli cenderung lebih konservatif/pesimis.</li>
+      </ul>
+      Yang paling ditekankan buku: <strong>BIA ≈ Bayes VaR</strong>. Kalau dua batang ini hampir sama panjang, model dinyatakan <strong>VALID</strong>.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7 — KENAPA TIDAK ADA AKURASI ===== -->
+  <h3 class="step">⑦  "Kok Tidak Ada Akurasi?" — Pertanyaan yang Sering Muncul</h3>
+  <div class="card">
+    <p>Banyak yang bertanya: <em>"kenapa Model 1, 2, dan 3 tidak punya nilai akurasi (precision/recall/F1) seperti model machine learning?"</em>
+      Jawabannya: <strong>itu memang disengaja dan benar secara metodologi.</strong></p>
+
+    <!-- BAGAN: estimasi vs klasifikasi -->
+    <div class="cols c2" style="margin:1rem 0;">
+      <div class="card" style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.2);">
+        <h4 style="color:var(--primary-light);">🎯 Model Prediksi (punya akurasi)</h4>
+        <p>Menebak <strong>label</strong>: "fraud" vs "bukan fraud".</p>
+        <p>Ada <strong>jawaban benar</strong> untuk dibandingkan → bisa dihitung benar/salah.</p>
+        <div class="badge" style="background:var(--primary-light);color:#fff;margin-top:0.3rem;">precision · recall · F1 · ROC-AUC</div>
+      </div>
+      <div class="card" style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);">
+        <h4 style="color:var(--accent);">💰 Model Risiko (Model 1/2/3 — TANPA akurasi)</h4>
+        <p>Menghasilkan <strong>satu angka uang</strong> (estimasi cadangan / VaR).</p>
+        <p><strong>Tidak ada "VaR yang sebenarnya"</strong> untuk dibandingkan → akurasi tidak relevan.</p>
+        <div class="badge green" style="margin-top:0.3rem;">validasi silang antar-metode</div>
+      </div>
+    </div>
+
+    <div class="info-box green">
+      <strong>🔍 Apa maksud bagan ini?</strong><br>
+      Kotak kiri (biru) adalah model <em>prediksi</em>: karena menebak label dan kita tahu jawaban benarnya,
+      benar/salah bisa dihitung → muncul angka <strong>akurasi</strong>.
+      Kotak kanan (hijau) adalah ketiga model di proyek ini: mereka <em>mengestimasi sebuah nilai</em> (berapa rupiah harus dicadangkan),
+      bukan menebak label. Karena tidak ada satu "nilai benar" yang pasti, <strong>akurasi tidak bisa — dan tidak perlu — dihitung.</strong>
+    </div>
+
+    <h4 style="margin-top:1.2rem;">✅ Lalu bagaimana model ini divalidasi?</h4>
+    <p style="margin-top:0.4rem;">Bukan dengan akurasi, melainkan dengan <strong>validasi silang antar-metode</strong> (Giudici, 2009):</p>
+    <div class="info-box" style="margin-top:0.6rem;">
+      💡 Kalau <strong>7 metode berbeda</strong> menghasilkan VaR yang <strong>saling berdekatan</strong> → estimasi dianggap <strong>dapat dipercaya</strong>.
+      Indikator kuncinya: <strong>BIA ≈ Bayes VaR</strong>. Inilah "pengganti akurasi" untuk model risiko.
+    </div>
+
+    <div class="info-box yellow" style="margin-top:0.8rem;">
+      📌 <strong>Catatan:</strong> di repo ini sebenarnya <em>ada</em> metrik akurasi — tapi di file terpisah
+      <code>src/classification.py</code>, yaitu pipeline <strong>klasifikasi fraud PaySim</strong> (precision, recall, F1, ROC-AUC).
+      Itu pelengkap data-mining yang <strong>berbeda</strong> dari ketiga model ORM di dashboard ini.
+    </div>
+  </div>
+
+  <!-- ===== SECTION 8 ===== -->
+  <h3 class="step">⑧  Ringkasan Alur — 5 Langkah yang Mudah Diingat</h3>
+  <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));">
+    <div class="table-scroll">
+      <table class="data-table">
+        <tbody>
+          <tr style="background:rgba(59,130,246,0.06);"><td style="width:2rem;text-align:center;font-size:1.3rem;font-weight:700;">A</td><td><strong>Kumpulkan</strong> 3 sumber data: internal, expert, eksternal</td><td style="text-align:right;font-size:1.2rem;">📊👥🏢</td></tr>
+          <tr style="background:rgba(124,58,237,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">B</td><td><strong>Scaling</strong> data eksternal (bagi dengan <code>c</code>) agar setara</td><td style="text-align:right;font-size:1.2rem;">📏</td></tr>
+          <tr style="background:rgba(16,185,129,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">C</td><td><strong>Gabungkan</strong> jadi satu kolam data (Integrasi Bayesian)</td><td style="text-align:right;font-size:1.2rem;">🔀</td></tr>
+          <tr style="background:rgba(245,158,11,0.06);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">D</td><td><strong>Hitung Bayes VaR</strong> (persentil 99,9%) + 6 pembanding lain</td><td style="text-align:right;font-size:1.2rem;">💰</td></tr>
+          <tr style="background:rgba(16,185,129,0.08);"><td style="text-align:center;font-size:1.3rem;font-weight:700;">E</td><td><strong>Validasi silang</strong>: bandingkan dengan BIA → mirip = ✅ VALID</td><td style="text-align:right;font-size:1.2rem;">✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- _RINGKASAN_END_ -->
+
+  <div class="success-box">
+    <strong>🎯 Intinya dalam satu kalimat:</strong> Metode 3 menuang kerugian dari <strong>tiga sumber</strong> ke satu kolam
+    (setelah data bank lain disetarakan), mengambil <strong>angka kerugian ekstrem (Bayes VaR 99,9%)</strong>,
+    lalu mengeceknya dengan standar regulator <strong>BIA</strong> — jika keduanya mirip, estimasi modal cadangan bank dinyatakan dapat dipercaya.
+  </div>
+
+  <div class="info-box green" style="margin-top:1rem;">
+    👉 Ingin melihat <strong>angka asli &amp; grafik interaktif</strong>-nya? Buka halaman
+    <a href="#" onclick="showPage('integrated');return false;"><strong>"3 — VaR Integrasi &amp; BIA"</strong></a> di menu samping.
+  </div>
+</div>
+
 <!-- ==================== RINGKASAN EKSEKUTIF ==================== -->
 <div id="page-summary" class="page">
   <div class="hero">
@@ -2674,6 +3216,9 @@ function showPage(id) {
   document.querySelectorAll('.nav-btn').forEach(b => {
     if (b.onclick.toString().includes("'" + id + "'")) b.classList.add('active');
   });
+  if (window.location.hash !== '#' + id) {
+    history.replaceState(null, '', '#' + id);
+  }
   window.scrollTo(0, 0);
 }
 
@@ -3449,7 +3994,20 @@ showPage = function(id) {
 
 document.addEventListener('DOMContentLoaded', () => {
   initProcessAnimations();
-  resetProcessAnimations('beranda');
+  const valid = ['beranda','background','data','scorecard','metode-1','actuarial','metode-2','integrated','metode-3','summary'];
+  const initial = (window.location.hash || '').replace('#', '');
+  const start = valid.includes(initial) ? initial : 'beranda';
+  showPage(start);
+  resetProcessAnimations(start);
+});
+
+window.addEventListener('hashchange', () => {
+  const id = (window.location.hash || '').replace('#', '');
+  const valid = ['beranda','background','data','scorecard','metode-1','actuarial','metode-2','integrated','metode-3','summary'];
+  if (valid.includes(id) && !document.getElementById('page-' + id).classList.contains('active')) {
+    showPage(id);
+    resetProcessAnimations(id);
+  }
 });
 </script>
 </body>
